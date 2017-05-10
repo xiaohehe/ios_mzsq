@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>291EE817-0480-4D78-BD1A-DB49FF8B2664</string>
+	<key>IDESourceControlProjectName</key>
+	<string>MuZhiSheQu</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>0d791d90-d124-e44a-9189-8f8fa036771b++9997</key>
+		<string>https://119.254.167.141:8443/svn/ios/MuZhiSheQu</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>MuZhiSheQu.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>0d791d90-d124-e44a-9189-8f8fa036771b++9997</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectRepositoryRootDictionary</key>
+	<dict>
+		<key>0d791d90-d124-e44a-9189-8f8fa036771b++9997</key>
+		<string>https://119.254.167.141:8443/svn/ios</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://119.254.167.141:8443/svn/ios/MuZhiSheQu/MuZhiSheQu.xcodeproj</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>0d791d90-d124-e44a-9189-8f8fa036771b++9997</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.subversion</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>0d791d90-d124-e44a-9189-8f8fa036771b++9997</string>
+			<key>IDESourceControlWCCName</key>
+			<string>MuZhiSheQu</string>
+		</dict>
+	</array>
+</dict>
+</plist>

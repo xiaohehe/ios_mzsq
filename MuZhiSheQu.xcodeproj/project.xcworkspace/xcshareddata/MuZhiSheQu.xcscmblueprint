@@ -1,0 +1,25 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "0d791d90-d124-e44a-9189-8f8fa036771b++9997",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+    "0d791d90-d124-e44a-9189-8f8fa036771b++9997" : {
+
+    }
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "0d791d90-d124-e44a-9189-8f8fa036771b++9997" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "291EE817-0480-4D78-BD1A-DB49FF8B2664",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "0d791d90-d124-e44a-9189-8f8fa036771b++9997" : "MuZhiSheQux%E6%96%B0%E7%89%88\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "MuZhiSheQu",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "MuZhiSheQu.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/119.254.167.141:8443\/svn\/ios",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Subversion",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "0d791d90-d124-e44a-9189-8f8fa036771b++9997"
+    }
+  ]
+}
