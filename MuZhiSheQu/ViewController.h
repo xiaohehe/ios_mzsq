@@ -18,6 +18,7 @@
 
 @interface ViewController : SuperViewController
 @property(nonatomic,strong)NSTimer *timer;
+@property(nonatomic,strong) NSMutableDictionary* shopDictionary;//购物车商品及数量字典
 
 @end
 

@@ -21,6 +21,8 @@
 #import "MyPageControl.h"
 #import "SheQuManagerViewController.h"
 #import "UIColor+Hex.h"
+#define SCREEN_WIDTH ([UIScreen mainScreen].bounds.size.width)
+
 @interface ViewController ()<RCIMReceiveMessageDelegate,UIScrollViewDelegate,UITextFieldDelegate>
 {
     int ii;
@@ -122,7 +124,7 @@
         
         self.commid = [[NSUserDefaults standardUserDefaults]objectForKey:@"commid"];
         if (self.commid==nil || [self.commid isEqualToString:@""]) {
-            // [self ShowAlertWithMessage:@"没有数据，请重新选择社区"];
+            [self ShowAlertWithMessage:@"没有数据，请重新选择社区"];
         }
         
         return;
@@ -130,6 +132,10 @@
     }
     
     
+}
+/*请求购物车*/
+-(void) requestShopingCart{
+
 }
 
 -(void)viewWillDisappear:(BOOL)animated
@@ -139,7 +145,7 @@
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
-   
+    self.shopDictionary=[NSMutableDictionary dictionary];
 //    UIView * view = [[UIView alloc]initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 20)];
 //    view.backgroundColor = grayTextColor;
 //    [self.view addSubview:view];
@@ -1279,7 +1285,7 @@
     _shangPinScrollView.pagingEnabled = YES;
     _shangPinScrollView.bounces = YES;
     _shangPinScrollView.scrollEnabled = YES;
-    //    _shangPinScrollView.backgroundColor = [UIColor redColor];
+    //_shangPinScrollView.backgroundColor = [UIColor redColor];
     _shangPinScrollView.delegate = self;
     _shangPinScrollView.showsVerticalScrollIndicator = NO;
     _shangPinScrollView.showsHorizontalScrollIndicator = NO;
@@ -1292,6 +1298,7 @@
     //        _shangPinPageControl.pageIndicatorTintColor=[UIColor grayColor];
     _shangPinPageControl.numberOfPages=ceilf(arr.count/4.0);
     //    _shangPinPageControl.currentPage = 0;
+   // _shangPinPageControl.backgroundColor=[UIColor blueColor];
     [shopView addSubview:_shangPinPageControl];
     
     
@@ -2279,7 +2286,9 @@
 //        img.layer.cornerRadius=2;
 //        img.layer.borderColor=blackLineColore.CGColor;
 //        img.layer.borderWidth=.5;
-        NSLog(@"%@",array[i][@"img1"]);
+        NSLog(@"array=%@",array[i]);
+        NSLog(@"prod_name=%@",array[i][@"prod_name"]);
+
         NSString *cut = array[i][@"img1"];
         NSString *imagename = [cut lastPathComponent];
         NSString *path = [cut stringByDeletingLastPathComponent];
@@ -2353,19 +2362,21 @@
         //            oldPrice.hidden=YES;
         //        }
         
+        //来自哪里
+        UILabel * comeFromlab = [[UILabel alloc]initWithFrame:CGRectMake(img.right+10*self.scale, newPrice.bottom, self.view.width - img.right - 10*self.scale, 20*self.scale)];
+        comeFromlab.textColor = grayTextColor;
+        comeFromlab.font = Small10Font(self.scale);
+        comeFromlab.text = [NSString stringWithFormat:@"来自%@",array[i][@"shop_name"]];
+        [bgVi addSubview:comeFromlab];
+
+        
         //销售数量
-        UILabel * xiaoshouShuLiangLab = [[UILabel alloc]initWithFrame:CGRectMake(img.right+10*self.scale, newPrice.bottom, self.view.width - img.right-10*self.scale, 20*self.scale)];
+        UILabel * xiaoshouShuLiangLab = [[UILabel alloc]initWithFrame:CGRectMake(img.right+10*self.scale, comeFromlab.bottom, self.view.width - img.right-10*self.scale, 20*self.scale)];
         xiaoshouShuLiangLab.textColor = grayTextColor;
         xiaoshouShuLiangLab.font = Small10Font(self.scale);
         NSString * sales = [NSString stringWithFormat:@"%@",array[i][@"sales"]];
         xiaoshouShuLiangLab.text = [NSString stringWithFormat:@"已售%@",sales];
         [bgVi addSubview:xiaoshouShuLiangLab];
-        //来自哪里
-        UILabel * comeFromlab = [[UILabel alloc]initWithFrame:CGRectMake(img.right+10*self.scale, xiaoshouShuLiangLab.bottom, self.view.width - img.right - 10*self.scale, 20*self.scale)];
-        comeFromlab.textColor = grayTextColor;
-        comeFromlab.font = Small10Font(self.scale);
-        comeFromlab.text = [NSString stringWithFormat:@"来自%@",array[i][@"shop_name"]];
-        [bgVi addSubview:comeFromlab];
         
         
         
@@ -2377,6 +2388,38 @@
         UILabel * bottomLab = [[UILabel alloc]initWithFrame:CGRectMake(10*self.scale, 100*self.scale - 0.3, self.view.width - 20*self.scale, 0.3)];
         bottomLab.backgroundColor = grayTextColor;
         [bgVi addSubview:bottomLab];
+        
+        UIButton *jiaBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [jiaBtn setImage:[UIImage imageNamed:@"na2"] forState:UIControlStateNormal];
+        jiaBtn.frame=CGRectMake(SCREEN_WIDTH-30, comeFromlab.bottom, 22*self.scale, 22*self.scale);
+        jiaBtn.tag=567;
+       // [jiaBtn addTarget:self action:@selector(jiaBtnEvent:) forControlEvents:UIControlEventTouchUpInside];
+        [bgVi addSubview:jiaBtn];
+        
+        UILabel *num = [[UILabel alloc]initWithFrame:CGRectMake(jiaBtn.frame.origin.x-25*self.scale, comeFromlab.bottom, 25*self.scale, 22*self.scale)];
+        //    num.layer.borderWidth=.5;
+        //    num.layer.borderColor=[UIColor colorWithRed:204/255.0 green:205/255.0 blue:206/255.0 alpha:1].CGColor;
+        num.font=SmallFont(self.scale);
+        num.tag=678;
+        num.text=[NSString stringWithFormat:@"%ld",(long)self.index];
+//        if (_index==0) {
+//            jianBtn.hidden=YES;
+//            num.hidden=YES;
+//        }else{
+//            jianBtn.hidden=NO;
+//            num.hidden=NO;
+//        }
+        num.textColor=grayTextColor;
+        num.textAlignment=NSTextAlignmentCenter;
+        [bgVi addSubview:num];
+
+        
+        UIButton *jianBtn = [[UIButton alloc]initWithFrame:CGRectMake(num.frame.origin.x-22*self.scale, comeFromlab.bottom, 22*self.scale, 22*self.scale)];
+        [jianBtn setImage:[UIImage imageNamed:@"na1"] forState:UIControlStateNormal];
+        jianBtn.tag=456;
+       // [jianBtn addTarget:self action:@selector(jiaBtnEvent:) forControlEvents:UIControlEventTouchUpInside];
+        [bgVi addSubview:jianBtn];
+
         
         //        if ([[NSString stringWithFormat:@"%@",_weishangData[i][@"origin_price"]] isEqualToString:[NSString stringWithFormat:@"%@",_weishangData[i][@"price"]]]) {
         //            oldPrice.hidden=YES;

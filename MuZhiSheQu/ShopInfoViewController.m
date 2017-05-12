@@ -247,6 +247,8 @@
     
     
 }
+
+/*请求当前用户购物车中的购买数量*/
 -(void)ReshBotView{
     
     
@@ -263,6 +265,7 @@
 
     [analyze getShopingCartDataWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
         [self.activityVC stopAnimate];
+        NSLog(@"models==%@",models);
         if ([code isEqualToString:@"0"]) {
             _carPrice = models[@"total_amount"] ;
             _carNum= models[@"total_num"] ;
@@ -877,7 +880,7 @@
     
     [self centerCont];
 }
-
+/*更改购车车内商品数量*/
 -(void)jiaBtnEvent:(UIButton *)btn{
    
     
