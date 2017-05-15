@@ -882,27 +882,17 @@
 }
 /*更改购车车内商品数量*/
 -(void)jiaBtnEvent:(UIButton *)btn{
-   
-    
     if ([Stockpile sharedStockpile].isLogin==NO) {
-        
         [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
             if (index==1) {
                 LoginViewController *login = [self login];
                 [login resggong:^(NSString *str) {
-                    
                     [self ReshData];
                 }];
             }
-            
         }];
-        
         return;
     }
-   
-  
-    
-    
     [self.view addSubview:self.activityVC];
     [self.activityVC startAnimate];
     
@@ -925,19 +915,15 @@
         if (_index<=0) {
             _index=0;
         }
-
         NSString *userid = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
         NSString *num = [NSString stringWithFormat:@"%ld",(long)_index];
         NSDictionary *dicc = @{@"user_id":userid,@"prod_id":self.prod_id,@"prod_count":num,@"shop_id":self.shop_id};
-        
         AnalyzeObject *anle = [AnalyzeObject new];
         [anle addProdWithDic:dicc Block:^(id models, NSString *code, NSString *msg) {
             [self ReshBotView];
             [self shangJiaXiangQing];
             [self.activityVC stopAnimate];
-
             if ([code isEqualToString:@"0"]) {
-               
 //                UIButton *jianBtn = (UIButton *)[self.view viewWithTag:456];
 //                UILabel *num = (UILabel *)[self.view viewWithTag:678];
 //                num.text=[NSString stringWithFormat:@"%ld",(long)_index];
@@ -951,11 +937,6 @@
 //                    num.hidden=NO;
 //                    _botRTwo.hidden=NO;
 //                }
-//                
-                
-                
-            
-                
             }else{
                 if (btn.tag==456) {
                     _numb++;
@@ -968,12 +949,8 @@
                 }
                 [self ShowAlertWithMessage:msg];
             }
-        
-         
          }];
     }else{
-        
-
         if (btn.tag==456) {
             _numb--;
             _index--;
@@ -986,13 +963,11 @@
         if (_numb<=0) {
             _numb=0;
 //            _botRTwo.hidden=YES;
-
 //            return;
         }
         if (_index<=0) {
             _index=0;
         }
-   
 //        UIButton *jianBtn = (UIButton *)[self.view viewWithTag:456];
 //        UILabel *num = (UILabel *)[self.view viewWithTag:678];
 ////        num.text=[NSString stringWithFormat:@"%ld",(long)_index];
@@ -1023,16 +998,6 @@
 //    }else{
 //        _zongPrice = _zongPrice+[_data[0][@"price"]floatValue];
 //    }
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
 }
 
 //增加失败后要让数量减一

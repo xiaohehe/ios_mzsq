@@ -199,17 +199,10 @@
 //}
 
 -(NSMutableAttributedString *)stringColorAllString:(NSString *)string redString:(NSString *)redString{
-
-    
-    
     NSMutableAttributedString *str = [[NSMutableAttributedString alloc]initWithString:string];
-    
     NSRange range=[string rangeOfString:[NSString stringWithFormat:@"%@",redString]];
-    
     [str addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:range];
-    
     return str;
-    
 }
 
 -(void)ClearCache{

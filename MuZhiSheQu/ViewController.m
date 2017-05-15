@@ -97,18 +97,13 @@
     _five=NO;
     textFieldString = @"";
     [self gouWuCheShuZi];
-    
 //    self.navigationController.navigationBarHidden=YES;
     [RCIM sharedRCIM].disableMessageAlertSound=NO;
     [self ReshMessage];
     [RCIM sharedRCIM].receiveMessageDelegate=self;
-    
-    
     [self.navigationController setNavigationBarHidden:YES animated:YES];
-    
 //    NSString *addrss = [[NSUserDefaults standardUserDefaults]objectForKey:@"commname"];
 //    self.TitleLabel.text=addrss;
-
     if ([[NSUserDefaults standardUserDefaults]boolForKey:@"changeComm"]) {
         _lingShouData=[NSMutableArray new];
         _lunda=[NSMutableArray new];
@@ -121,21 +116,34 @@
         [[NSUserDefaults standardUserDefaults]setBool:NO forKey:@"changeComm"];
         [[NSUserDefaults standardUserDefaults]synchronize];
     }else{
-        
         self.commid = [[NSUserDefaults standardUserDefaults]objectForKey:@"commid"];
         if (self.commid==nil || [self.commid isEqualToString:@""]) {
             [self ShowAlertWithMessage:@"没有数据，请重新选择社区"];
         }
-        
         return;
-        
     }
-    
-    
 }
 /*请求购物车*/
 -(void) requestShopingCart{
+    [self.shopDictionary removeAllObjects];
+    NSString *userid =  [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
+    if(userid==nil)
+        return;
+    NSDictionary *dic = @{@"user_id":userid};
+    AnalyzeObject *analy=[[AnalyzeObject alloc]init];
+    [analy showCartWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
+        if ([code isEqualToString:@"0"]) {
+            NSArray* arr=models;
+            NSLog(@"cart==%@",arr);
 
+            for (int i = 0; i < arr.count; i ++) {
+                NSArray * Prod_infoArr = arr[i][@"prod_info"];
+                for (int j = 0; j < Prod_infoArr.count; j ++) {
+                    [self.shopDictionary setObject:Prod_infoArr[j][@"prod_count"] forKey:Prod_infoArr[j][@"prod_id"]];
+               }
+            }
+        }
+    }];
 }
 
 -(void)viewWillDisappear:(BOOL)animated
@@ -146,6 +154,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.shopDictionary=[NSMutableDictionary dictionary];
+    [self requestShopingCart];
 //    UIView * view = [[UIView alloc]initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 20)];
 //    view.backgroundColor = grayTextColor;
 //    [self.view addSubview:view];
@@ -179,34 +188,25 @@
     if ([self getCommid]==nil || [[self getCommid] isEqualToString:@""]) {
         [[NSUserDefaults standardUserDefaults]setBool:NO forKey:@"changeComm"];
     }
-    
-    
-   BOOL gong = [[NSUserDefaults standardUserDefaults]boolForKey:@"G"];
-    
+    BOOL gong = [[NSUserDefaults standardUserDefaults]boolForKey:@"G"];
     if (gong) {
         AnalyzeObject *anle = [AnalyzeObject new];
+        /**
+         *广告
+         */
         [anle ADD:@{@"community_id":[self getCommid]} Block:^(id models, NSString *code, NSString *msg) {
             if ([code isEqualToString:@"0"]) {
                 _ADDic=models;
                 [self ADData:models];
-                
             }
-            
-            
         }];
     }
-
     if ([Stockpile sharedStockpile].isLogin) {
         [self gongGaoDian];
     }
     [self createShangJiaJinZhuBtn];
-    
-    
-    
-    
-    
-
 }
+
 - (void)createShangJiaJinZhuBtn
 {
     if (_shangjiaJinZhuBtn)
@@ -225,8 +225,6 @@
    
 }
 -(void)ADData:(NSDictionary *)dic{
-
-
     _BigCon = [[UIControl alloc]initWithFrame:self.appdelegate.window.bounds];
     _BigCon.backgroundColor=[UIColor colorWithRed:0 green:0 blue:0 alpha:.6];
     [self.appdelegate.window addSubview:_BigCon];
@@ -496,7 +494,8 @@
         //商品
         self.hidesBottomBarWhenPushed=YES;
         ShopInfoViewController *buess = [ShopInfoViewController new];
-        
+        NSLog(@"ShopInfoViewController   tiao商品");
+
         if ([_ADDic[@"shop_info"][@"is_open_chat"]isEqualToString:@"2"]) {
             buess.isopen=NO;
         }else{
@@ -513,6 +512,7 @@
         buess.prod_id = _ADDic[@"prod_id"];
         buess.xiaoliang = _ADDic[@"prod_info"][@"sales"];
         buess.shoucang = _ADDic[@"prod_info"][@"collect_time"];
+        NSLog(@"shopid==%@",_ADDic[@"shop_id"]);
 //        buess.yunfei=
         
         /**
@@ -565,7 +565,7 @@
     _two=NO;
     _three=NO;
     _four=NO;
-    
+    NSLog(@"communityid====%@",self.commid);
     //零售
     //  [_lingShouData removeAllObjects];
     AnalyzeObject *analyze=[[AnalyzeObject alloc]init];
@@ -986,7 +986,7 @@
     
 }
 
-
+/*scrollview停止滑动的时候执行*/
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollview
 {
     ii = scrollview.contentOffset.x / scrollview.frame.size.width;
@@ -1132,8 +1132,6 @@
 
 #pragma mark -- 创建_mainScrollView
 -(void)newView{
-    
-  
     if (_mainScrollView) {
         [_mainScrollView removeFromSuperview];
     
@@ -1192,13 +1190,6 @@
     UIImageView * yinYingImageView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 153.0/753.0*[UIScreen mainScreen].bounds.size.width)];
     yinYingImageView.image = [UIImage imageNamed:@"top_bg"];
     [_mainScrollView addSubview:yinYingImageView];
-    
-    
-    
-    
-
-    
-    
 //    10月26日新加搜索 //17年4.28更换位置和改变样式
     UIView *souVi=[[UIView alloc]initWithFrame:CGRectMake(10*self.scale,22+self.TitleLabel.height/2- (0.087743*(self.view.width-20*self.scale-self.TitleLabel.height))/2, self.view.width-20*self.scale-self.TitleLabel.height, 0.087743*(self.view.width-20*self.scale-self.TitleLabel.height))];
     souVi.alpha =0;
@@ -1939,20 +1930,10 @@
                 }
             }
         }
-        
-        
-
-        
-        
-        
-        
-        
-        
-        
-        
         self.hidesBottomBarWhenPushed=YES;
         ShopInfoViewController *buess = [ShopInfoViewController new];
-        
+        NSLog(@"ShopInfoViewController   lunbo");
+
         if ([data[tag][@"shop_info"][@"is_open_chat"]isEqualToString:@"2"]) {
             buess.isopen=NO;
         }else{
@@ -1979,13 +1960,10 @@
          */
         
         [self.navigationController pushViewController:buess animated:YES];
-    
-    
     }
-    
     self.hidesBottomBarWhenPushed=NO;
-
 }
+
 #pragma mark -- 公告更多按钮点击事件
 - (void)gongGaoMoreBtnClick
 {
@@ -2247,11 +2225,7 @@
 ////    bScrollView.pagingEnabled = YES;
 //    
 //    bScrollView.delegate = self;
-    
-    
-    
     float w = self.view.width;
-    
     for (int i=0; i<array.count; i++) {
         
         float x = 0;
@@ -2288,16 +2262,13 @@
 //        img.layer.borderWidth=.5;
         NSLog(@"array=%@",array[i]);
         NSLog(@"prod_name=%@",array[i][@"prod_name"]);
-
         NSString *cut = array[i][@"img1"];
         NSString *imagename = [cut lastPathComponent];
         NSString *path = [cut stringByDeletingLastPathComponent];
         NSString *smallImgUrl=[NSString stringWithFormat:@"%@/%@",path,[imagename stringByReplacingOccurrencesOfString:@"." withString:@"_thumb320."]];
-
         NSLog(@"%@",smallImgUrl);
           [img setImageWithURL:[NSURL URLWithString:smallImgUrl] placeholderImage:[UIImage imageNamed:@"center_img"]];
         [bgVi addSubview:img];
-        
         //商品名称
         UILabel *la = [[UILabel alloc]initWithFrame:CGRectMake(img.right + 10*self.scale, img.top, bgVi.width - img.right-10*self.scale,20*self.scale)];
         la.text=[NSString stringWithFormat:@"%@",array[i][@"prod_name"]];
@@ -2307,8 +2278,6 @@
         la.font=SmallFont(self.scale);
         [bgVi addSubview:la];
 //        [la sizeToFit];
-        
-        
 //        UILabel *la = [[UILabel alloc]initWithFrame:CGRectMake(0, img.bottom+5*self.scale, bgVi.width,50*self.scale)];
 //        la.text=[NSString stringWithFormat:@"%@",array[i][@"prod_name"]];
 //        la.numberOfLines=2;
@@ -2319,28 +2288,22 @@
 //        [la sizeToFit];
         //商品价格
         NSString * preceString = [NSString stringWithFormat:@"￥%@元/%@",array[i][@"price"],array[i][@"unit"]];
-        
         NSString * firstString = [NSString stringWithFormat:@"￥%@元",array[i][@"price"]];
         NSString * secondString = [NSString stringWithFormat:@"/%@",array[i][@"unit"]];
         CGRect PriceRect = [self getStringWithFont:12*self.scale withString:preceString withWith:999999];
         UILabel *newPrice = [[UILabel alloc]initWithFrame:CGRectMake(img.right + 10*self.scale, la.bottom,PriceRect.size.width,20*self.scale)];
-
 //        newPrice.text=preceString;
 //        newPrice.font=[UIFont boldSystemFontOfSize:12*self.scale];
         newPrice.font = SmallFont(self.scale);
         newPrice.textColor=[UIColor redColor];
-        
         NSMutableAttributedString * attributeString = [[NSMutableAttributedString    alloc]initWithString:preceString];
         [attributeString addAttribute:NSForegroundColorAttributeName value:grayTextColor range:NSMakeRange(firstString.length, secondString.length)];
         newPrice.attributedText = attributeString;
-        
         [bgVi addSubview:newPrice];
 //        [newPrice sizeToFit];
-        
 //        if (newPrice.width>100*self.scale) {
 //            newPrice.width=100*self.scale;
 //        }
-        
         //原价
         NSString * oldPriceString = [NSString stringWithFormat:@"￥%@",array[i][@"origin_price"]];
         CGRect oldRect =  [self getStringWithFont:10*self.scale withString:oldPriceString withWith:9999999];
@@ -2353,23 +2316,15 @@
         [bgVi addSubview:oldPrice];
 //        [oldPrice sizeToFit];
 //        oldPrice.centerY=newPrice.centerY;
-        
-        
-        
-        
-        
         //        if ([[NSString stringWithFormat:@"%@",_weishangData[i][@"origin_price"]] integerValue]<=0) {
         //            oldPrice.hidden=YES;
         //        }
-        
         //来自哪里
         UILabel * comeFromlab = [[UILabel alloc]initWithFrame:CGRectMake(img.right+10*self.scale, newPrice.bottom, self.view.width - img.right - 10*self.scale, 20*self.scale)];
         comeFromlab.textColor = grayTextColor;
         comeFromlab.font = Small10Font(self.scale);
         comeFromlab.text = [NSString stringWithFormat:@"来自%@",array[i][@"shop_name"]];
         [bgVi addSubview:comeFromlab];
-
-        
         //销售数量
         UILabel * xiaoshouShuLiangLab = [[UILabel alloc]initWithFrame:CGRectMake(img.right+10*self.scale, comeFromlab.bottom, self.view.width - img.right-10*self.scale, 20*self.scale)];
         xiaoshouShuLiangLab.textColor = grayTextColor;
@@ -2377,68 +2332,49 @@
         NSString * sales = [NSString stringWithFormat:@"%@",array[i][@"sales"]];
         xiaoshouShuLiangLab.text = [NSString stringWithFormat:@"已售%@",sales];
         [bgVi addSubview:xiaoshouShuLiangLab];
-        
-        
-        
         UIView *lin = [[UIView alloc]initWithFrame:CGRectMake(0, oldPrice.height/2, oldPrice.width, .5)];
-        
         lin.backgroundColor=grayTextColor;
         [oldPrice addSubview:lin];
-        
         UILabel * bottomLab = [[UILabel alloc]initWithFrame:CGRectMake(10*self.scale, 100*self.scale - 0.3, self.view.width - 20*self.scale, 0.3)];
         bottomLab.backgroundColor = grayTextColor;
         [bgVi addSubview:bottomLab];
-        
         UIButton *jiaBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         [jiaBtn setImage:[UIImage imageNamed:@"na2"] forState:UIControlStateNormal];
         jiaBtn.frame=CGRectMake(SCREEN_WIDTH-30, comeFromlab.bottom, 22*self.scale, 22*self.scale);
-        jiaBtn.tag=567;
-       // [jiaBtn addTarget:self action:@selector(jiaBtnEvent:) forControlEvents:UIControlEventTouchUpInside];
+        [jiaBtn addTarget:self action:@selector(changeShopingCartNum:) forControlEvents:UIControlEventTouchUpInside];
+        jiaBtn.tag=100000+i;
         [bgVi addSubview:jiaBtn];
-        
         UILabel *num = [[UILabel alloc]initWithFrame:CGRectMake(jiaBtn.frame.origin.x-25*self.scale, comeFromlab.bottom, 25*self.scale, 22*self.scale)];
-        //    num.layer.borderWidth=.5;
-        //    num.layer.borderColor=[UIColor colorWithRed:204/255.0 green:205/255.0 blue:206/255.0 alpha:1].CGColor;
         num.font=SmallFont(self.scale);
-        num.tag=678;
-        num.text=[NSString stringWithFormat:@"%ld",(long)self.index];
-//        if (_index==0) {
-//            jianBtn.hidden=YES;
-//            num.hidden=YES;
-//        }else{
-//            jianBtn.hidden=NO;
-//            num.hidden=NO;
-//        }
+        num.tag=200000+i;
+        NSString* prodID=array[i][@"prod_id"];
+        int* index=[self.shopDictionary[prodID] intValue];
+        num.text=[NSString stringWithFormat:@"%d",index];
+        UIButton *jianBtn = [[UIButton alloc]initWithFrame:CGRectMake(num.frame.origin.x-22*self.scale, comeFromlab.bottom, 22*self.scale, 22*self.scale)];
+        [jianBtn setImage:[UIImage imageNamed:@"na1"] forState:UIControlStateNormal];
+        [jianBtn addTarget:self action:@selector(changeShopingCartNum:) forControlEvents:UIControlEventTouchUpInside];
+        jianBtn.tag=300000+i;
+        [bgVi addSubview:jianBtn];
+        if (index==0) {
+            jianBtn.hidden=YES;
+            num.hidden=YES;
+        }else{
+            jianBtn.hidden=NO;
+            num.hidden=NO;
+        }
         num.textColor=grayTextColor;
         num.textAlignment=NSTextAlignmentCenter;
         [bgVi addSubview:num];
-
-        
-        UIButton *jianBtn = [[UIButton alloc]initWithFrame:CGRectMake(num.frame.origin.x-22*self.scale, comeFromlab.bottom, 22*self.scale, 22*self.scale)];
-        [jianBtn setImage:[UIImage imageNamed:@"na1"] forState:UIControlStateNormal];
-        jianBtn.tag=456;
-       // [jianBtn addTarget:self action:@selector(jiaBtnEvent:) forControlEvents:UIControlEventTouchUpInside];
-        [bgVi addSubview:jianBtn];
-
-        
         //        if ([[NSString stringWithFormat:@"%@",_weishangData[i][@"origin_price"]] isEqualToString:[NSString stringWithFormat:@"%@",_weishangData[i][@"price"]]]) {
         //            oldPrice.hidden=YES;
         //            lin.hidden=YES;
         //        }
-        
-        
-        
-        
         float yuan = [[NSString stringWithFormat:@"%@",array[i][@"origin_price"]] floatValue];
         float xian = [[NSString stringWithFormat:@"%@",array[i][@"price"]] floatValue];
-        
         if (xian>=yuan) {
             oldPrice.hidden=YES;
             lin.hidden=YES;
         }
-        
- 
-        
         view.size = CGSizeMake([UIScreen mainScreen].bounds.size.width,bgVi.bottom);
 //                view.contentSize=CGSizeMake(bScrollView.width, bgVi.bottom);
 //        _fenLeiScrollView.size = CGSizeMake([UIScreen mainScreen].bounds.size.width,[UIScreen mainScreen].bounds.size.height - self.NavImg.height - 49 - _scroll.height );
@@ -2446,17 +2382,8 @@
         //        _fenLeiScrollView.contentSize = CGSizeMake([UIScreen mainScreen].bounds.size.width * _shangmenData.count, bView.height);
         _fenLeiScrollView.scrollEnabled = YES;
         _mainScrollView.contentSize=CGSizeMake(0, _fenLeiScrollView.bottom);
-
-        
     }
-    
-    
-    
-
 //    bView.backgroundColor = [UIColor redColor];
-    
-
-    
 }
 
 #pragma mark -- 创建隐藏的scrollView
@@ -2611,7 +2538,8 @@
 
     self.hidesBottomBarWhenPushed=YES;
     ShopInfoViewController *buess = [ShopInfoViewController new];
-    
+    NSLog(@"ShopInfoViewController   goodsEvent");
+
     if ([shopInfo[@"is_open_chat"]isEqualToString:@"2"]) {
         buess.isopen=NO;
     }else{
@@ -3546,6 +3474,87 @@
     return [textField resignFirstResponder];
   
    
+}
+
+/*更改购车车内商品数量*/
+-(void)changeShopingCartNum:(UIButton *)btn{
+    if ([Stockpile sharedStockpile].isLogin==NO) {
+        [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
+            if (index==1) {
+                LoginViewController *login = [self login];
+                [login resggong:^(NSString *str) {//登录成功后需要加载的数据
+                    [self requestShopingCart];
+                }];
+            }
+        }];
+        return;
+    }
+    [self.view addSubview:self.activityVC];
+    [self.activityVC startAnimate];
+    NSInteger num=0;//购物车商品数量
+    NSInteger index=-1;//商品项，为了获取商品id
+    NSInteger tag=btn.tag;
+    UILabel* numLb=nil;
+    //UIScrollView * bScrollView = (UIScrollView *)[_fenLeiScrollView viewWithTag:2000+fenleiIndex];
+    if (tag<200000) {
+        numLb=(UILabel *)[self.view viewWithTag:200000+tag-100000];
+        num=[numLb.text intValue];
+        num++;
+        index=tag-100000;
+    }else{
+        numLb=(UILabel *)[self.view viewWithTag:200000+tag-300000];
+        num=[numLb.text intValue];
+        num--;
+        index=tag-300000;
+    }
+    if (num<0) {
+        num=0;
+    }
+    NSMutableArray * dataArray = [self.fenLeiDictionary objectForKey:goodsListID];
+    NSDictionary *shopInfo = dataArray[index];
+    NSString* prodID=shopInfo[@"prod_id"];
+    NSString* shopID=shopInfo[@"shop_id"];
+    NSString *userid = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
+    NSDictionary *dicc = @{@"user_id":userid,@"prod_id":prodID,@"prod_count":[NSNumber numberWithInt:num],@"shop_id":shopID};
+        AnalyzeObject *anle = [AnalyzeObject new];
+        [anle addProdWithDic:dicc Block:^(id models, NSString *code, NSString *msg) {
+            NSLog(@"addcart=%@",models);
+            //[self ReshBotView];
+            //[self shangJiaXiangQing];
+            [self.activityVC stopAnimate];
+            if ([code isEqualToString:@"0"]) {
+                numLb.text=[NSString stringWithFormat:@"%d",num];
+                UIButton* subBtn=(UIButton *)[self.view viewWithTag:300000+index];
+                if(num==0){
+                    numLb.hidden=YES;
+                    subBtn.hidden=YES;
+                }else{
+                    numLb.hidden=NO;
+                    subBtn.hidden=NO;
+                }
+                NSString * value = [[NSUserDefaults standardUserDefaults]objectForKey:@"GouWuCheShuLiang"];
+                int cartNum=[value intValue];
+                if(tag<200000){
+                    cartNum++;
+                }else{
+                    cartNum--;
+                    if(cartNum<0)cartNum=0;
+                }
+                [[NSUserDefaults standardUserDefaults] setObject:[NSString stringWithFormat:@"%d",cartNum] forKey:@"GouWuCheShuLiang"];
+                [self gouWuCheShuZi];
+            }else{
+//                if (tag<20000) {
+//                    _numb++;
+//                    _index++;
+//                    _type=@"1";
+//                }else{
+//                    _numb--;
+//                    _index--;
+//                    _type=@"2";
+//                }
+//                [self ShowAlertWithMessage:msg];
+            }
+        }];
 }
 
 
