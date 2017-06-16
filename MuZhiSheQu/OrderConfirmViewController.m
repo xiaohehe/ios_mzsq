@@ -912,10 +912,8 @@ NSInteger ta;
     [anle OrdersubmitWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
         if ([code isEqualToString:@"0"]) {
             [self.activityVC stopAnimate];
-            
-       
-            
-            
+            [self.appdelegate.shopDictionary removeAllObjects];
+            self.appdelegate.isRefresh=true;
             if (btn1.selected==YES) {
                 [self.appdelegate AliPayPrice:[NSString stringWithFormat:@"%.2f",_zongProce] OrderID:models[@"order_no"] OrderName:@"拇指社区" OrderDescription:models[@"order_no"] complete:^(NSDictionary *resp) {
                      
@@ -953,10 +951,7 @@ NSInteger ta;
                 [self.navigationController pushViewController:huodao animated:YES];
             
             }
-
-            
         }
-        
     }];
 
 }

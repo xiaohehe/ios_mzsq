@@ -44,9 +44,11 @@
 @end
 
 @implementation BreakInfoViewController
+
 -(void)reshshocuang:(reshshoucang)block{
     _block=block;
 }
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     _shoucang=NO;
@@ -59,7 +61,6 @@
     _numberz=0;
     _carNum = @"0";
     _gonggao = @"";
-
     if (_isPush)
     {
         NSDictionary *dic = @{@"shop_id": self.shop_id,
@@ -75,7 +76,6 @@
                 }else{
                     self.isopen=YES;
                 }
-                
                 self.tel=[NSString stringWithFormat:@"%@",[models objectForKey:@"hotline"]];
                 self.ID=ID;
                 self.titlete=[models objectForKey:@"shop_name"];
@@ -88,46 +88,31 @@
                 self.TitleLabel.text = self.titlete;
             }
             
-            
         }];
-        
     }
-
-    
-    
-    
-    
-    
-    
-  
     [self remind];
     [self leftScroll];
     [self RightTable];
     [self bottomVi];
     [self shangJiaXiangQing];
     [self returnVi];
-
     [self ReshData];
-   
-
     _arr = [NSMutableArray array];
     if (_issleep) {
         [self ShowAlertWithMessage:@"商铺正在休息中，您所提交的订单会在营业后第一时间处理"];
     }
-    
-    
 }
 
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:YES];
     [UmengCollection intoPage:NSStringFromClass([self class])];
-    
-    
+    self.navigationController.navigationBarHidden = NO;
+    self.navigationController.navigationBar.hidden = YES;
     [self ReshBotView];
     [self shangJiaXiangQing];
     [_rightTable reloadData];
     [self remind];
-    self.navigationController.navigationBarHidden=YES;
+    //self.navigationController.navigationBarHidden=YES;
     
     if ([Stockpile sharedStockpile].isLogin) {
         

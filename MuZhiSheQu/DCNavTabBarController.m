@@ -219,16 +219,20 @@
     
     CGFloat width = 0;
     NSInteger j=sender.tag - 10000;
-    for (int i=1; i<_btnWArr.count - 4; i++)
+    NSInteger count=_btnWArr.count;
+    //NSLog(@"title==%@,count==%d ",sender.currentTitle,count);
+
+    for (int i=1; i<count-4; i++)
     {
 
-        if (j == _btnWArr.count - 1)
+        if (j == (count - 1))
         {
             j = j - 1;
             
         }
         width = (j+1)/(4+i)*[UIScreen mainScreen].bounds.size.width/5+width;
     }
+
     float w = self.oldBtn.left-(self.oldBtn.width/2)-60*scale;
     
     float offsetFloat = self.topBar.contentSize.width - self.topBar.bounds.size.width;

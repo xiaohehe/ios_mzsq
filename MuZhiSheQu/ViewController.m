@@ -9,7 +9,7 @@
 #import "ViewController.h"
 #import "BreakFirstViewController.h"
 #import "GanXiShopViewController.h"
-#import "GanXiShopViewController.h"
+//#import "GanXiShopViewController.h"
 #import <RongIMKit/RongIMKit.h>
 #import "ShopInfoViewController.h"
 #import "BreakInfoTableViewCell.h"
@@ -21,6 +21,7 @@
 #import "MyPageControl.h"
 #import "SheQuManagerViewController.h"
 #import "UIColor+Hex.h"
+#import "IMViewController.h"
 #define SCREEN_WIDTH ([UIScreen mainScreen].bounds.size.width)
 
 @interface ViewController ()<RCIMReceiveMessageDelegate,UIScrollViewDelegate,UITextFieldDelegate>
@@ -36,10 +37,6 @@
     UIView * hiddenLineFenLab;
     CGFloat height;
     NSString * textFieldString;
-    
-    
-
-    
 }
 
 @property(nonatomic,strong)UIScrollView *mainScrollView;
@@ -57,31 +54,21 @@
 @property(nonatomic,strong)NSMutableArray *hiddenArray;
 //@property(nonatomic,strong)UILabel * hiddenLineFenLab;
 @property(nonatomic,strong)NSMutableArray *lingShouData,*lunboData,*shangmenData,*weishangData,*lunda,*adverData,*adverDa,*fenBtnArr;
-
 @property(nonatomic,assign)BOOL one,two,three,four,five;
 @property(nonatomic,strong)NSDictionary *ADDic;
-
 @property(nonatomic,assign)NSInteger index;
-
 @property(nonatomic,strong)UIScrollView *scroll;
-
-
 @property(nonatomic,assign)float xialaH;
-
 @property(nonatomic,assign)float keyeBoardShowHeight;
-
 @property (nonatomic,retain)UIButton * shangjiaJinZhuBtn;
-
 @property (nonatomic,retain)UIButton * shengHuoFuWuBtn;
 @property (nonatomic,retain)UIButton * wuYeZhongXinBtn;
 @property (nonatomic,retain)UIButton * dizhiBtn;
-
 @property (nonatomic,retain)NSTimer * gongGaoTimer;
-
 @property (nonatomic,retain)NSString * gongGaoStringq;
 @property (nonatomic,retain)NSDictionary * gongGaoDic;
-
-
+@property(nonatomic,strong) UIView * hiddleGongGaoView;
+@property(nonatomic,strong)NSMutableDictionary *shopData;
 
 @end
 
@@ -89,6 +76,7 @@
 
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:YES];
+    self.tabBarController.tabBar.hidden=NO;
     [UmengCollection intoPage:NSStringFromClass([self class])];
     _one=NO;
     _two=NO;
@@ -102,6 +90,11 @@
     [self ReshMessage];
     [RCIM sharedRCIM].receiveMessageDelegate=self;
     [self.navigationController setNavigationBarHidden:YES animated:YES];
+    if(self.appdelegate.isRefresh){
+        self.appdelegate.isRefresh=false;
+        [self refreshPage];
+    }
+
 //    NSString *addrss = [[NSUserDefaults standardUserDefaults]objectForKey:@"commname"];
 //    self.TitleLabel.text=addrss;
     if ([[NSUserDefaults standardUserDefaults]boolForKey:@"changeComm"]) {
@@ -123,51 +116,58 @@
         return;
     }
 }
+
 /*请求购物车*/
--(void) requestShopingCart{
-    [self.shopDictionary removeAllObjects];
+-(void) requestShopingCart:(BOOL) isRefresh{
+    [self.appdelegate.shopDictionary removeAllObjects];
     NSString *userid =  [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
     if(userid==nil)
         return;
     NSDictionary *dic = @{@"user_id":userid};
     AnalyzeObject *analy=[[AnalyzeObject alloc]init];
     [analy showCartWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
+        //NSLog(@"cartCode==%@ msg=%@",code,msg);
         if ([code isEqualToString:@"0"]) {
             NSArray* arr=models;
-            NSLog(@"cart==%@",arr);
-
+            if(arr==nil||arr.count==0){
+                [self.appdelegate.shopDictionary removeAllObjects];
+                if(isRefresh)
+                    [self xiala];
+                return ;            }
             for (int i = 0; i < arr.count; i ++) {
                 NSArray * Prod_infoArr = arr[i][@"prod_info"];
                 for (int j = 0; j < Prod_infoArr.count; j ++) {
-                    [self.shopDictionary setObject:Prod_infoArr[j][@"prod_count"] forKey:Prod_infoArr[j][@"prod_id"]];
+                    [self.appdelegate.shopDictionary setObject:Prod_infoArr[j][@"prod_count"] forKey:Prod_infoArr[j][@"prod_id"]];
                }
             }
+            if(isRefresh)
+                [self xiala];
+        }else if([code isEqualToString:@"1"]){
+            [self.appdelegate.shopDictionary removeAllObjects];
+            if(isRefresh)
+                [self xiala];
         }
     }];
 }
 
--(void)viewWillDisappear:(BOOL)animated
-{
+-(void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     [UmengCollection outPage:NSStringFromClass([self class])];
+    //[[NSNotificationCenter defaultCenter] removeObserver:self name:@"refreshPage" object:nil];
 }
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.shopDictionary=[NSMutableDictionary dictionary];
-    [self requestShopingCart];
+    [self requestShopingCart:false];
 //    UIView * view = [[UIView alloc]initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 20)];
 //    view.backgroundColor = grayTextColor;
 //    [self.view addSubview:view];
-    
     self.fenLeiDictionary = [NSMutableDictionary new];
     self.indexDictionary = [NSMutableDictionary new];
     self.xialaHDictionary = [NSMutableDictionary new];
     self.gongGaoDic = [NSDictionary new];
-    
     fenleiIndex = 0;
     _xialaH = 0;
-
-
     self.viewArray = [NSMutableArray new];
     _ADDic = [NSDictionary new];
     ii=1;
@@ -178,7 +178,6 @@
 //    [self.navigationController setNavigationBarHidden:YES animated:YES];
 //    self.NavImg.hidden = YES;
 //    self.navigationController.navigationBarHidden=YES;
-
     [self loadNotificationCell];
     [self.view endEditing:YES];
     // Do any additional setup after loading the view, typically from a nib.
@@ -205,10 +204,15 @@
         [self gongGaoDian];
     }
     [self createShangJiaJinZhuBtn];
+   // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshPage)  name:@"refreshPage" object:nil];
 }
 
-- (void)createShangJiaJinZhuBtn
-{
+-(void) refreshPage{
+    NSLog(@"--refreshPage");
+    [self requestShopingCart:true];
+}
+
+- (void)createShangJiaJinZhuBtn{
     if (_shangjiaJinZhuBtn)
     {
         [_shangjiaJinZhuBtn removeFromSuperview];
@@ -221,9 +225,8 @@
     [_shangjiaJinZhuBtn addTarget:self action:@selector(shangjiaJinZhuBtnClick) forControlEvents:(UIControlEventTouchUpInside)];
     [self.view addSubview:_shangjiaJinZhuBtn];
     [_shangjiaJinZhuBtn bringSubviewToFront:self.view];
-    
-   
 }
+
 -(void)ADData:(NSDictionary *)dic{
     _BigCon = [[UIControl alloc]initWithFrame:self.appdelegate.window.bounds];
     _BigCon.backgroundColor=[UIColor colorWithRed:0 green:0 blue:0 alpha:.6];
@@ -245,22 +248,15 @@
     [_BigCon addSubview:btn];
     [btn setImage:[UIImage imageNamed:@"addshn"] forState:0];
     [btn addTarget:self action:@selector(remo) forControlEvents:UIControlEventTouchUpInside];
-    
-
 }
 
 -(void)ADDT{
-
-    
     AnalyzeObject *anle = [AnalyzeObject new];
     [anle ADDJLu:@{@"ad_id":_ADDic[@"id"]} Block:^(id models, NSString *code, NSString *msg) {
-        
     }];
-    
     [[NSUserDefaults standardUserDefaults]setBool:YES forKey:@"ad"];
     [[NSUserDefaults standardUserDefaults]synchronize];
     //-----------------是否休息判断
-    
     NSString *add = @"";
     if ([_ADDic[@"shop_info"][@"status"] isEqualToString:@"3"]) {
         add=@"商铺正在休息中，您所提交的订单会在营业后第一时间处理";
@@ -276,32 +272,19 @@
             }
         }
     }
-    
-    
-    
     if ([add isEqualToString:@"商铺正在休息中，您所提交的订单会在营业后第一时间处理"]) {
-     
         [self tiao:YES];
-        
-        
         return;
     }else{
-    
-
     }
-    
     BOOL isSleep1=YES;
     BOOL isSleep2=YES;
     BOOL isSleep3=YES;
-    
-    
     NSArray *timArr  = [_ADDic[@"shop_info"][@"business_hour"] componentsSeparatedByString:@","];
-    
     NSDate *now = [NSDate date];
     NSDateFormatter *nowFo = [[NSDateFormatter alloc]init];
     [nowFo setDateFormat:@"yyyy-MM-dd"];
     NSString *noewyers = [nowFo stringFromDate:now];
-    
     for (NSString *str in timArr) {
         if ([str isEqualToString:@"1"]) {
             
@@ -327,36 +310,21 @@
             double timed = [dated timeIntervalSince1970];
             //现在的时间戳
             double timen = [daten timeIntervalSince1970];
-            
-            
-            
             if (timen>times && timen<timed) {
                 isSleep1=NO;
             }else{
                 isSleep1=YES;
             }
-            
-            
-            
-        }
-        
-        
-        
-        
-        else if ([str isEqualToString:@"2"]) {
-            
+        } else if ([str isEqualToString:@"2"]) {
             NSString *timeStart1 = [noewyers stringByAppendingString:[NSString stringWithFormat:@" %@",_ADDic[@"shop_info"][@"business_start_hour2"]]];
             NSString *timeEnd1 =[noewyers stringByAppendingString:[NSString stringWithFormat:@" %@",_ADDic[@"shop_info"][@"business_end_hour2"]]];
             NSDateFormatter *fo = [[NSDateFormatter alloc]init];
             [fo setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
             NSDate *das = [fo dateFromString:timeStart1];
             NSDate *dad = [fo dateFromString:timeEnd1];
-            
-            
             NSDate *dates = [self getNowDateFromatAnDate:das];
             NSDate *dated = [self getNowDateFromatAnDate:dad];
             NSDate *daten = [self getNowDateFromatAnDate:[NSDate date]];
-            
             //开始的时间戳
             double times = [dates timeIntervalSince1970];
             //结束的时间戳
@@ -369,13 +337,7 @@
             }else{
                 isSleep2=YES;
             }
-            
-            
-            
-        }
-        
-        
-        else  if ([str isEqualToString:@"3"]) {
+        }else  if ([str isEqualToString:@"3"]) {
             
             NSString *timeStart1 = [noewyers stringByAppendingString:[NSString stringWithFormat:@" %@",_ADDic[@"shop_info"][@"business_start_hour3"]]];
             NSString *timeEnd1 =[noewyers stringByAppendingString:[NSString stringWithFormat:@" %@",_ADDic[@"shop_info"][@"business_end_hour3"]]];
@@ -383,8 +345,6 @@
             [fo setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
             NSDate *das = [fo dateFromString:timeStart1];
             NSDate *dad = [fo dateFromString:timeEnd1];
-            
-            
             NSDate *dates = [self getNowDateFromatAnDate:das];
             NSDate *dated = [self getNowDateFromatAnDate:dad];
             NSDate *daten = [self getNowDateFromatAnDate:[NSDate date]];
@@ -411,21 +371,13 @@
         add = @"商铺正在休息中，您所提交的订单会在营业后第一时间处理";
         
     }
-    
     if ([_ADDic[@"shop_info"][@"business_hour"] isEqualToString:@""]) {
 
         add=@"";
     }
-    
-    
+
     //-----------------是否休息判断end
-    
-    
-    
-    
         self.hidesBottomBarWhenPushed=YES;
-        
-        
         BOOL issleep;
         if ([add isEqualToString:@"商铺正在休息中，您所提交的订单会在营业后第一时间处理"]) {
             issleep=YES;
@@ -433,8 +385,6 @@
         }else{
             issleep=NO;
         }
-        
-
     [self tiao:issleep];
 }
 
@@ -444,9 +394,7 @@
     [self remo];
     if ([[NSString stringWithFormat:@"%@",_ADDic[@"redirect_to"]] isEqualToString:@"1"]) {
         //商家
-        
         self.hidesBottomBarWhenPushed=YES;
-
         if ([_ADDic[@"shop_info"][@"shop_type"] isEqualToString:@"2"]) {
             GanXiShopViewController *ganxi = [GanXiShopViewController new];
             if ([_ADDic[@"shop_info"][@"is_open_chat"]isEqualToString:@"2"]) {
@@ -454,8 +402,6 @@
             }else{
                 ganxi.isOpen=YES;
             }
-            
-            
             ganxi.issleep=issleep;
             ganxi.ID=_ADDic[@"shop_id"];
             ganxi.titlee=_ADDic[@"shop_info"][@"shop_name"];
@@ -463,11 +409,8 @@
             ganxi.shop_user_id=_ADDic[@"shop_info"][@"user_id"];
             [self.navigationController pushViewController:ganxi animated:YES];
             self.hidesBottomBarWhenPushed=NO;
-
         }else{
             self.hidesBottomBarWhenPushed=YES;
-
-            
             BreakInfoViewController *info = [[BreakInfoViewController alloc]init];
             if ([_ADDic[@"shop_info"][@"is_open_chat"]isEqualToString:@"2"]) {
                 info.isopen=NO;
@@ -483,13 +426,9 @@
             info.yunfei =_ADDic[@"shop_info"][@"delivery_fee"];
             info.manduoshaofree=_ADDic[@"shop_info"][@"free_delivery_amount"];
             info.shop_user_id=_ADDic[@"shop_info"][@"user_id"];
-            
             [self.navigationController pushViewController:info animated:YES];
             self.hidesBottomBarWhenPushed=NO;
-
         }
-
-        
     }else{
         //商品
         self.hidesBottomBarWhenPushed=YES;
@@ -514,7 +453,6 @@
         buess.shoucang = _ADDic[@"prod_info"][@"collect_time"];
         NSLog(@"shopid==%@",_ADDic[@"shop_id"]);
 //        buess.yunfei=
-        
         /**
          *  2016 8 27
          */
@@ -522,31 +460,15 @@
         /**
          *  2016.8.27
          */
-        
-        
         [self.navigationController pushViewController:buess animated:YES];
-
-        
         self.hidesBottomBarWhenPushed=NO;
-
-        
     }
-    
-
-
-
 }
--(void)remo{
 
+-(void)remo{
     [_BigCon removeFromSuperview];
     _BigCon=nil;
 }
-
-
-
-
-
-
 
 -(void)reshData{
     [self.appdelegate dingwei];
@@ -596,37 +518,23 @@
 //                NSLog(@"%d",fenleiIndex);
                  goodsListID = [NSString stringWithFormat:@"%@",_shangmenData[fenleiIndex][@"id"]];
                 viewNumber = _shangmenData.count;
-
-                
                 for (int i = 0; i<_shangmenData.count; i++)
                 {
                     NSMutableArray * fenleiArray  = [NSMutableArray new];
-                    
                     [self.fenLeiDictionary setValue:fenleiArray forKey:_shangmenData[i][@"id"]];
-                    
                     NSString * index = @"0";
-                    
                     [self.indexDictionary setValue:index forKey:_shangmenData[i][@"id"]];
-                    
                     NSString * xiaLaH = [NSString stringWithFormat:@"%f",0.0];
-                    
                     [self.xialaHDictionary setValue:xiaLaH  forKey:_shangmenData[i][@"id"]];
-                    
                 }
-                
-                
             }
         }
 //        if (_shangmenData.count>0)
 //        {
              [self cool];
 //        }
-       
-
         // [self newView];
-
     }];
-    
     //轮播图片
     [_lunda removeAllObjects];
     [_lunboData removeAllObjects];
@@ -651,8 +559,9 @@
     [anleshequ communitySlogan:@{@"community_id":self.commid} WithBlock:^(id models, NSString *code, NSString *msg) {
         if ([code isEqualToString:@"0"])
         {
-            NSLog(@"%@",models);
+            NSLog(@"社区==%@",models);
             _gongGaoDic = models;
+            [self loadShopDetail];
         }
         [self stop];
         
@@ -695,6 +604,25 @@
     
     
 }
+
+-(void)loadShopDetail{
+    [self.activityVC startAnimate];
+    AnalyzeObject *analyze=[[AnalyzeObject alloc]init];
+    NSDictionary *dic=@{@"shop_id":_gongGaoDic[@"shop_id"]};
+    if ([Stockpile sharedStockpile].isLogin) {
+        dic=@{@"shop_id":_gongGaoDic[@"shop_id"],@"user_id":[self getuserid]};
+    }
+  //  NSDictionary *dic=@{@"shop_id":_gongGaoDic[@"shop_id"],@"user_id":[self getuserid]};
+    NSLog(@"%@",dic);
+    [analyze queryShopDetailwithDic:dic WithBlock:^(id models, NSString *code, NSString *msg) {
+        if ([code isEqualToString:@"0"]) {
+            _shopData=models;
+        }
+    }];
+}
+
+
+
 -(void)stop{
     //    if (_one && _two && _three && _four) {
     //        [self.activityVC stopAnimate];
@@ -704,12 +632,10 @@
         [self.activityVC stopAnimate];
         [self performSelector:@selector(newView) withObject:nil afterDelay:0.3];
         [self.mainScrollView.footer endRefreshing];
-        
         [self.mainScrollView.header endRefreshing];
     }
-    
-    
 }
+
 #pragma mark -- 获取商品信息 //刷新
 -(void)cool{
 //    NSInteger index = [[self.indexDictionary objectForKey:goodsListID] integerValue];
@@ -718,7 +644,6 @@
     AnalyzeObject *anle = [AnalyzeObject new];
     [anle shouYeGoodsF:dic Block:^(id models, NSString *code, NSString *msg) {
         [[self.fenLeiDictionary objectForKey:goodsListID] removeAllObjects];
-        
         if ([code isEqualToString:@"0"])
         {
             NSMutableArray * weishangData = [self.fenLeiDictionary objectForKey:goodsListID];
@@ -726,23 +651,15 @@
             NSLog(@"%@",weishangData);
             [self.fenLeiDictionary setObject:weishangData forKey:goodsListID];
 //            [self.indexDictionary setObject:[NSString stringWithFormat:@"%ld",index] forKey:goodsListID];
-            
-            
         }
         _two=YES;
         [self stop];
-        
         [UIView animateWithDuration:.3 animations:^{
-            
             lineFen.frame=CGRectMake((Tag-1000000000)*[UIScreen mainScreen].bounds.size.width/5, _scroll.height-2,[UIScreen mainScreen].bounds.size.width/5, 2);
 //            _X=0;
             hiddenLineFenLab.frame = CGRectMake((hiddenTag - 1000000000)*[UIScreen mainScreen].bounds.size.width/5, _hiddenScrollView.height-2,[UIScreen mainScreen].bounds.size.width/5, 2);
-            
         }];
-       
-
     }];
-
 }
 #pragma mark===-= _weishangData原本是微商的数据源  微商去掉 目前是商品类表的数据源;
 
@@ -752,7 +669,6 @@
     NSInteger index = [[self.indexDictionary objectForKey:goodsListID] integerValue];
     index = index + 1;
     [self.activityVC startAnimate];
-    
     AnalyzeObject *anle = [AnalyzeObject new];
     NSDictionary *dic = @{@"pindex":[NSString stringWithFormat:@"%ld",(long)index],@"class_id":[NSString stringWithFormat:@"%@",goodsListID]};
     [anle shouYeGoodsF:dic Block:^(id models, NSString *code, NSString *msg) {
@@ -856,8 +772,7 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-
-    
+    //NSLog(@"--scrollView_offset=%f--",_mainScrollView.contentOffset.y);
      UIView * yinCangDeView = (UIView *)[_mainScrollView viewWithTag:9999999];
      UITextField * yinCangDeTextField = (UITextField *)[yinCangDeView viewWithTag:99999999];
      UITextField * daoHanTextField = (UITextField *)[self.NavImg viewWithTag:888];
@@ -893,8 +808,6 @@
             yinCangDeTextField.text = daoHanTextField.text;
             
         }
-    
-        
     }
     else if (_mainScrollView.contentOffset.y==0)
     {
@@ -908,20 +821,20 @@
         UIButton * talkImg = (UIButton *)[self.NavImg viewWithTag:1234];
         [talkImg setImage:[UIImage imageNamed:@"lt"] forState:UIControlStateNormal];
     }
-        
-
-    
-    if (_mainScrollView.contentOffset.y>=self.view.width*336/720 + height - 64)
+    if (_mainScrollView.contentOffset.y>=self.view.width*336/720 + height - 64-self.view.width/75*8)
     {
+        //NSLog(@"111111");
+        _hiddleGongGaoView.hidden=NO;
         _hiddenScrollView.hidden = NO;
     }
     else
     {
+        // NSLog(@"222222");
+        _hiddleGongGaoView.hidden=YES;
         _hiddenScrollView.hidden = YES;
     }
     return;
-    
- 
+
 //    UIScrollView * bScrollView  = (UIScrollView *)[_fenLeiScrollView viewWithTag:2000+fenleiIndex];
 //
 //    if (scrollView == bScrollView) {//bScrollView 子scrollview _mainScrollView :父scrollView
@@ -1038,15 +951,9 @@
         }
         __block NSInteger j = m;
         [UIView animateWithDuration:.3 animations:^{
-            
             lineFen.frame=CGRectMake(m*[UIScreen mainScreen].bounds.size.width/5, _scroll.height-2, [UIScreen mainScreen].bounds.size.width/5, 2);
          
             [self srollScrollViewWith:j];
-
-        
-            
-        
-          
             hiddenLineFenLab.frame = CGRectMake(m*[UIScreen mainScreen].bounds.size.width/5, _hiddenScrollView.height-2, [UIScreen mainScreen].bounds.size.width/5, 2);
             
         }];
@@ -1066,75 +973,45 @@
         {
             _xialaH = self.view.width*336/720 + height;
             //         [_mainScrollView setContentOffset:CGPointMake(0, _xialaH)];
-        }
-        else
-        {
+        }else{
             _xialaH = _mainScrollView.contentOffset.y;
         }
-      
-      
             NSMutableArray * dataArray =[self.fenLeiDictionary objectForKey:goodsListID];
             if (dataArray.count == 0)
             {
-                
                 //            NSLog(@"%ld",[[self.indexDictionary objectForKey:goodsListID] integerValue]);
                 [self GoosdListshangla];
                 
-            }
-            else
-            {
+            }else{
                 //            _index = [[self.indexDictionary objectForKey:goodsListID] integerValue];
                 //            NSLog(@"%ld",_index);
                 [self GoodsF:bScrollView withArray:[self.fenLeiDictionary objectForKey:goodsListID]];
-                
-                
                 //            _xialaH = [[self.xialaHDictionary objectForKey:goodsListID] floatValue];
-                
                 //            NSLog(@"_xialaH = %f",_xialaH);
                 [_mainScrollView setContentOffset:CGPointMake(0, _xialaH)];
             }
-        
-
-
-    
-        
-      
-        
-        
     }
-    
-    
-
 }
 
-
-
-
 -(void)xiala{
-
+    NSLog(@"xiala==");
 //    [self.mainScrollView.header endRefreshing];
     Tag=1000000000+fenleiIndex;
     hiddenTag = -(1000000000+fenleiIndex);
     [self.indexDictionary setObject:[NSString stringWithFormat:@"%d",0] forKey:goodsListID];
     [self reshData];
-
 }
+
 -(void)shangla{
     _xialaH=_mainScrollView.contentOffset.y;
-//
 //    [self.xialaHDictionary setObject:[NSString stringWithFormat:@"%f",_xialaH] forKey:goodsListID];
-    
-    
-    
     [self GoosdListshangla];
-
 }
 
 #pragma mark -- 创建_mainScrollView
 -(void)newView{
     if (_mainScrollView) {
         [_mainScrollView removeFromSuperview];
-    
     }
     if (_gongGaoTimer)
     {
@@ -1142,37 +1019,27 @@
         _gongGaoTimer = nil;
     }
     [self ReshMessage];
-    
     _mainScrollView=[[UIScrollView alloc]initWithFrame:CGRectMake(0, 0 ,self.view.width, [UIScreen mainScreen].bounds.size.height-49)];
-
     _mainScrollView.backgroundColor = [UIColor whiteColor];
-    
     _mainScrollView.tag = 220;
     _mainScrollView.delegate = self;
- 
-    
     [_mainScrollView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(xiala)];
     [_mainScrollView addLegendFooterWithRefreshingTarget:self refreshingAction:@selector(shangla)];
     _mainScrollView.footer.automaticallyRefresh=NO;
     [self.view insertSubview:_mainScrollView belowSubview:self.NavImg];
-
-    
       [self createShangJiaJinZhuBtn];
     _ImageScrollView=[[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, self.view.width, self.view.width*336/720)];
     _ImageScrollView.pagingEnabled=YES;
     _ImageScrollView.delegate=self;
     [_mainScrollView addSubview:_ImageScrollView];
-    
     _ImageScrollView.contentSize=CGSizeMake(_ImageScrollView.width*_lunboData.count, _ImageScrollView.height);
 //    _ImageScrollView.backgroundColor = [UIColor redColor];
-    
     for (int i=0; i<_lunboData.count; i++) {
         UIButton *img = [[UIButton alloc]initWithFrame:CGRectMake(i*self.view.width, 0, _ImageScrollView.width+0*self.scale, _ImageScrollView.height+0*self.scale)];
         img.tag=1000+i;
         [img addTarget:self action:@selector(lunbo:) forControlEvents:UIControlEventTouchUpInside];
         [img setBackgroundImageForState:UIControlStateNormal withURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",_lunboData[i]]] placeholderImage:[UIImage imageNamed:@"center_img"]];
         [img setBackgroundImageForState:UIControlStateHighlighted withURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",_lunboData[i]]] placeholderImage:[UIImage imageNamed:@"center_img"]];
-
         [_ImageScrollView addSubview:img];
     }
     if (_timer) {
@@ -1180,13 +1047,11 @@
         _timer=nil;
     }
     _timer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(lunbo) userInfo:nil repeats:YES];
-
     _pageControl=[[UIPageControl alloc]initWithFrame:CGRectMake(self.view.width/2-100*self.scale, _ImageScrollView.bottom-25, 200*self.scale,20)];
     _pageControl.currentPageIndicatorTintColor=blueTextColor;
     _pageControl.pageIndicatorTintColor=[UIColor whiteColor];
     _pageControl.numberOfPages=_lunboData.count;
     [_mainScrollView addSubview:_pageControl];
-    
     UIImageView * yinYingImageView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 153.0/753.0*[UIScreen mainScreen].bounds.size.width)];
     yinYingImageView.image = [UIImage imageNamed:@"top_bg"];
     [_mainScrollView addSubview:yinYingImageView];
@@ -1200,12 +1065,10 @@
     souVi.clipsToBounds = YES;
     souVi.layer.cornerRadius = souVi.height/2;
     [_mainScrollView addSubview:souVi];
-    
     UIImageView *souImg=[[UIImageView alloc]initWithFrame:CGRectMake(souVi.height/2-6*self.scale, 3*self.scale, souVi.height-6*self.scale, souVi.height-6*self.scale)];
     souImg.image=[UIImage imageNamed:@"search_home_ico"];
     souImg.alpha = 0.5;
     [souVi addSubview:souImg];
-    
     UITextField *souTf=[[UITextField alloc]initWithFrame:CGRectMake(souImg.right, 0, souVi.width-souImg.right, souVi.height)];
     souTf.returnKeyType = UIReturnKeySearch;
     UITextField * textF = (UITextField *)[self.NavImg viewWithTag:888];
@@ -1216,7 +1079,6 @@
     souTf.font=SmallFont(self.scale);
     souTf.delegate = self;
     [souVi addSubview:souTf];
-    
     //17年4.28新添加的消息按钮
     UIButton *talkImg = [UIButton buttonWithType:UIButtonTypeCustom];
     [talkImg setImage:[UIImage imageNamed:@"lt"] forState:UIControlStateNormal];
@@ -1226,8 +1088,6 @@
     //    talkImg.backgroundColor = [UIColor blackColor];
     talkImg.alpha = 0;
     [_mainScrollView addSubview:talkImg];
-    
-    
     UILabel *CarNum=[[UILabel alloc]initWithFrame:CGRectMake(talkImg.width-4.5, -.5, 5, 5)];
     CarNum.backgroundColor=[UIColor redColor];
     CarNum.layer.cornerRadius=CarNum.width/2;
@@ -1357,7 +1217,6 @@
     _dizhiBtn.titleLabel.font = SmallFont(self.scale);
     [dizhiView addSubview:_dizhiBtn];
 
-    
     //物业中心Btn
     _wuYeZhongXinBtn = [[UIButton alloc]initWithFrame:CGRectMake(_dizhiBtn.right + 10*self.scale, _shengHuoFuWuBtn.top, _shengHuoFuWuBtn.width, _shengHuoFuWuBtn.height)];
     [_wuYeZhongXinBtn addTarget:self action:@selector(wuYeZhongXinBtnCLick) forControlEvents:(UIControlEventTouchUpInside)];
@@ -1377,12 +1236,9 @@
     
     //公告View
     
-    UIView * gongGaoView = [[UIView alloc]initWithFrame:CGRectMake(0, dizhiView.bottom, self.view.width, self.view.width/75*8)];
-//    gongGaoView.backgroundColor = [UIColor redColor];
+    UIView* gongGaoView = [[UIView alloc]initWithFrame:CGRectMake(0, dizhiView.bottom, self.view.width, self.view.width/75*8)];
+    //gongGaoView.backgroundColor = [UIColor redColor];
     [shopView addSubview:gongGaoView];
-    
-   
-
 
 //    //公告lab
     NSString * gongGaoString = _gongGaoDic[@"slogan"];
@@ -1438,11 +1294,13 @@
     [v addSubview:gongGaoImageView];
     
     //公告更多按钮
-    UIButton * gongGaoMoreBtn = [[UIButton alloc]initWithFrame:CGRectMake(self.view.width - gongGaoMoreRect.size.width - 20*self.scale , gongGaoImageView.top, gongGaoMoreRect.size.width+20*self.scale, gongGaoImageView.height)];
-    [gongGaoMoreBtn setTitle:@"更多" forState:(UIControlStateNormal)];
-    gongGaoMoreBtn.titleLabel.font = SmallFont(self.scale);
-    [gongGaoMoreBtn setTitleColor:grayTextColor forState:(UIControlStateNormal)];
-    [gongGaoMoreBtn addTarget:self action:@selector(gongGaoMoreBtnClick) forControlEvents:(UIControlEventTouchUpInside)];
+    UIButton * gongGaoMoreBtn = [[UIButton alloc]initWithFrame:CGRectMake(self.view.width - gongGaoMoreRect.size.width - 20*self.scale , gongGaoImageView.top, gongGaoMoreRect.size.width, gongGaoImageView.height)];
+    [gongGaoMoreBtn setImage:[UIImage imageNamed:@"customer_service"] forState:UIControlStateNormal];
+    //[gongGaoMoreBtn setTitle:@"更多" forState:(UIControlStateNormal)];
+    //gongGaoMoreBtn.titleLabel.font = SmallFont(self.scale);
+   // [gongGaoMoreBtn setTitleColor:grayTextColor forState:(UIControlStateNormal)];
+   [gongGaoMoreBtn addTarget:self action:@selector(gongGaoMoreBtnClick) forControlEvents:(UIControlEventTouchUpInside)];
+    //  [gongGaoMoreBtn addTarget:self action:@selector(talk) forControlEvents:(UIControlEventTouchUpInside)];
     [gongGaoView addSubview:gongGaoMoreBtn];
     gongGaoMoreBtn.backgroundColor = [UIColor whiteColor];
     shopView.height = gongGaoView.bottom;
@@ -1462,12 +1320,10 @@
     _fenBtnArr = [NSMutableArray new];
     setX = 0*self.scale;
     for (int i=0; i<_shangmenData.count; i++) {
-        
-        
         UIButton *btn = [[UIButton alloc]init];
         [btn setTitle:[NSString stringWithFormat:@"%@",_shangmenData[i][@"class_name"]] forState:0];
         [btn setTitleColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:.7] forState:0];
-//        [btn setTitleColor:[UIColor colorWithRed:0 green:134/255.0 blue:237/255.0 alpha:1] forState:UIControlStateSelected];
+        //        [btn setTitleColor:[UIColor colorWithRed:0 green:134/255.0 blue:237/255.0 alpha:1] forState:UIControlStateSelected];
         [btn setTitleColor:[UIColor blackColor] forState:(UIControlStateSelected)];
         btn.tag=1000000000+i;
         [_scroll addSubview:btn];
@@ -1475,7 +1331,7 @@
         //        [btn sizeToFit];
         //        btn.width=btn.width+20*self.scale;
         btn.width=[UIScreen mainScreen].bounds.size.width/5;
-//        btn.backgroundColor = [UIColor redColor];
+        //        btn.backgroundColor = [UIColor redColor];
         btn.height=30*self.scale;
         btn.left=setX;
         [btn addTarget:self action:@selector(changeFenLei:) forControlEvents:UIControlEventTouchUpInside];
@@ -1485,7 +1341,6 @@
             btn.selected=YES;
         }
     }
-    
     if (!lineFen) {
         lineFen = [[UIView alloc] initWithFrame:CGRectMake((Tag-1000000000)*[UIScreen mainScreen].bounds.size.width/5, _scroll.height-2, [UIScreen mainScreen].bounds.size.width/5, 2)];
 //        lineFen.backgroundColor=[UIColor colorWithRed:0 green:134/255.0 blue:237/255.0 alpha:1];
@@ -1493,10 +1348,8 @@
         
     }
     [_scroll addSubview:lineFen];
-    
     _scroll.contentSize=CGSizeMake(setX, 0);
     [_scroll setContentOffset:CGPointMake(_X, 0)];
-    
     [self createHiddenVeiw];
     //    if (!_fenLeiScrollView)
     //    {
@@ -1504,25 +1357,15 @@
     //    }
     _fenLeiScrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0,  self.view.width*336/720 + height+30*self.scale, _mainScrollView.width, [UIScreen mainScreen].bounds.size.height - 49-self.NavImg.height - _scroll.bottom)];
     _fenLeiScrollView.contentSize = CGSizeMake([UIScreen mainScreen].bounds.size.width * _shangmenData.count,  [UIScreen mainScreen].bounds.size.height - 49-self.NavImg.height - _scroll.bottom);
-    
     _fenLeiScrollView.pagingEnabled = YES;
-    
     _fenLeiScrollView.bounces = NO;
-    
     _fenLeiScrollView.scrollEnabled = NO;
-    
     _fenLeiScrollView.delegate = self;
-    
     _fenLeiScrollView.tag = 200;
-    
     [_fenLeiScrollView setContentOffset:CGPointMake(fenleiIndex * [UIScreen mainScreen].bounds.size.width, 0) animated:NO];
-    
     [_mainScrollView addSubview:_fenLeiScrollView];
-    
-    
     for (int i = 0; i < _shangmenData.count; i++)
     {
-        
         UIScrollView * bScrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(i*[UIScreen mainScreen].bounds.size.width, 0, _mainScrollView.width, [UIScreen mainScreen].bounds.size.height-self.NavImg.bottom-49 - _scroll.height)];
         
         //        [bScrollView addLegendFooterWithRefreshingTarget:self refreshingAction:@selector(shangla)];
@@ -1530,33 +1373,20 @@
         //        bScrollView.footer.automaticallyRefresh=NO;
         
         bScrollView.bounces = NO;
-        
         bScrollView.scrollEnabled = NO;
-        
         bScrollView.delegate  = self;
-        
-        
         //NO 发送滚动的通知 但是就算手指移动 scroll也不会动了 YES 发送通知 scroll可以移动
         [bScrollView setCanCancelContentTouches:YES];
         [bScrollView setBounces:NO];
         // NO 立即通知touchesShouldBegin:withEvent:inContentView 看是否滚动 scroll
         [bScrollView setDelaysContentTouches:NO];
-        
         bScrollView.tag = 2000+i;
-        
         [_fenLeiScrollView addSubview:bScrollView];
-        
         [self GoodsF:bScrollView withArray:[self.fenLeiDictionary objectForKey:_shangmenData[i][@"id"]]];
-        
-        
     }
-    
-    //    NSLog(@"%@",self.fenLeiDictionary);
-    
 }
 
 -(void)lunbo{
-    
 //    static int i=1;
     
     if (ii<_lunboData.count)
@@ -1571,19 +1401,12 @@
         _pageControl.currentPage = ii;
         ii++;
     }
-    
-    
-    
 }
-
-
 
 -(void)lunbo:(UIButton *)vi{
     [self.view endEditing:YES];
     self.hidesBottomBarWhenPushed=YES;
     LunBoWebViewController *lunbo = [LunBoWebViewController new];
-    
-    
     NSArray * data;
     NSInteger tag;
     if (vi.tag>=10000) {
@@ -1593,32 +1416,18 @@
       data=_lunda;
       tag=vi.tag-1000;
     }
-
-    
-    
-    
-    
     if ([data[tag][@"redirect_to"] isEqualToString:@"1"]) {
         return;
     }else if ([data[tag][@"redirect_to"] isEqualToString:@"2"]){
        lunbo.link = data[tag][@"redirect_to"];
         [self.navigationController pushViewController:lunbo animated:YES];
-
-    
     }else if ([data[tag][@"redirect_to"] isEqualToString:@"3"]){
         deiletWebViewViewController *deole = [deiletWebViewViewController new];
         deole.html =[NSString stringWithFormat:@"%@",data[tag][@"detail"]] ;
         [self.navigationController pushViewController:deole animated:YES];
-
     }else if ([data[tag][@"redirect_to"] isEqualToString:@"4"]){
-        
-
-        
         //-----------------是否休息判断
-        
-        
         //判断是否休息的bool值
-        
         //    BOOL isSleep1=NO;
         //    BOOL isSleep2=NO;
         //    BOOL isSleep3=NO;
@@ -1933,7 +1742,6 @@
         self.hidesBottomBarWhenPushed=YES;
         ShopInfoViewController *buess = [ShopInfoViewController new];
         NSLog(@"ShopInfoViewController   lunbo");
-
         if ([data[tag][@"shop_info"][@"is_open_chat"]isEqualToString:@"2"]) {
             buess.isopen=NO;
         }else{
@@ -1967,11 +1775,32 @@
 #pragma mark -- 公告更多按钮点击事件
 - (void)gongGaoMoreBtnClick
 {
+//    self.hidesBottomBarWhenPushed = YES;
+//    BreakInfoViewController *info = [[BreakInfoViewController alloc]init];
+//    
+//    info.ID = _gongGaoDic[@"shop_id"];
+//    [self.navigationController pushViewController:info animated:YES];
+//    self.hidesBottomBarWhenPushed = NO;
+    if ([Stockpile sharedStockpile].isLogin==NO) {
+        [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
+            if (index==1) {
+                [self login];
+            }
+        }];
+        return;
+    }
+
+    if(_shopData==nil)
+        return;
     self.hidesBottomBarWhenPushed = YES;
-    BreakInfoViewController *info = [[BreakInfoViewController alloc]init];
-    
-    info.ID = _gongGaoDic[@"shop_id"];
-    [self.navigationController pushViewController:info animated:YES];
+    IMViewController *_conversationVC = [[IMViewController alloc]init];
+    _conversationVC.conversationType = ConversationType_PRIVATE;
+    _conversationVC.targetId = _shopData[@"shop_user_id"];
+   // _conversationVC.userName = @"123456";
+    _conversationVC.title = _shopData[@"shop_name"];
+    //NSLog(@"shopUserID==%@",_shopData[@"shop_user_id"]);
+    //_conversationVC.conversation = model;
+    [self.navigationController pushViewController:_conversationVC animated:YES];
     self.hidesBottomBarWhenPushed = NO;
 }
 
@@ -2027,9 +1856,6 @@
         lineFen.frame=CGRectMake((sender.tag-1000000000)*[UIScreen mainScreen].bounds.size.width/5, _scroll.height-2, [UIScreen mainScreen].bounds.size.width/5, 2);
         hiddenLineFenLab.frame = CGRectMake((sender.tag-1000000000)*[UIScreen mainScreen].bounds.size.width/5, _hiddenScrollView.height-2, [UIScreen mainScreen].bounds.size.width/5, 2);
     }];
-  
-    
-    
     sender.selected=YES;
     Tag=sender.tag;
     hiddenTag = - Tag;
@@ -2199,10 +2025,11 @@
 //
 //
 //}
+
 #pragma mark -- 创建滑动的ScrollView
 -(void)GoodsF:(UIScrollView *)view withArray:(NSArray *)array
 {
-    NSLog(@"%@",array);
+    NSLog(@"=array=%@",array);
     view.backgroundColor = [UIColor whiteColor];
    
     for (UIButton * btn in view.subviews)
@@ -2211,13 +2038,7 @@
     }
     NSLog(@"%@",array);
 //    _mainScrollView.backgroundColor=whiteLineColore;
-    
-    
-
 //    UIScrollView * bScrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(i*[UIScreen mainScreen].bounds.size.width, 0, _mainScrollView.width, [UIScreen mainScreen].bounds.size.height-self.NavImg.bottom-49-view.bottom)];
-    
-   
-    
 //    bScrollView.userInteractionEnabled = NO;
 //    
 //    bScrollView.tag = 100;
@@ -2227,33 +2048,26 @@
 //    bScrollView.delegate = self;
     float w = self.view.width;
     for (int i=0; i<array.count; i++) {
-        
         float x = 0;
         float y = 100*self.scale*i;
-        
         UIButton *bgVi = [[UIButton alloc]initWithFrame:CGRectMake(x,y,w,100*self.scale)];
         bgVi.backgroundColor=[UIColor clearColor];
         [view addSubview:bgVi];
         [bgVi addTarget:self action:@selector(goodsEvent:) forControlEvents:UIControlEventTouchUpInside];
         bgVi.tag=1000000000000+i;
-        
         UIImageView *img = [[UIImageView alloc]initWithFrame:CGRectMake(10*self.scale, 10*self.scale, bgVi.height - 20*self.scale, bgVi.height-20*self.scale)];
         img.contentMode=UIViewContentModeScaleAspectFill;
         img.clipsToBounds=YES;
         img.layer.cornerRadius=2;
 //        img.layer.borderColor=blackLineColore.CGColor;
 //        img.layer.borderWidth=.5;
-        
 //        float x = (w+15*self.scale)*(i%2);
 //        float y = ((w+40*self.scale)+15*self.scale)*(i/2);
-        
 //        UIButton *bgVi = [[UIButton alloc]initWithFrame:CGRectMake(15*self.scale+x, 10*self.scale+y, w,w+40*self.scale)];
 //        bgVi.backgroundColor=[UIColor clearColor];
 //        [view addSubview:bgVi];
 //        [bgVi addTarget:self action:@selector(goodsEvent:) forControlEvents:UIControlEventTouchUpInside];
 //        bgVi.tag=1000000000000+i;
-        
-        
 //        UIImageView *img = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, bgVi.width, bgVi.width-20*self.scale)];
 //        img.contentMode=UIViewContentModeScaleAspectFill;
 //        img.clipsToBounds=YES;
@@ -2338,22 +2152,26 @@
         UILabel * bottomLab = [[UILabel alloc]initWithFrame:CGRectMake(10*self.scale, 100*self.scale - 0.3, self.view.width - 20*self.scale, 0.3)];
         bottomLab.backgroundColor = grayTextColor;
         [bgVi addSubview:bottomLab];
+        
+        NSInteger gid=[goodsListID integerValue];
+        
         UIButton *jiaBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         [jiaBtn setImage:[UIImage imageNamed:@"na2"] forState:UIControlStateNormal];
-        jiaBtn.frame=CGRectMake(SCREEN_WIDTH-30, comeFromlab.bottom, 22*self.scale, 22*self.scale);
+        jiaBtn.frame=CGRectMake(SCREEN_WIDTH-40, comeFromlab.bottom, 32*self.scale, 32*self.scale);
         [jiaBtn addTarget:self action:@selector(changeShopingCartNum:) forControlEvents:UIControlEventTouchUpInside];
-        jiaBtn.tag=100000+i;
+        jiaBtn.tag=100000*gid+i;
+        //NSLog(@"jia tag==%d  tag/1000=%d",jiaBtn.tag,jiaBtn.tag/gid);
         [bgVi addSubview:jiaBtn];
-        UILabel *num = [[UILabel alloc]initWithFrame:CGRectMake(jiaBtn.frame.origin.x-25*self.scale, comeFromlab.bottom, 25*self.scale, 22*self.scale)];
+        UILabel *num = [[UILabel alloc]initWithFrame:CGRectMake(jiaBtn.frame.origin.x-25*self.scale, comeFromlab.bottom+5*self.scale, 25*self.scale, 22*self.scale)];
         num.font=SmallFont(self.scale);
-        num.tag=200000+i;
+        num.tag=200000*gid+i;
         NSString* prodID=array[i][@"prod_id"];
-        int* index=[self.shopDictionary[prodID] intValue];
+        int* index=[self.appdelegate.shopDictionary[prodID] intValue];
         num.text=[NSString stringWithFormat:@"%d",index];
-        UIButton *jianBtn = [[UIButton alloc]initWithFrame:CGRectMake(num.frame.origin.x-22*self.scale, comeFromlab.bottom, 22*self.scale, 22*self.scale)];
+        UIButton *jianBtn = [[UIButton alloc]initWithFrame:CGRectMake(num.frame.origin.x-32*self.scale, comeFromlab.bottom, 32*self.scale, 32*self.scale)];
         [jianBtn setImage:[UIImage imageNamed:@"na1"] forState:UIControlStateNormal];
         [jianBtn addTarget:self action:@selector(changeShopingCartNum:) forControlEvents:UIControlEventTouchUpInside];
-        jianBtn.tag=300000+i;
+        jianBtn.tag=300000*gid+i;
         [bgVi addSubview:jianBtn];
         if (index==0) {
             jianBtn.hidden=YES;
@@ -2389,6 +2207,78 @@
 #pragma mark -- 创建隐藏的scrollView
 - (void)createHiddenVeiw
 {
+    if(_hiddleGongGaoView){
+        [_hiddleGongGaoView removeFromSuperview];
+        for (UIView * view in _hiddleGongGaoView.allSubviews)
+        {
+            [view removeFromSuperview];
+        }
+        _hiddleGongGaoView = nil;
+    }
+    //公告View
+    
+    _hiddleGongGaoView = [[UIView alloc]initWithFrame:CGRectMake(0, 64, self.view.width, self.view.width/75*8)];
+    _hiddleGongGaoView.backgroundColor = [UIColor whiteColor];
+    [self.view addSubview:_hiddleGongGaoView];
+    
+    //    //公告lab
+    NSString * gongGaoString = _gongGaoDic[@"slogan"];
+    CGRect gongGaoMoreRect = [self getStringWithFont:12*self.scale withString:@"更多" withWith:self.view.width];
+    CGRect  rect = [self getStringWithFont:12*self.scale withString:gongGaoString withWith:self.view.width];
+    UIView * labView = [[UIView alloc]initWithFrame:CGRectMake(10*self.scale +(_hiddleGongGaoView.height - 14*self.scale)/21*62 + 5*self.scale,7*self.scale,self.view.width - (10*self.scale +(_hiddleGongGaoView.height - 14*self.scale)/21*62) - 30*self.scale - gongGaoMoreRect.size.width + 20*self.scale, _hiddleGongGaoView.height- 14*self.scale)];
+    [_hiddleGongGaoView addSubview:labView];
+    if (rect.size.width > labView.width )
+    {
+        UILabel * lab1 = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, rect.size.width, labView.height)];
+        lab1.font = SmallFont(self.scale);
+        lab1.text = gongGaoString;
+        [labView addSubview:lab1];
+        
+        UILabel * lab2 = [[UILabel alloc]initWithFrame:CGRectMake(lab1.right + 15*self.scale, 0, lab1.width, lab1.height)];
+        lab2.font = SmallFont(self.scale);
+        lab2.text = gongGaoString;
+        [labView addSubview:lab2];
+        
+        _gongGaoTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 repeats:YES block:^(NSTimer * _Nonnull timer) {
+            lab1.frame = CGRectMake(lab1.frame.origin.x - 1*self.scale, lab1.origin.y, lab1.width, lab1.height);
+            lab2.frame = CGRectMake(lab2.frame.origin.x - 1*self.scale, lab2.origin.y, lab2.width, lab2.height);
+            if (-lab1.frame.origin.x >= rect.size.width)
+            {
+                lab1.frame = CGRectMake(lab2.width + lab2.frame.origin.x+15*self.scale, lab1.origin.y, lab1.width, lab1.height);
+            }
+            if (-lab2.frame.origin.x >= rect.size.width)
+            {
+                lab2.frame = CGRectMake(lab1.width + lab1.frame.origin.x+15*self.scale, lab2.origin.y, lab2.width, lab2.height);
+            }
+            
+        }];
+        [[NSRunLoop currentRunLoop] addTimer:_gongGaoTimer forMode:NSDefaultRunLoopMode];
+    }else{
+        UILabel * gongGaoLab = [[UILabel alloc]initWithFrame:CGRectMake(0,0,labView.width,labView.height)];
+        gongGaoLab.font = SmallFont(self.scale);
+        gongGaoLab.text = gongGaoString;
+        [labView addSubview:gongGaoLab];
+    }
+    //公告图片
+    UIView * v = [[UIView alloc]initWithFrame:CGRectMake(0, 0, (_hiddleGongGaoView.height - 14*self.scale)/21*62+10*self.scale+5*self.scale, _hiddleGongGaoView.height)];
+    v.backgroundColor = [UIColor whiteColor];
+    
+    [_hiddleGongGaoView addSubview:v];
+    UIImageView * gongGaoImageView = [[UIImageView alloc]initWithFrame:CGRectMake(10*self.scale, 7*self.scale, (_hiddleGongGaoView.height - 14*self.scale)/21*62, _hiddleGongGaoView.height- 14*self.scale)];
+    gongGaoImageView.image = [UIImage imageNamed:@"sq"];
+    [v addSubview:gongGaoImageView];
+    
+    //公告更多按钮
+    UIButton * gongGaoMoreBtn = [[UIButton alloc]initWithFrame:CGRectMake(self.view.width - gongGaoMoreRect.size.width - 20*self.scale , gongGaoImageView.top, gongGaoMoreRect.size.width+20*self.scale, gongGaoImageView.height)];
+    [gongGaoMoreBtn setTitle:@"更多" forState:(UIControlStateNormal)];
+    gongGaoMoreBtn.titleLabel.font = SmallFont(self.scale);
+    [gongGaoMoreBtn setTitleColor:grayTextColor forState:(UIControlStateNormal)];
+    [gongGaoMoreBtn addTarget:self action:@selector(gongGaoMoreBtnClick) forControlEvents:(UIControlEventTouchUpInside)];
+    [_hiddleGongGaoView addSubview:gongGaoMoreBtn];
+    gongGaoMoreBtn.backgroundColor = [UIColor whiteColor];
+    _hiddleGongGaoView.hidden = YES;
+
+    
     if (_hiddenScrollView)
     {
         [_hiddenScrollView removeFromSuperview];
@@ -2399,7 +2289,7 @@
         }
         _hiddenScrollView = nil;
     }
-     _hiddenScrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0,64, [UIScreen mainScreen].bounds.size.width, 30*self.scale)];
+     _hiddenScrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0,64+self.view.width/75*8, [UIScreen mainScreen].bounds.size.width, 30*self.scale)];
     _hiddenScrollView.showsVerticalScrollIndicator = NO;
     _hiddenScrollView.showsHorizontalScrollIndicator = NO;
     _hiddenScrollView.backgroundColor = [UIColor whiteColor];
@@ -2411,8 +2301,6 @@
     _hiddenArray = [NSMutableArray new];
     float  setX = 0*self.scale;
     for (int i=0; i<_shangmenData.count; i++) {
-        
-        
         UIButton *btn = [[UIButton alloc]init];
         [btn setTitle:[NSString stringWithFormat:@"%@",_shangmenData[i][@"class_name"]] forState:0];
         [btn setTitleColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:.7] forState:0];
@@ -2434,44 +2322,31 @@
         }
     }
     NSLog(@"%@",hiddenLineFenLab);
-    
 //    if (!hiddenLineFenLab)
 //    {
         hiddenLineFenLab = [[UIView alloc] initWithFrame:CGRectMake(((-hiddenTag)-1000000000)*[UIScreen mainScreen].bounds.size.width/5, _hiddenScrollView.height-2, [UIScreen mainScreen].bounds.size.width/5, 2)];
-     
 //        hiddenLineFenLab.backgroundColor=[UIColor colorWithRed:0 green:134/255.0 blue:237/255.0 alpha:1];
         hiddenLineFenLab.backgroundColor = blueTextColor;
         [_hiddenScrollView addSubview:hiddenLineFenLab];
 //    }
-
-    
     _hiddenScrollView.contentSize=CGSizeMake(setX, 0);
     [_hiddenScrollView setContentOffset:CGPointMake(_X, 0)];
-   
 }
-- (void)hiddenChangeFenLei:(UIButton *)sender
-{
+
+- (void)hiddenChangeFenLei:(UIButton *)sender{
     [self srollScrollViewWith:-sender.tag-1000000000];
     for (UIButton *btn in self.hiddenArray)
     {
         btn.selected=NO;
         //        NSLog(@"按钮的个数%d",)
     }
-    
 //    NSLog(@"sender.tag%ld",sender.tag-1000000001);
-    
     //            UIImageView *Hline=(UIImageView *)[self.view viewWithTag:3];
     //            Hline.frame=CGRectMake((button.tag-1)*self.view.width/2, _ToolView.height-.5, self.view.width/2, .5) ;
-    
-    
     [UIView animateWithDuration:.3 animations:^{
-        
         lineFen.frame=CGRectMake((-sender.tag-1000000000)*[UIScreen mainScreen].bounds.size.width/5, _scroll.height-2, [UIScreen mainScreen].bounds.size.width/5, 2);
         hiddenLineFenLab.frame = CGRectMake((-sender.tag-1000000000)*[UIScreen mainScreen].bounds.size.width/5, _hiddenScrollView.height-2, [UIScreen mainScreen].bounds.size.width/5, 2);
     }];
-    
-    
-    
     sender.selected=YES;
     hiddenTag =sender.tag;
     Tag = - hiddenTag;
@@ -2486,22 +2361,15 @@
     }
     UIScrollView * bScrollView = (UIScrollView *)[_fenLeiScrollView viewWithTag:2000+fenleiIndex];
     bScrollView.scrollEnabled = YES;
-    
     [_fenLeiScrollView setContentOffset:CGPointMake((-sender.tag - 1000000000)*[UIScreen mainScreen].bounds.size.width, 0) animated:NO];
     _X = _scroll.contentOffset.x;
-    
     goodsListID = _shangmenData[fenleiIndex][@"id"];
-    
-    if (_mainScrollView.contentOffset.y>=self.view.width*336/720 + height + 60*self.scale)
-    {
+    if (_mainScrollView.contentOffset.y>=self.view.width*336/720 + height + 60*self.scale){
         _xialaH = self.view.width*336/720 + height+60*self.scale;
         //         [_mainScrollView setContentOffset:CGPointMake(0, _xialaH)];
-    }
-    else
-    {
+    }else{
         _xialaH = _mainScrollView.contentOffset.y;
     }
-    
     NSMutableArray * dataArray =[self.fenLeiDictionary objectForKey:goodsListID];
     if (dataArray.count == 0)
     {
@@ -2510,36 +2378,28 @@
         [self GoosdListshangla];
     }
     //    [_mainScrollView setContentOffset:CGPointMake(0, self.view.width*336/720 + height) animated:YES];
-    else
-    {
+    else{
         UIScrollView * bScrollView = (UIScrollView *)[_fenLeiScrollView viewWithTag:2000+fenleiIndex];
         [self GoodsF:bScrollView withArray:[self.fenLeiDictionary objectForKey:goodsListID]];
-        
         //        _xialaH = [[self.xialaHDictionary objectForKey:goodsListID] floatValue];
         //
         [_mainScrollView setContentOffset:CGPointMake(0, _xialaH)];
     }
 }
--(void)goodsEvent:(UIButton *)sender{
 
-    
+-(void)goodsEvent:(UIButton *)sender{
     NSMutableArray * dataArray = [self.fenLeiDictionary objectForKey:goodsListID];
     NSDictionary *shopInfo = dataArray[sender.tag-1000000000000];
-    
     NSLog(@"%@",shopInfo);
-    
-   BOOL isSeelp = [self getTimeWith:shopInfo];
-
+    BOOL isSeelp = [self getTimeWith:shopInfo];
 //    if (isSeelp) {
 //        [self ShowAlertWithMessage:@"休息了"];
 //    }else{
 //        [self ShowAlertWithMessage:@"工作了"];
 //    }
-
     self.hidesBottomBarWhenPushed=YES;
     ShopInfoViewController *buess = [ShopInfoViewController new];
     NSLog(@"ShopInfoViewController   goodsEvent");
-
     if ([shopInfo[@"is_open_chat"]isEqualToString:@"2"]) {
         buess.isopen=NO;
     }else{
@@ -2572,62 +2432,6 @@
     self.hidesBottomBarWhenPushed=NO;
     
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #pragma mark - 上门服务
 -(void)newShangMen:(UIView *)view{
@@ -2789,16 +2593,12 @@
 }
 
 -(void)bottonViewWithSetYY:(CGFloat )setYY{
-    
     CGFloat w=self.view.width-20*self.scale;
     CGFloat h=150*self.scale;
     CGFloat setY=setYY+10*self.scale;
     CGFloat x=10*self.scale;
     CGFloat y=setY;
     for (int i=0; i<_adverData.count; i++) {
-        
-        
-        
         UIButton *img = [[UIButton alloc]initWithFrame:CGRectMake(x, y, w, 150*self.scale)];
         img.tag=10000+i;
         [img addTarget:self action:@selector(lunbo:) forControlEvents:UIControlEventTouchUpInside];
@@ -2815,14 +2615,29 @@
 - (void)dizhiBtnClick
 {
     if (![Stockpile sharedStockpile].isLogin) {
-        [self ShowAlertWithMessage:@"请先登录"];
+        //[self ShowAlertWithMessage:@"请先登录"];
+        [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
+            if (index==1) {
+                LoginViewController *login = [self login];
+                [login resggong:^(NSString *str) {//登录成功后需要加载的数据
+                    NSLog(@"登录成功");
+                    [self requestShopingCart:true];
+                }];
+            }
+        }];
         return;
     }
-    self.hidesBottomBarWhenPushed = YES;
-    SheQuManagerViewController * shequMVC = [[SheQuManagerViewController alloc]init];
-    shequMVC.nojiantou = YES;
-    [self.navigationController pushViewController:shequMVC animated:YES];
-    self.hidesBottomBarWhenPushed = NO;
+    //self.hidesBottomBarWhenPushed = YES;
+    ChoosePlotController* choosePlot=[[ChoosePlotController alloc] init];
+    choosePlot.isRoot=false;
+    [self.navigationController pushViewController:choosePlot animated:YES];
+   // self.hidesBottomBarWhenPushed = NO;
+    
+//    self.hidesBottomBarWhenPushed = YES;
+//    SheQuManagerViewController * shequMVC = [[SheQuManagerViewController alloc]init];
+//    shequMVC.nojiantou = YES;
+//    [self.navigationController pushViewController:shequMVC animated:YES];
+//    self.hidesBottomBarWhenPushed = NO;
 }
 
 - (void)shengHuoFuWuBtnClick
@@ -2832,6 +2647,7 @@
     [self.navigationController pushViewController:shangjiaVC animated:YES];
     self.hidesBottomBarWhenPushed = NO;
 }
+
 - (void)wuYeZhongXinBtnCLick
 {
     
@@ -2841,6 +2657,7 @@
     [self.navigationController pushViewController:wuyeVC animated:YES];
     self.hidesBottomBarWhenPushed = NO;
 }
+
 -(void)shangjiaJinZhuBtnClick
 {
     self.hidesBottomBarWhenPushed = YES;
@@ -2848,24 +2665,17 @@
     [self.navigationController pushViewController:shangjiaVC animated:YES];
     self.hidesBottomBarWhenPushed = NO;
 }
+
 -(void)ZaoCanEvent:(UIButton *)button{
-    
-    
-    
-    [self.view endEditing:YES];
-    
-    
+  [self.view endEditing:YES];
     self.hidesBottomBarWhenPushed = YES;
     NSInteger tag = button.tag-1;
     NSArray * shopS=(NSArray *)[_lingShouData[tag] objectForKey:@"shop_info"];
-   
     if (shopS.count==1) {
         [self skipToDetail:(NSDictionary *)(shopS.firstObject)];
         self.hidesBottomBarWhenPushed=NO;
         return;
     }
-    
-    
     NSString *ID = [_lingShouData[tag] objectForKey:@"id"];
     NSLog(@"++++%@",_lingShouData);
     BreakFirstViewController *breakF = [[BreakFirstViewController alloc]init];
@@ -2876,122 +2686,78 @@
     breakF.namet = [_lingShouData[tag] objectForKey:@"class_name"];
     [self.navigationController pushViewController:breakF animated:YES];
     self.hidesBottomBarWhenPushed=NO;
-    
-
 }
+
 -(void)skipToDetail:(NSDictionary *)shopInfo{
-    
     //-----------------是否休息判断
-    
     BOOL isSleep1=YES;
     BOOL isSleep2=YES;
     BOOL isSleep3=YES;
-    
-    
     NSArray *timArr  = [shopInfo[@"business_hour"] componentsSeparatedByString:@","];
-    
     NSDate *now = [NSDate date];
     NSDateFormatter *nowFo = [[NSDateFormatter alloc]init];
     [nowFo setDateFormat:@"yyyy-MM-dd"];
     NSString *noewyers = [nowFo stringFromDate:now];
-    
     for (NSString *str in timArr) {
         if ([str isEqualToString:@"1"]) {
-            
             NSString *timeStart1 = [noewyers stringByAppendingString:[NSString stringWithFormat:@" %@",shopInfo[@"business_start_hour1"]]];
             NSString *timeEnd1 =[noewyers stringByAppendingString:[NSString stringWithFormat:@" %@",shopInfo[@"business_end_hour1"]]];
-            
             NSDateFormatter *fo = [[NSDateFormatter alloc]init];
             [fo setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
             NSDate *das = [fo dateFromString:timeStart1];
             NSDate *dad = [fo dateFromString:timeEnd1];
-            
             NSDate *dates = [self getNowDateFromatAnDate:das];
             NSDate *dated = [self getNowDateFromatAnDate:dad];
             NSDate *daten = [self getNowDateFromatAnDate:[NSDate date]];
-            
             NSLog(@"%@",[NSDate date]);
-            
-            
             //开始的时间戳
             double times = [dates timeIntervalSince1970];
             //结束的时间戳
             double timed = [dated timeIntervalSince1970];
             //现在的时间戳
             double timen = [daten timeIntervalSince1970];
-            
-            
-            
             if (timen>times && timen<timed) {
                 isSleep1=NO;
             }else{
                 isSleep1=YES;
             }
-            
-            
-            
-        }
-        
-        
-        
-        
-        else if ([str isEqualToString:@"2"]) {
-            
+        }else if ([str isEqualToString:@"2"]) {
             NSString *timeStart1 = [noewyers stringByAppendingString:[NSString stringWithFormat:@" %@",shopInfo[@"business_start_hour2"]]];
             NSString *timeEnd1 =[noewyers stringByAppendingString:[NSString stringWithFormat:@" %@",shopInfo[@"business_end_hour2"]]];
             NSDateFormatter *fo = [[NSDateFormatter alloc]init];
             [fo setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
             NSDate *das = [fo dateFromString:timeStart1];
             NSDate *dad = [fo dateFromString:timeEnd1];
-            
-            
             NSDate *dates = [self getNowDateFromatAnDate:das];
             NSDate *dated = [self getNowDateFromatAnDate:dad];
             NSDate *daten = [self getNowDateFromatAnDate:[NSDate date]];
-            
             //开始的时间戳
             double times = [dates timeIntervalSince1970];
             //结束的时间戳
             double timed = [dated timeIntervalSince1970];
             //现在的时间戳
             double timen = [daten timeIntervalSince1970];
-            
-            
-            
             if (timen>times && timen<timed) {
                 isSleep2=NO;
             }else{
                 isSleep2=YES;
             }
-            
-            
-            
-        }
-        
-        
-        else  if ([str isEqualToString:@"3"]) {
-            
+        }else  if ([str isEqualToString:@"3"]) {
             NSString *timeStart1 = [noewyers stringByAppendingString:[NSString stringWithFormat:@" %@",shopInfo[@"business_start_hour3"]]];
             NSString *timeEnd1 =[noewyers stringByAppendingString:[NSString stringWithFormat:@" %@",shopInfo[@"business_end_hour3"]]];
             NSDateFormatter *fo = [[NSDateFormatter alloc]init];
             [fo setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
             NSDate *das = [fo dateFromString:timeStart1];
             NSDate *dad = [fo dateFromString:timeEnd1];
-            
-            
             NSDate *dates = [self getNowDateFromatAnDate:das];
             NSDate *dated = [self getNowDateFromatAnDate:dad];
             NSDate *daten = [self getNowDateFromatAnDate:[NSDate date]];
-            
             //开始的时间戳
             double times = [dates timeIntervalSince1970];
             //结束的时间戳
             double timed = [dated timeIntervalSince1970];
             //现在的时间戳
             double timen = [daten timeIntervalSince1970];
-            
-            
-            
             if (timen>times && timen<timed) {
                 isSleep3=NO;
             }else{
@@ -2999,24 +2765,18 @@
             }
             
         }
-        
-        
     }
     //-----------------
     
     BOOL   issleep=NO;
-
     if (isSleep1==NO || isSleep2==NO || isSleep3==NO) {
         issleep=NO;
     }else{
         issleep=YES;
     }
-    
     if ([shopInfo[@"business_hour"] isEqualToString:@""]) {
         issleep=NO;
     }
-    
-    
     if ([shopInfo[@"status"] isEqualToString:@"3"]) {
         issleep=YES;
     }else{
@@ -3031,15 +2791,10 @@
             }
         }
     }
-
-    
-    
     //-----------------是否休息判断end
     [self.view endEditing:YES];
-    
     NSString *ID = [shopInfo objectForKey:@"id"];
     NSString * shop_type=[shopInfo objectForKey:@"shop_type"];
-    
     if ([shop_type isEqualToString:@"2"]) {
         GanXiShopViewController *ganxi = [GanXiShopViewController new];
         if ([shopInfo[@"is_open_chat"] isEqualToString:@"2"]) {
@@ -3054,10 +2809,7 @@
         ganxi.topSetimg = [shopInfo objectForKey:@"logo"];
         ganxi.shop_user_id=[shopInfo objectForKey:@"shop_user_id"];
         [self.navigationController pushViewController:ganxi animated:YES];
-        
     }else{
-        
-        
         BreakInfoViewController *info = [[BreakInfoViewController alloc]init];
         
         if ([shopInfo[@"is_open_chat"]isEqualToString:@"2"]) {
@@ -3065,7 +2817,6 @@
         }else{
             info.isopen=YES;
         }
-        
         info.ID=ID;
         info.titlete=[shopInfo objectForKey:@"shop_name"];
         info.shopImg = [shopInfo objectForKey:@"logo"];
@@ -3081,34 +2832,21 @@
         /**
          *  2016.8.27
          */
-
-        
-
         [self.navigationController pushViewController:info animated:YES];
-        
     }
-    
-    
 }
-
 
 -(void)ShangMenFuWuEvent:(UIButton *)sender{
     [self.view endEditing:YES];
     self.hidesBottomBarWhenPushed=YES;
     NSInteger tag = sender.tag-10;
-    
-    
     NSArray * shops=[_shangmenData[tag] objectForKey:@"shop_info"];
     if (shops.count==1) {
    
         [self skipToDetail:(NSDictionary *)(shops.firstObject)];
         self.hidesBottomBarWhenPushed=NO;
         return;
-        
     }
-    
-    
-  
     NSString *ID = [_shangmenData[tag] objectForKey:@"id"];
 
     BreakFirstViewController *breakF = [[BreakFirstViewController alloc]init];
@@ -3118,39 +2856,28 @@
     breakF.is_weishop=@"2";
     breakF.namet = [_shangmenData[tag] objectForKey:@"class_name"];
     [self.navigationController pushViewController:breakF animated:YES];
-
     self.hidesBottomBarWhenPushed=NO;
- 
-
-    
 }
 
 -(void)WeiShangEvent:(UIButton *)button{
     [self.view endEditing:YES];
     self.hidesBottomBarWhenPushed = YES;
     NSInteger tag = button.tag-100;
-    
     NSArray * shopS=(NSArray *)[_weishangData[tag] objectForKey:@"shop_info"];
-    
     if (shopS.count==1) {
         [self skipToDetail:(NSDictionary *)(shopS.firstObject)];
         self.hidesBottomBarWhenPushed=NO;
         return;
     }
-    
-    
     NSString *ID = [_weishangData[tag] objectForKey:@"id"];
-    
     BreakFirstViewController *breakF = [[BreakFirstViewController alloc]init];
     breakF.type=@"weidian";
     breakF.ID=ID;
     breakF.shop_type=@"1";
     breakF.is_weishop=@"1";
     breakF.namet = [_weishangData[tag] objectForKey:@"class_name"];
-
     [self.navigationController pushViewController:breakF animated:YES];
     self.hidesBottomBarWhenPushed=NO;
-    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -3191,6 +2918,7 @@
       //  [[UIApplication sharedApplication]setApplicationIconBadgeNumber:0];
     }
 }
+
 #pragma mark -- 购物车的数字
 - (void)gouWuCheShuZi
 {
@@ -3305,24 +3033,20 @@
     RCDChatListViewController *rong = [[RCDChatListViewController alloc]init];
     [self.navigationController pushViewController:rong animated:YES];
     self.hidesBottomBarWhenPushed=NO;
-
-
 }
+
 #pragma mark -- 滑动视图
 - (void)srollScrollViewWith:(NSInteger)index
 {
     CGFloat  width = 0;
     for (int i=1; i<_shangmenData.count - 4; i++)
     {
-        
         if (index == _shangmenData.count - 1)
         {
             index = index - 1;
-            
         }
         width = (index+1)/(4+i)*[UIScreen mainScreen].bounds.size.width/5+width;
     }
-    
     [_scroll setContentOffset:CGPointMake(width ,0) animated:YES];
     [_hiddenScrollView setContentOffset:CGPointMake(width ,0) animated:YES];
 }
@@ -3330,9 +3054,7 @@
 #pragma mark -- 键盘监听事件创建
 - (void)loadNotificationCell
 {
-    
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(keyboardChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
-    
    // [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     
     //[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(keyboardShow:) name:UIKeyboardDidShowNotification object:nil];
@@ -3349,12 +3071,9 @@
     CGRect rect=[info[UIKeyboardFrameEndUserInfoKey] CGRectValue];
     CGFloat duration=[info[UIKeyboardAnimationDurationUserInfoKey] floatValue];
     [UIView animateWithDuration:duration animations:^{
-        
         CGFloat keyHeigth = self.view.height-rect.origin.y;
-        
         CGFloat top =( self.view.width*336/720 + height + 60*self.scale+self.NavImg.bottom);
         CGFloat offset = _mainScrollView.contentOffset.y;
-//        
 //        CGFloat textbottom= top-offset;
 //        
 //        if (textbottom>0 && keyHeigth+textbottom>self.view.height) {
@@ -3363,11 +3082,6 @@
 //        if (keyHeigth <= 0) {
 //            _mainScrollView.contentOffset=CGPointMake(0,0);
 //        }
-        
-        
-      
-        
-        
         //_mainScrollView.frame=CGRectMake(0, self.NavImg.bottom, self.view.width, rect.origin.y-self.NavImg.bottom);
     }];
 }
@@ -3379,7 +3093,6 @@
     NSDictionary *info = [notif userInfo];
     NSValue *value = [info objectForKey:UIKeyboardFrameBeginUserInfoKey];
     CGSize keyboardSize = [value CGRectValue].size;
-    
     NSLog(@"keyBoard:%f", keyboardSize.height);
     NSLog(@"键盘将要出现");
     //    [UIView beginAnimations:nil context:nil];
@@ -3403,13 +3116,10 @@
         return;
     }
     NSDictionary *info = [notif userInfo];
-    
     NSValue *value = [info objectForKey:UIKeyboardFrameBeginUserInfoKey];
     CGSize keyboardSize = [value CGRectValue].size;
     NSLog(@"keyboardWasHidden keyBoard:%f", keyboardSize.height);
     NSLog(@"键盘出现");
-    
-    
     NSLog(@"keyBoard:%f", keyboardSize.height);
     NSLog(@"键盘将要出现");
     //    [UIView beginAnimations:nil context:nil];
@@ -3431,7 +3141,6 @@
     NSDictionary *info = [notif userInfo];
     NSValue *value = [info objectForKey:UIKeyboardFrameBeginUserInfoKey];
     CGSize keyboardSize = [value CGRectValue].size;
-    
     NSLog(@"keyBoard:%f", keyboardSize.height);
     
     //    [UIView beginAnimations:nil context:nil];
@@ -3454,26 +3163,22 @@
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
-    
-
     UITextField *souTf=[self.view viewWithTag:888];
     if ([souTf.text isEmptyString]) {
         [self ShowAlertWithMessage:@"请你输入想要购买的商品名称"];
         [self.view endEditing:YES];
         return [textField resignFirstResponder];
-        
-      
     }
-    
     self.hidesBottomBarWhenPushed=YES;
     SouViewController *vi=[SouViewController new];
+    //vi.shop_id= shopInfo[@"shop_id"];
+    //NSLog(@"shop_id:--%@",shopInfo[@"shop_id"]);
+
     vi.keyword=souTf.text.trimString;
     [self.navigationController pushViewController:vi animated:YES];
     self.hidesBottomBarWhenPushed=NO;
     [self.view endEditing:YES];
     return [textField resignFirstResponder];
-  
-   
 }
 
 /*更改购车车内商品数量*/
@@ -3483,33 +3188,36 @@
             if (index==1) {
                 LoginViewController *login = [self login];
                 [login resggong:^(NSString *str) {//登录成功后需要加载的数据
-                    [self requestShopingCart];
+                    NSLog(@"登录成功");
+                     [self requestShopingCart:true];
                 }];
             }
         }];
         return;
     }
-    [self.view addSubview:self.activityVC];
-    [self.activityVC startAnimate];
+    //[self.view addSubview:self.activityVC];
+   // [self.activityVC startAnimate];
+    NSInteger gid=[goodsListID integerValue];
     NSInteger num=0;//购物车商品数量
     NSInteger index=-1;//商品项，为了获取商品id
-    NSInteger tag=btn.tag;
+    NSInteger tag=btn.tag/gid;
     UILabel* numLb=nil;
     //UIScrollView * bScrollView = (UIScrollView *)[_fenLeiScrollView viewWithTag:2000+fenleiIndex];
     if (tag<200000) {
-        numLb=(UILabel *)[self.view viewWithTag:200000+tag-100000];
+        index=btn.tag-100000*gid;//tag-100000;
+        numLb=(UILabel *)[self.view viewWithTag:200000*gid+index];
         num=[numLb.text intValue];
         num++;
-        index=tag-100000;
     }else{
-        numLb=(UILabel *)[self.view viewWithTag:200000+tag-300000];
+        index=btn.tag-300000*gid;
+        numLb=(UILabel *)[self.view viewWithTag:200000*gid+index];
         num=[numLb.text intValue];
         num--;
-        index=tag-300000;
     }
     if (num<0) {
         num=0;
     }
+    NSLog(@"index==%d   gid==%d   tag==%d",index,gid,tag);
     NSMutableArray * dataArray = [self.fenLeiDictionary objectForKey:goodsListID];
     NSDictionary *shopInfo = dataArray[index];
     NSString* prodID=shopInfo[@"prod_id"];
@@ -3524,7 +3232,7 @@
             [self.activityVC stopAnimate];
             if ([code isEqualToString:@"0"]) {
                 numLb.text=[NSString stringWithFormat:@"%d",num];
-                UIButton* subBtn=(UIButton *)[self.view viewWithTag:300000+index];
+                UIButton* subBtn=(UIButton *)[self.view viewWithTag:300000*gid+index];
                 if(num==0){
                     numLb.hidden=YES;
                     subBtn.hidden=YES;
@@ -3532,6 +3240,7 @@
                     numLb.hidden=NO;
                     subBtn.hidden=NO;
                 }
+                [self.appdelegate.shopDictionary setObject:[NSString stringWithFormat:@"%d",num] forKey:prodID];
                 NSString * value = [[NSUserDefaults standardUserDefaults]objectForKey:@"GouWuCheShuLiang"];
                 int cartNum=[value intValue];
                 if(tag<200000){
@@ -3543,19 +3252,16 @@
                 [[NSUserDefaults standardUserDefaults] setObject:[NSString stringWithFormat:@"%d",cartNum] forKey:@"GouWuCheShuLiang"];
                 [self gouWuCheShuZi];
             }else{
-//                if (tag<20000) {
-//                    _numb++;
-//                    _index++;
-//                    _type=@"1";
-//                }else{
-//                    _numb--;
-//                    _index--;
-//                    _type=@"2";
-//                }
-//                [self ShowAlertWithMessage:msg];
+                UIAlertView *alert = [[UIAlertView alloc]
+                                      initWithTitle:@"提示" // 指定标题
+                                      message:msg  // 指定消息
+                                      delegate:nil
+                                      cancelButtonTitle:@"确定" // 为底部的取消按钮设置标题
+                                      // 不设置其他按钮
+                                      otherButtonTitles:nil];
+                [alert show];
             }
         }];
 }
-
 
 @end

@@ -14,5 +14,7 @@
 @property(nonatomic,assign)BOOL isShort;
 @property(nonatomic,strong)UILabel *price_yuan;//原价
 @property(nonatomic,strong)UILabel *lin;
+@property(nonatomic,strong)UIButton *jiaBtn,*jianBtn;//增加、减少
+@property(nonatomic,strong)UILabel *numLb;//数量
 
 @end

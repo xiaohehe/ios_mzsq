@@ -12,10 +12,7 @@
 #import "UmengCollection.h"
 #import "ShengHuoTableViewCell.h"
 @interface ShangJiaViewController()<UITableViewDataSource,UITableViewDelegate,UITextFieldDelegate,ShangJiaTableViewCellDelegate>{
-
-
     UIView *lineFen;
-
 }
 @property(nonatomic,strong)UIScrollView *ToolView;
 //@property(nonatomic,strong)UILabel *la;
@@ -65,8 +62,10 @@
 //        return;
         
     }
-//
-
+    //
+    
+    self.navigationController.navigationBarHidden = NO;
+    self.navigationController.navigationBar.hidden = YES;
 }
 
 
@@ -194,6 +193,7 @@
     [anle showCommonTelWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
         [self.activityVC stopAnimate];
         if ([code isEqualToString:@"0"]) {
+            NSLog(@"tel==%@",models);
             _guanliTel=[NSString stringWithFormat:@"%@",models[@"platform_tel"]];
             [self telWithTel:_guanliTel];
 
@@ -452,30 +452,19 @@
     AnalyzeObject *anle = [AnalyzeObject new];
     
     NSDictionary *dic = @{@"community_id":[self getCommid],@"lng":[NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults] objectForKey:@"longitude"]],@"lat":[NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults] objectForKey:@"latitude"]]};
-    
-    
-    
-    
     [anle leibiaol:dic Block:^(id models, NSString *code, NSString *msg) {
         [_topData removeAllObjects];
         [self.activityVC stopAnimate];
         [_tableView.header endRefreshing];
         if ([code isEqualToString:@"0"])
         {
-            NSLog(@"%@",_topData);
+            NSLog(@"init==%@",models);
             [_topData addObjectsFromArray:models];
             if (_topData.count>0 && [_IdStr isEqualToString:@"!"]) {
 //                _IdStr = [NSString stringWithFormat:@"%@",_topData[0][@"id"]];
-                
-              
-             [self createSonViewControllerWith:_topData];
-            
-
+                [self createSonViewControllerWith:_topData];
             }
-        }
-        else
-        {
-     
+        }else{
             [self createReshBtn];
 //            [self.activityVC stopAnimate];
 //            [_tableView.header endRefreshing];

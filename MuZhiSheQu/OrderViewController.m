@@ -43,21 +43,14 @@
     _shopArr = [NSMutableArray new];
     _prodInfo= [NSMutableDictionary new];
     _bigDic=[NSMutableDictionary new];
-    
     //NSLog(@"%@",_bigbigArr);
      _ar = [[NSUserDefaults standardUserDefaults]objectForKey:@"address"];
     _botPrice=0;
     _data = _bigbigArr;
-    
     [self bigScrollView];
     [self orderInfo];
-   
-    
-    
     [self returnVi];
     [self MoreList];
-    
-    
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(topvi:) name:@"shopAddress" object:nil];
     
     
@@ -925,7 +918,8 @@ NSInteger ta1;
     [anle OrdersubmitWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
         [self.activityVC stopAnimate];
         if ([code isEqualToString:@"0"]) {
-            
+            [self.appdelegate.shopDictionary removeAllObjects];
+            self.appdelegate.isRefresh=true;
             [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"GouWuCheShuLiang"];
             if (btn1.selected==YES) {
                 [self.appdelegate AliPayPrice:[NSString stringWithFormat:@"%.2f",_botPrice] OrderID:[NSString stringWithFormat:@"%@",models[@"order_no"]] OrderName:@"拇指社区" OrderDescription:[NSString stringWithFormat:@"%@",models[@"order_no"]] complete:^(NSDictionary *resp) {

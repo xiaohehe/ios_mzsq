@@ -56,8 +56,6 @@
     return self;
 }
 
-
-
 - (void)onRCIMReceiveMessage:(RCMessage *)message
                         left:(int)left{
 
@@ -152,8 +150,6 @@
 //    [RCIM sharedRCIM].receiveMessageDelegate=self;
 
     [RCIM sharedRCIM].disableMessageAlertSound=NO;
-
-    
 }
 
 

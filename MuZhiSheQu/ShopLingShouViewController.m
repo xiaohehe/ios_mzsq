@@ -40,6 +40,8 @@
     if ([_zhuang isEqualToString:@"1"]) {
         [self sc0h:nil];
     }
+    self.navigationController.navigationBarHidden = NO;
+    self.navigationController.navigationBar.hidden = YES;
 }
 
 -(void)viewWillDisappear:(BOOL)animated

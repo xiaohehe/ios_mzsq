@@ -11,9 +11,7 @@
 #import <BaiduMapAPI_Location/BMKLocationComponent.h>
 #import <BaiduMapAPI_Search/BMKSearchComponent.h>
 #import "CellView.h"
-
 #import <BaiduMapAPI_Search/BMKGeocodeSearch.h>
-
 @interface GetBaiDuMapViewController ()<BMKMapViewDelegate,BMKLocationServiceDelegate,BMKGeoCodeSearchDelegate>
 @property(nonatomic,strong)BMKMapView* mapView;
 @property(nonatomic,strong)BMKLocationService* locService;

@@ -37,51 +37,42 @@
     [self newNav];
     [self newView];
     [self.view addSubview:self.activityVC];
-    
-    
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(biansheng:) name:@"sheng" object:nil];
-     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(bianshi:) name:@"shi" object:nil];
-     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(bianqu:) name:@"qu" object:nil];
-     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(biancommqu:) name:@"commqu" object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(bianshi:) name:@"shi" object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(bianqu:) name:@"qu" object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(biancommqu:) name:@"commqu" object:nil];
 }
 
-
-
-
--(void)viewWillAppear:(BOOL)animated
-{
+-(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [UmengCollection intoPage:NSStringFromClass([self class])];
+    //self.tabBarController.tabBar.hidden=YES;
+    self.navigationController.navigationBarHidden = NO;
+    self.navigationController.navigationBar.hidden = YES;
 }
--(void)viewWillDisappear:(BOOL)animated
-{
+
+-(void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     [UmengCollection outPage:NSStringFromClass([self class])];
 }
+
 -(void)newView{
-    
-    
    // NSArray *ar = @[@"province",@"city",@"community",@"community_name"];
     NSString *sn = [NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults]objectForKey:@"GuideShengName"]];
     NSString *si = [NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults]objectForKey:@"GuideShengId"]];
-
     NSString *shn = [NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults]objectForKey:@"GuideShiName"]];
     NSString *shi = [NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults]objectForKey:@"GuideShiId"]];
-
     NSString *qn = [NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults]objectForKey:@"GuidequName"]];
     NSString *qi = [NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults]objectForKey:@"GuidequId"]];
-    
     NSString *shen = [NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults]objectForKey:@"commid"]];
     NSString *shei = [NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults]objectForKey:@"commname"]];
-
 //    if (sn==nil || [sn isEqualToString:@""]) {
 //        shn=@"";
 //        qn=@"";
 //        shei=@"";
 //    }
-
-    
     NSArray *ar = @[sn,shn,qn,shei];
+    NSLog(@"address==%@   xuan==",ar);
     _sheng=ar[0];
     _shi=ar[1];
     _qu=ar[2];
@@ -90,47 +81,30 @@
     _shiid=shi;
     _quid=qi;
     _shequid=shen;
-    
     if (_sheng==nil || [_sheng isEqualToString:@""]) {
         _shi=@"";
         _qu=@"";
         _shequ=@"";
     }
-    
-    
-    
     NSArray *arr = @[@"所在省份",@"所在城市",@"所在区域",@"社区名称"];
  //   NSArray *arr1 = @[@"所在省份",@"所在城市",@"所在区域",@"社区名称"];
-    
     float setY=self.NavImg.bottom+ 10*self.scale;
     for (int i=0; i<4; i++) {
-        
         CellView *sheng = [[CellView alloc]initWithFrame:CGRectMake(0, setY, self.view.width, 44*self.scale)];
         sheng.title=arr[i];
         sheng.tag=i+10;
-        
         sheng.content=ar[i];
-    
         sheng.contentLabel.textAlignment=NSTextAlignmentRight;
         [self.view addSubview:sheng];
-        
         setY = sheng.bottom;
-        
         UIImageView *jiantou = [[UIImageView alloc]initWithFrame:CGRectMake(self.view.width-20*self.scale, sheng.contentLabel.top-2*self.scale, 20*self.scale, 25*self.scale)];
         jiantou.image=[UIImage imageNamed:@"xq_right"];
         [sheng addSubview:jiantou];
-        
-        
         UIButton *btn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, sheng.width, sheng.height)];
         btn.tag=i+1;
         [btn addTarget:self action:@selector(xun:) forControlEvents:UIControlEventTouchUpInside];
         [sheng addSubview:btn];
-        
-        
-        
-        
     }
-    
     UIButton *save = [[UIButton alloc]initWithFrame:CGRectMake(10*self.scale, setY+10*self.scale, self.view.width-20*self.scale, 35*self.scale)];
     save.backgroundColor=blueTextColor;
     [save setTitle:@"保存" forState:UIControlStateNormal];
@@ -138,10 +112,6 @@
     save.layer.cornerRadius=5;
     [save addTarget:self action:@selector(saveEvent) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:save];
-    
-    
-    
-    
     UILabel *la = [[UILabel alloc]initWithFrame:CGRectMake(10*self.scale, save.bottom+30*self.scale, self.view.width-20*self.scale, 30*self.scale)];
     la.text=@"如果您所在的社区还未开通拇指社区，请访问下列网址查看拇指社区加盟代理：";
     la.numberOfLines=0;
@@ -149,8 +119,6 @@
     la.font=Small10Font(self.scale);
     la.textColor=grayTextColor;
     [self.view addSubview:la];
-    
-    
     UILabel *wangzhi = [[UILabel alloc]initWithFrame:CGRectMake(0, la.bottom+30*self.scale, 0, 0)];
     wangzhi.text=@"www.mzsq.com(长按复制)";
     wangzhi.font=SmallFont(self.scale);
@@ -158,43 +126,29 @@
     [wangzhi sizeToFit];
     wangzhi.userInteractionEnabled=YES;
     wangzhi.centerX=self.view.centerX;
-    
-    
-    
     UILongPressGestureRecognizer *tap = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(fuzhi:)];
     [wangzhi addGestureRecognizer:tap];
-
-    
-    
-
 }
 
 -(void)fuzhi:(UILongPressGestureRecognizer *)gesture{
-
     if(gesture.state == UIGestureRecognizerStateBegan)
     {
         UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
         pasteboard.string = @"http://www.mzsq.com";
         [self ShowAlertWithMessage:@"复制成功"];
     }
-
-
 }
 
 -(void)saveEvent{
-    
     if ([_sheng isEqualToString:@""] || [_shi isEqualToString:@""] || [_shequ isEqualToString:@""]) {
         [self ShowAlertWithMessage:@"完善信息后保存"];
         return;
     }
-    
     [self.view addSubview:self.activityVC];
     [self.activityVC startAnimate];
     [[NSUserDefaults standardUserDefaults]setObject:_dic forKey:@"commaddress"];
     [[NSUserDefaults standardUserDefaults]setObject:_xuande forKey:@"xuandata"];
     [[NSUserDefaults standardUserDefaults]synchronize];
-    
-    
     AnalyzeObject *nale = [AnalyzeObject new];
   //  self.commid = [[NSUserDefaults standardUserDefaults]objectForKey:@"commid"];
      NSString *userid = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
@@ -204,59 +158,33 @@
     [dic setObject:_shiid forKey:@"city_id"];
     [dic setObject:_quid forKey:@"district_id"];
     [dic setObject:_shequid forKey:@"community_id"];
-    
     [nale modifyCommunityAddressDicWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
         [self.activityVC stopAnimate];
-
         if ([code isEqualToString:@"0"]) {
             [[NSUserDefaults standardUserDefaults]setObject:_shequid forKey:@"commid"];
             [[NSUserDefaults standardUserDefaults]setObject:_shequ forKey:@"commname"];
-            
             [[NSUserDefaults standardUserDefaults]setObject:_shengid forKey:@"GuideShengId"];
             [[NSUserDefaults standardUserDefaults]setObject:_sheng forKey:@"GuideShengName"];
-
-            
             [[NSUserDefaults standardUserDefaults]setObject:_quid forKey:@"GuidequId"];
             [[NSUserDefaults standardUserDefaults]setObject:_qu forKey:@"GuidequName"];
-
             [[NSUserDefaults standardUserDefaults]setObject:_shiid forKey:@"GuideShiId"];
             [[NSUserDefaults standardUserDefaults]setObject:_shi forKey:@"GuideShiName"];
-
             [[NSUserDefaults standardUserDefaults]setBool:YES forKey:@"changeComm"];
             [[NSUserDefaults standardUserDefaults]setBool:YES forKey:@"changeCommShang"];
-
-            
             [[NSUserDefaults standardUserDefaults] synchronize];
-            
-           
             NSString *tag =[NSString stringWithFormat:@"%@", [[NSUserDefaults standardUserDefaults] objectForKey:@"commid"]];
-            
             NSSet * tagJihe = [NSSet setWithObjects:tag, nil];
-            
             NSLog(@"%@",tagJihe);
-            
-            
             [JPUSHService setTags:tagJihe callbackSelector:@selector((tagsAliasCallback:tags:alias:)) object:self];
-            
             if (_xuanshequ==YES) {
                 _xuanshequ=NO;
-                
                 self.tabBarController.selectedIndex=3;
                 return;
             }
-            
-            
+            [self.delegate passValue: [[NSArray alloc] initWithObjects:@"success",nil]];
             [self.navigationController popViewControllerAnimated:YES];
         }
     }];
-    
-    
-    
-
-    
-
-    
-    
 }
 
 -(void)biansheng:(NSNotification *)not{

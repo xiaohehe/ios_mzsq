@@ -26,8 +26,6 @@
 //static NSString * const AFAppDotNetAPIBaseURLString = @"http://api.zzwms.com/";
 static NSString * const AFAppDotNetAPIBaseURLString = @"https://app.mzsq.cc";
 
-
-
 @implementation AFAppDotNetAPIClient
 
 + (instancetype)sharedClient {
@@ -35,10 +33,6 @@ static NSString * const AFAppDotNetAPIBaseURLString = @"https://app.mzsq.cc";
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _sharedClient = [[AFAppDotNetAPIClient alloc] initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/app/Public/mzsq/",AFAppDotNetAPIBaseURLString]]];
-        
-        
-        
-        
 //        NSString *cerPath = [[NSBundle mainBundle] pathForResource:@"YJHhttps" ofType:@"cer"];
 //        NSData * certData =[NSData dataWithContentsOfFile:cerPath];
 //        NSSet * certSet = [[NSSet alloc] initWithObjects:certData, nil];
@@ -48,13 +42,7 @@ static NSString * const AFAppDotNetAPIBaseURLString = @"https://app.mzsq.cc";
 //        _sharedClient.securityPolicy.allowInvalidCertificates=YES;
 //        //是否允许校验域名(NO 不允许,YES 允许)
 //        _sharedClient.securityPolicy.validatesDomainName=YES;
-
-        
-        
-        
-        
        [_sharedClient.requestSerializer setTimeoutInterval:20];
-        
         [_sharedClient. reachabilityManager setReachabilityStatusChangeBlock :^( AFNetworkReachabilityStatus status) {
             switch (status) {
                 case AFNetworkReachabilityStatusReachableViaWWAN :
@@ -70,10 +58,8 @@ static NSString * const AFAppDotNetAPIBaseURLString = @"https://app.mzsq.cc";
                     break ;
             }
         }];
-        
         [_sharedClient. reachabilityManager startMonitoring ];
     });
-    
     return _sharedClient;
 }
 

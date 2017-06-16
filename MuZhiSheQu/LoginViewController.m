@@ -64,7 +64,6 @@
 }
 
 -(void)UIKeyboardWillHideNotification:(NSNotification *)notification{
-    
     NSDictionary *info =notification.userInfo;
 //    CGRect rect=[info[UIKeyboardFrameEndUserInfoKey] CGRectValue];
     CGFloat duration=[info[UIKeyboardAnimationDurationUserInfoKey] floatValue];
@@ -74,11 +73,8 @@
         //        self.view.bottom=
         //
         //_vi.bottom=rect.origin.y;
-        
         self.view.bottom=self.view.height;
     }];
-    
-    
 }
 
 -(void)newView{
@@ -166,6 +162,7 @@
         _time--;
     }
 }
+
 -(void)huoqu{
     [self.view endEditing:YES];
     UITextField *tel = (UITextField *)[self.view viewWithTag:10];
@@ -186,19 +183,17 @@
             _code=[NSString stringWithFormat:@"%@",[models objectForKey:@"verify_code"]];
             _time=60;
             _timer= [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timeji) userInfo:nil repeats:YES];
-            
             NSLog(@"****************%@",_code);
-            
         }else{
             [self ShowAlertWithMessage:@"获取失败"];
         }
     }];
 }
+
 /*登录*/
 -(void)LoginButtonEvent:(id)sender{
-    
     [self.view endEditing:YES];
-     UITextField *TelText = (UITextField *)[self.view viewWithTag:10];
+    UITextField *TelText = (UITextField *)[self.view viewWithTag:10];
     UITextField *yan = (UITextField *)[self.view viewWithTag:11];
     if ([TelText.text isEqualToString:@"18539466509"]) {
         _tel=@"18539466509";
@@ -206,14 +201,10 @@
     if ([TelText.text isEqualToString:@"13939256943"]) {
         _tel=@"13939256943";
     }
-    
-    
-    
     if ([[TelText.text trimString] isEmptyString]||[_tel isEmptyString] || ![[TelText.text trimString ] isEqualToString:_tel]) {
         [self ShowAlertWithMessage:@"请输入正确的手机号"];
         return;
     }
-    
     if ([_tel isEqualToString:@"18539466509"]) {
         yan.text=@"111111";
         
@@ -226,63 +217,40 @@
         return;
     }
     [self.activityVC startAnimate];
-    
     AnalyzeObject *analy=[[AnalyzeObject alloc]init];
-    
     [analy userLoginWithTel:_tel Block:^(id models, NSString *code, NSString *msg) {
         [self.activityVC stopAnimate];
-        
-
         NSLog(@"%@",models);
         if (models && [models isKindOfClass:[NSDictionary class]]) {
-            
             [[NSUserDefaults standardUserDefaults] setObject:models[@"cart_prod_count"] forKey:@"GouWuCheShuLiang"];
-            
-
-            
             [[NSUserDefaults standardUserDefaults]setObject:nil forKey:@"commid"];
             [[NSUserDefaults standardUserDefaults]setObject:nil forKey:@"commname"];
-            
             [[Stockpile sharedStockpile]setID:[NSString stringWithFormat:@"%@",[models objectForKey:@"id"]]];
             [[Stockpile sharedStockpile]setUserName:[NSString stringWithFormat:@"%@",[models objectForKey:@"user_name"]]];
-            
-            NSLog(@"%@",models);
+            //[[NSNotificationCenter defaultCenter] postNotificationName:@"refreshPage" object:nil];
+            //NSLog(@"%@",models);
             NSString *bieMing =[NSString stringWithFormat:@"mzsq_%@",[Stockpile sharedStockpile].ID];
 
              NSString *tag =[NSString stringWithFormat:@"%@",models[@"community_id"]];
             
             NSSet * tagJihe = [NSSet setWithObjects:tag, nil];
-            
-            NSLog(@"%@",tagJihe);
-            
+            //NSLog(@"%@",tagJihe);
             [JPUSHService setTags:tagJihe alias:bieMing fetchCompletionHandle:^(int iResCode, NSSet *iTags, NSString *iAlias) {
                   NSLog(@"rescode: %d, \ntags: %@, \nalias: %@\n", iResCode, iTags , iAlias);
             }];
-            
             //[JPUSHService setTags:tagJihe callbackSelector:@selector((tagsAliasCallback:tags:alias:)) object:self];
-            
           //  [JPUSHService setAlias:bieMing callbackSelector:@selector(tagsAliasCallback:tags:alias:) object:self];
-            
             //[[UIApplication sharedApplication] registerForRemoteNotifications];
-            
-            
 //            [APService setAlias:tag callbackSelector:@selector(tagsAliasCallback:tags:alias:) object:self];
-            
             [[Stockpile sharedStockpile]setName:[NSString stringWithFormat:@"%@",[models objectForKey:@"real_name"]]];
-            
-            
-
-            
             if ([[models objectForKey:@"nick_name"] isEqualToString:@""] || [models objectForKey:@"nick_name"]==nil) {
                 [[Stockpile sharedStockpile ] setNickName:[NSString stringWithFormat:@"%@",[models objectForKey:@"mobile"]]];
-                
                 RCUserInfo *_currentUserInfo =
                 [[RCUserInfo alloc] initWithUserId:[models objectForKey:@"id"]
                                               name:[models objectForKey:@"mobile"]
                                           portrait:[models objectForKey:@"avatar"]];
                 [RCIMClient sharedRCIMClient].currentUserInfo = _currentUserInfo;
                 [RCIM sharedRCIM].currentUserInfo=_currentUserInfo;
-                
             }else{
                 [[Stockpile sharedStockpile ] setNickName:[NSString stringWithFormat:@"%@",[models objectForKey:@"nick_name"]]];
                 RCUserInfo *_currentUserInfo =
@@ -292,10 +260,6 @@
                 [RCIMClient sharedRCIMClient].currentUserInfo = _currentUserInfo;
                 [RCIM sharedRCIM].currentUserInfo=_currentUserInfo;
             }
-            
-            
-            
-            
             [[NSUserDefaults standardUserDefaults]setObject:[NSString stringWithFormat:@"%@",[models objectForKey:@"avatar"]] forKey:@"touxiang"];
             [[Stockpile sharedStockpile]setIsLogin:YES];
             [[Stockpile sharedStockpile]setID:[NSString stringWithFormat:@"%@",[models objectForKey:@"id"]]];
@@ -306,12 +270,6 @@
             }else{
                 [[NSUserDefaults standardUserDefaults]setObject:[NSDictionary new] forKey:@"address"];
             }
-            
-           
-            
-
-            
-
             [Stockpile sharedStockpile].Name=models[@"mobile"];
             [[NSUserDefaults standardUserDefaults]setBool:YES forKey:@"or"];
             
@@ -338,33 +296,25 @@
             if (_block) {
                 _block(@"ok");
             }
-            
+            self.appdelegate.isRefresh=true;
             [self.appdelegate RongRunInit];
         }
-        
         [self dismissViewControllerAnimated:YES completion:nil];
-
-
         [self.appdelegate ZhuCeJPush];
         [[NSNotificationCenter defaultCenter] postNotificationName:@"logsuccedata" object:nil];
     }];
-    
     [[NSUserDefaults standardUserDefaults]synchronize];
-
 }
-
-
-
-
-
 
 - (void)tagsAliasCallback:(int)iResCode tags:(NSSet*)tags alias:(NSString*)alias {
     NSLog(@"rescode: %d, \ntags: %@, \nalias: %@\n", iResCode, tags , alias);
 }
+
 /* 忘记密码*/
 -(void)ForgotButtonEvent:(id)sender{
     
 }
+
 /*注册*/
 -(void)RegisterButtonEvent:(id)sender{
     

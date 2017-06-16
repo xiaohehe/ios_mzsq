@@ -428,4 +428,9 @@
  */
 -(void)shangjialPush:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
 
+/**
+ *附近的社区接口
+ */
+-(void)getNearbyCommunity:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
+
 @end

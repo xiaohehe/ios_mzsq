@@ -7,9 +7,10 @@
 //
 
 #import "SuperViewController.h"
-
+#import "PassValueDelegate.h"
 
 @interface SheQuManagerViewController : SuperViewController
 @property(nonatomic,assign)BOOL xuanshequ;
 @property(nonatomic,assign)BOOL nojiantou;
+@property(nonatomic,assign) NSObject<PassValueDelegate> *delegate;
 @end

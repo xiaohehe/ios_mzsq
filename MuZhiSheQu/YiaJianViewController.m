@@ -89,10 +89,15 @@
 
     UILabel *la = (UILabel *)[self.view viewWithTag:123];
     la.text = @"";
-
-
-    
 }
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    self.navigationController.navigationBarHidden = NO;
+    self.navigationController.navigationBar.hidden = YES;
+}
+
 #pragma mark - 导航
 -(void)newNav{
     self.TitleLabel.text=@"意见反馈";

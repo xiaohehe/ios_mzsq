@@ -26,6 +26,8 @@
     [self.activityVC startAnimate];
     _index=0;
     [self reshData];
+    self.navigationController.navigationBarHidden = NO;
+    self.navigationController.navigationBar.hidden = YES;
 }
 -(void)viewWillDisappear:(BOOL)animated
 {

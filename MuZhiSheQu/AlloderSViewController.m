@@ -405,10 +405,7 @@
 
 }
 -(void)talkAndTel:(UIButton *)sender{
-    
     self.hidesBottomBarWhenPushed=YES;
-    
-    
     if ([sender.titleLabel.text isEqualToString:@"talk"]) {
         //聊天
 //        RCDChatViewController *chatService = [RCDChatViewController new];
@@ -417,12 +414,8 @@
 //        chatService.conversationType = ConversationType_PRIVATE;
 //        chatService.title = _data[sender.tag-5000000][@"shop_name"];
 //        [self.navigationController pushViewController: chatService animated:YES];
-        
-        
-        
     }else{
         //电话
-        
         [self.view addSubview:self.activityVC];
         [self.activityVC startAnimate];
         AnalyzeObject *anle = [AnalyzeObject new];
@@ -439,23 +432,9 @@
             }
             NSMutableString * str=[[NSMutableString alloc] initWithFormat:@"telprompt://%@",_data[sender.tag-8000000][@"hotline"]];
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:str]];
-            
         }];
-
-        
-        
-        
-        
-        
-        
-        
-        
         //        [[[UIAlertView alloc]initWithTitle:@"在线联系卖家电话" message:_data1[sender.tag-2000000][@"order_detail"][0][@"hotline"] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"呼叫", nil]show ] ;
-        
-        
-    }
-    
-    
+    }   
 }
 
 

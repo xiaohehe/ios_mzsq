@@ -19,18 +19,17 @@
 
 @implementation BreakFirstViewController
 
--(void)viewWillAppear:(BOOL)animated
-{
+-(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [UmengCollection intoPage:NSStringFromClass([self class])];
+    self.navigationController.navigationBarHidden = NO;
+    self.navigationController.navigationBar.hidden = YES;
 }
--(void)viewWillDisappear:(BOOL)animated
-{
+
+-(void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     [UmengCollection outPage:NSStringFromClass([self class])];
 }
-
-
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -43,10 +42,7 @@
     [self.view addSubview:self.activityVC];
     [self.activityVC startAnimate];
     [self ReshData];
-    
-    
-
-
+   // NSLog(@"--namet--%@",self.namet);
 }
 
 //-(void)keyboredxiA{

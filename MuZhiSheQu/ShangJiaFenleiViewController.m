@@ -198,17 +198,12 @@
         [self.activityVC stopAnimate];
         [self.shenghuoTableView.header endRefreshing];
         [self.shenghuoTableView.footer endRefreshing];
-     
-        
+        NSLog(@"array==%@",models);
         if ([code isEqualToString:@"0"]) {
-            
             if (_index==1) {
                 [self.dataArray removeAllObjects];
             }
-            
             [self.dataArray addObjectsFromArray:models];
-            NSLog(@"%@",self.dataArray);
-            
         }else{
         }
         [self.shenghuoTableView reloadData];
@@ -220,10 +215,7 @@
             self.showNothingLab.textAlignment=NSTextAlignmentCenter;
             [self.view addSubview:_showNothingLab];
         }
-        
-        
-    }];
-    
+   }];
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

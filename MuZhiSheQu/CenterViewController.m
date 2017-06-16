@@ -100,52 +100,33 @@
     [la sizeToFit];
     la.left=10;
     _vi.height=la.bottom;
-    
     if (la.width>self.view.width) {
-
         CGRect frame = la.frame;
         frame.origin.x = self.view.width;
         la.frame = frame;
-    
-    
-    
-    
         [UIView beginAnimations:@"testAnimation" context:NULL];
         [UIView setAnimationDuration:20];
         [UIView setAnimationCurve:UIViewAnimationCurveLinear];
         [UIView setAnimationDelegate:self];
         [UIView setAnimationRepeatAutoreverses:NO];
         [UIView setAnimationRepeatCount:999999];
-    
         frame = la.frame;
         frame.origin.x = -frame.size.width;
         la.frame = frame;
         [UIView commitAnimations];
-    
-    
     }
-    
-
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-
     if (buttonIndex==1) {
             self.hidesBottomBarWhenPushed=YES;
             LoginViewController *login = [LoginViewController new];
             login.f=NO;
             [self presentViewController:login animated:YES completion:nil];
-
-        
     }else{
-    
         self.tabBarController.selectedIndex=0;
         [self dismissViewControllerAnimated:YES completion:nil];
-
     }
-
-
-
 }
 
 //-(void)onSelectedTableRow:(RCConversationModelType)conversationModelType conversationModel:(RCConversationModel *)model atIndexPath:(NSIndexPath *)indexPath

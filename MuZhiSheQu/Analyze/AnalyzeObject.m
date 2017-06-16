@@ -584,24 +584,15 @@
         }else{
             block(nil,nil,nil);
         }
-        
-        
-        
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        
         block(nil,nil,nil);
-        
-        
     }];
 }
--(void)commentListwithDic:(NSDictionary *)dic WithBlock:(void(^)(id models, NSString *code ,NSString * msg))block{
 
+-(void)commentListwithDic:(NSDictionary *)dic WithBlock:(void(^)(id models, NSString *code ,NSString * msg))block{
     [[AFAppDotNetAPIClient sharedClient]POST:@"?service=Comment.commentList" parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
-        
-        
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
-        
         if ([ret isEqualToString:@"200"]) {
             NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
             NSString *msg =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"msg"]];
@@ -613,22 +604,15 @@
         }else{
             block(nil,nil,nil);
         }
-        
-        
-        
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        
                 block(nil,nil,nil);
-        
     }];
 }
 
 -(void)getNoticeListwithDic:(NSDictionary *)dic WithBlock:(void(^)(id models, NSString *code ,NSString * msg))block{
     [[AFAppDotNetAPIClient sharedClient]POST:@"?service=User.getNoticeList" parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
-        
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
-        
         if ([ret isEqualToString:@"200"]) {
             NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
             NSString *msg =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"msg"]];
@@ -640,16 +624,25 @@
         }else{
             block(nil,nil,nil);
         }
-        
-        
-        
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        
                 block(nil,nil,nil);
-        
-        
     }];
+}
 
+
+-(NSString*)DataTOjsonString:(id)object
+{
+    NSString *jsonString = nil;
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:object
+                                                       options:NSJSONWritingPrettyPrinted // Pass 0 if you don't care about the readability of the generated string
+                                                         error:&error];
+    if (! jsonData) {
+        NSLog(@"Got an error: %@", error);
+    } else { 
+        jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    } 
+    return jsonString; 
 }
 #pragma mark - --------- 个人中心 ---------
 #pragma mark - 用户登录接口
@@ -658,11 +651,9 @@
  */
 -(void)userLoginWithTel:(NSString *)mobile  Block:(void(^)(id models, NSString *code ,NSString * msg))block{
     [[AFAppDotNetAPIClient sharedClient]POST:@"?service=User.userLogin" parameters:[NSDictionary dictionaryWithObjectsAndKeys:mobile,@"mobile",@"4",@"type", nil] success:^(NSURLSessionDataTask *task, id responseObject) {
-        
-        
+        //NSLog(@"login==%@",[self DataTOjsonString:responseObject]);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
-        
         if ([ret isEqualToString:@"200"]) {
             NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
             NSString *msg =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"msg"]];
@@ -674,23 +665,15 @@
         }else{
             block(nil,nil,nil);
         }
-        
-        
-        
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        
                 block(nil,nil,nil);
-        
-        
     }];
 }
--(void)addProdWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
 
+-(void)addProdWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
     [[AFAppDotNetAPIClient sharedClient]POST:@"?service=Cart.addProd" parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
-        
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
-        
         if ([ret isEqualToString:@"200"]) {
             NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
             NSString *msg =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"msg"]];
@@ -702,14 +685,8 @@
         }else{
             block(nil,nil,nil);
         }
-        
-        
-        
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        
                 block(nil,nil,nil);
-        
-        
     }];
 }
 
@@ -717,7 +694,7 @@
 
     
     [[AFAppDotNetAPIClient sharedClient]POST:@"?service=Cart.showCart" parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
-        
+        //NSLog(@"shopingcart==%@",responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         
@@ -1564,7 +1541,6 @@
 -(void)getCommunityListWithDicWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
 
     [[AFAppDotNetAPIClient sharedClient]POST:@"?service=Area.getCommunityList" parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
-        
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         
@@ -2240,20 +2216,12 @@
         
         NSLog(@"%@",error);
     }];
-    
-
-
-
 }
 
-
 -(void)telTongJi:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-
     [[AFAppDotNetAPIClient sharedClient]POST:@"?service=Shop.telStatis" parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
-        
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
-        
         if ([ret isEqualToString:@"200"]) {
             NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
             NSString *msg =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"msg"]];
@@ -2265,17 +2233,9 @@
         }else{
             block(nil,nil,nil);
         }
-        
-        
-        
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        
         block(nil,nil,nil);
-        
     }];
-    
-
-
 }
 
 -(void)ADD:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
@@ -2296,19 +2256,14 @@
         }else{
             block(nil,nil,nil);
         }
-        
-        
-        
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        
+        NSLog(@"add_error%@",error);
         block(nil,nil,nil);
-        
     }];
     
 }
 
 -(void)ADDJLu:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-
     [[AFAppDotNetAPIClient sharedClient]POST:@"?service=User.clickAd" parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
         
         NSNumber *retn = [responseObject objectForKey:@"ret"];
@@ -2470,7 +2425,7 @@
 
 -(void)leibiaol:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
     [[AFAppDotNetAPIClient sharedClient]POST:@"?service=ProfessionClass.getLifeServiceClass" parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
-        
+        //NSLog(@"shfw==%@",responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         
@@ -2565,12 +2520,9 @@
 - (void)wuyYeZhongxin:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block
 {
     [[AFAppDotNetAPIClient sharedClient]POST:@"?service=NoticeWall.communityNoticeList" parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
-        
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         NSLog(@"%@",responseObject);
-        
-        
         if ([ret isEqualToString:@"200"]) {
             NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
             NSString *msg =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"msg"]];
@@ -2582,18 +2534,10 @@
         }else{
             block(nil,nil,nil);
         }
-        
-        
-        
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        
         block(nil,nil,nil);
-        
     }];
 }
-
-
-
 
 //http://mzsq.weiruanmeng.com/app/Public/mzsq/?service=Shop.isCollect
 //-(void)queryShopByKeyAndProWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
@@ -2631,11 +2575,8 @@
 -(void)ShopshopInfoWithDic:(NSDictionary *)dic WithBlock:(void(^)(id models, NSString *code ,NSString * msg))block
 {
     [[AFAppDotNetAPIClient sharedClient]POST:@"?service=Shop.shopInfo" parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
-        
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
-        
-        
         if ([ret isEqualToString:@"200"]) {
             NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
             NSLog(@"%@",code);
@@ -2648,26 +2589,17 @@
         }else{
             block(nil,nil,nil);
         }
-        
-        
-        
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        
         block(nil,nil,nil);
-        
     }];
-
 }
 
 #pragma mark -- 社区标语
 - (void)communitySlogan:(NSDictionary *)dic WithBlock:(void (^)(id, NSString *, NSString *))block
 {
     [[AFAppDotNetAPIClient sharedClient]POST:@"?service=Home.communitySlogan" parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
-        
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
-        
-        
         if ([ret isEqualToString:@"200"]) {
             NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
             NSLog(@"%@",code);
@@ -2680,13 +2612,34 @@
         }else{
             block(nil,nil,nil);
         }
-        
-        
-        
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        
         block(nil,nil,nil);
-        
     }];
 }
+
+/**
+ *附近的社区接口
+ */
+-(void)getNearbyCommunity:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
+    [[AFAppDotNetAPIClient sharedClient]POST:@"?service=Home.getNearbyCommunity" parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
+        //NSLog(@"--res--%@",responseObject);
+        NSNumber *retn = [responseObject objectForKey:@"ret"];
+        NSString *ret = [NSString stringWithFormat:@"%@",retn];
+        if ([ret isEqualToString:@"200"]) {
+            NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
+            NSLog(@"%@",code);
+            NSString *msg =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"msg"]];
+            if ([code isEqualToString:@"0"]) {
+                block([[responseObject objectForKey:@"data"] objectForKey:@"info"],code,msg);
+            }else{
+                block(nil,code,msg);
+            }
+        }else{
+            block(nil,nil,nil);
+        }
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        block(nil,nil,nil);
+    }];
+}
+
 @end

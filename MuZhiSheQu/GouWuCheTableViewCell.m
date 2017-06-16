@@ -184,7 +184,7 @@
     
    
     UIButton *subBtn=(UIButton *)[self.contentView viewWithTag:5];
-    subBtn.frame=CGRectMake(self.width-100*self.ZSY, self.height/2-12*self.ZSY, 22*self.ZSY, 22*self.ZSY);
+    subBtn.frame=CGRectMake(self.width-100*self.ZSY, self.height/2-0*self.ZSY, 22*self.ZSY, 22*self.ZSY);
     _SumLabel.frame=CGRectMake(subBtn.right+5*self.ZSY, subBtn.top,subBtn.width+13*self.ZSY, subBtn.height);
     _SumBG.frame=_SumLabel.frame;
     UIButton *addBtn=(UIButton *)[self.contentView viewWithTag:6];

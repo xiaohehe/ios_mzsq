@@ -24,6 +24,8 @@
     [UmengCollection intoPage:NSStringFromClass([self class])];
     _index=0;
     [self reshData];
+    self.navigationController.navigationBarHidden = NO;
+    self.navigationController.navigationBar.hidden = YES;
 }
 -(void)viewWillDisappear:(BOOL)animated
 {

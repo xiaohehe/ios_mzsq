@@ -36,32 +36,17 @@
     if ([Stockpile sharedStockpile].isLogin) {
         [self newFooter];
     }
-    
-
-    
-    
 }
 
 
 -(void)cache{
-
     NSString *cachPath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-    
     CGFloat fileSize = [self folderSizeAtPath:cachPath];
     CGFloat file = [self fileSizeAtPath:cachPath];
-    
     UILabel *cahe = (UILabel *)[self.view viewWithTag:999];
-    
     dispatch_async(dispatch_get_main_queue(), ^{
-        
-        
         cahe.text=[NSString stringWithFormat:@"%.2fMB",fileSize+file];
-        
-        
-        
     });
-
-
 }
 
 - (void)newFooter{
@@ -75,12 +60,9 @@
     [tiJiaoBtn setTitle:@"退出登录" forState:UIControlStateNormal];
     [tiJiaoBtn addTarget:self action:@selector(tuiChuBtnClick) forControlEvents:UIControlEventTouchUpInside];
     [footerView addSubview:tiJiaoBtn];
-    
-    
-   }
+}
 
 -(void)tuiChuBtnClick{
-
     [self ShowAlertTitle:nil Message:@"确定退出？" Delegate:self Block:^(NSInteger index) {
         if (index==1) {
             [[Stockpile sharedStockpile] setIsLogin:NO];
@@ -88,32 +70,24 @@
             [[NSUserDefaults standardUserDefaults]setObject:@"" forKey:@"user_id"];
             [[NSUserDefaults standardUserDefaults]synchronize];
             [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"GouWuCheShuLiang"];
+            [self.appdelegate.shopDictionary removeAllObjects];
             [self.appdelegate outLogin];
         }
         [[NSUserDefaults standardUserDefaults]setBool:NO forKey:@"G"];
         [[NSUserDefaults standardUserDefaults]synchronize];
-
     }];
-
-    
-    
-   
-
 }
 
 - (NSInteger)tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section {
-    
     return _dataSource.count;
 }
+
 //设置cell 内容
 - (UITableViewCell*)tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
     static NSString *CellIdentifier = @"CellIdentifier";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     cell.backgroundColor = [UIColor whiteColor];
-    
-    
     UILabel *titleLab = [[UILabel alloc] initWithFrame:CGRectMake(10*self.scale , 0, self.view.width/2, 44*self.scale)];
     titleLab.backgroundColor = [UIColor clearColor];
     titleLab.text = _dataSource[indexPath.row];
@@ -121,16 +95,12 @@
     titleLab.font = DefaultFont(self.scale);
     [cell addSubview:titleLab];
     cell.selectionStyle = UITableViewCellSelectionStyleDefault;
-    
     switch (indexPath.row) {
         case 0:
-            
             break;
         case 1:
-            
             break;
         case 2:{
-            
             UISwitch * kaiGuan = [[UISwitch alloc] initWithFrame:CGRectMake(self.view.width - 60, 7*self.scale, 49, 31*self.scale)];
             kaiGuan.onTintColor = blueTextColor;
             kaiGuan.on=[[UIApplication sharedApplication] isRegisteredForRemoteNotifications];
@@ -250,6 +220,15 @@
     }
     
 }
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    self.navigationController.navigationBarHidden = NO;
+    self.navigationController.navigationBar.hidden = YES;
+}
+
+
 #pragma mark - 导航
 -(void)newNav{
     self.TitleLabel.text=@"设置";

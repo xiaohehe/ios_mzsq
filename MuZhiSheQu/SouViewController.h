@@ -11,4 +11,7 @@
 @interface SouViewController : SuperViewController
 @property(nonatomic,strong)NSString *keyword;
 @property(nonatomic,strong)NSString * shop_id;
+@property(nonatomic,strong)UIImageView *bottomR,*bottomL;
+@property(nonatomic,strong)UIView *botROne,*botRTwo;
+//@property(nonatomic,assign)int numb;
 @end

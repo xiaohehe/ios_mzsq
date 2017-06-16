@@ -74,6 +74,12 @@
     
 }
 
+-(void)viewWillAppear:(BOOL)animated{
+    self.navigationController.navigationBarHidden = NO;
+    self.navigationController.navigationBar.hidden = YES;
+}
+
+
 #pragma mark ------返回按钮方法
 -(void)PopVC:(UIButton *)sender{
     

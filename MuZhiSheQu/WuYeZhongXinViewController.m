@@ -33,6 +33,14 @@
     [self createTableView];
     [self reshData];
 }
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    self.navigationController.navigationBarHidden = NO;
+    self.navigationController.navigationBar.hidden = YES;
+}
+
 #pragma mark -- 设置导航
 - (void)createDaoHang
 {

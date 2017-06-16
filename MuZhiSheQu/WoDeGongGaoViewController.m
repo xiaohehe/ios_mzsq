@@ -48,6 +48,8 @@
     [super viewWillAppear:animated];
     self.navigationController.navigationBarHidden=YES;
     [UmengCollection intoPage:NSStringFromClass([self class])];
+    self.navigationController.navigationBarHidden = NO;
+    self.navigationController.navigationBar.hidden = YES;
 }
 -(void)viewWillDisappear:(BOOL)animated
 {

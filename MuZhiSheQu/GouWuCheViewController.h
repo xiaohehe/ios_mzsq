@@ -15,7 +15,7 @@
 
 @interface GouWuCheViewController : SuperViewController
 @property(nonatomic,assign)BOOL popTwoVi,islunbo,fromLingShou;
-
+@property(nonatomic,assign)BOOL isShowBack;
 @property(nonatomic,strong)void (^reshNum)(NSString *str);
 @property(nonatomic,strong)void (^ifQing)(NSString *str);
 @property(nonatomic,strong)void (^reshLingShou)(NSString *str);

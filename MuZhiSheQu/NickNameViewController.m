@@ -60,19 +60,20 @@
     [self.view addSubview:tishi];
   
     
-    /*UIButton *LoginBtn=[[UIButton alloc]initWithFrame:CGRectMake(18*self.scale, bottomLine.bottom+15*self.scale, self.view.width-36*self.scale, 35*self.scale)];
-     [LoginBtn setBackgroundImage:[UIImage setImgNameBianShen:@"center_btn"] forState:UIControlStateNormal];
+    UIButton *LoginBtn=[[UIButton alloc]initWithFrame:CGRectMake(18*self.scale, tishi.bottom+15*self.scale, self.view.width-36*self.scale, 35*self.scale)];
+    LoginBtn.backgroundColor = blueTextColor;
+
+     //[LoginBtn setBackgroundImage:[UIImage setImgNameBianShen:@"center_btn"] forState:UIControlStateNormal];
      [LoginBtn setTitle:@"修改" forState:UIControlStateNormal];
      [LoginBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
      LoginBtn.titleLabel.font=BigFont(self.scale);
      [LoginBtn addTarget:self action:@selector(NextButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
-     [self.view addSubview:LoginBtn];*/
+     [self.view addSubview:LoginBtn];
 }
 -(void)NextButtonEvent:(id)sender{
     [self.view endEditing:YES];
     UITextField *YPwdText=(UITextField *)[self.view viewWithTag:10];
     NSString *ypwd=[YPwdText.text trimString];
-
     if (ypwd.length>30) {
         [self ShowAlertWithMessage:@"昵称应小于30个字符"];
         return;
@@ -81,12 +82,10 @@
         [self ShowAlertWithMessage:@"不能输入空字符"];
         return;
     }
-    
     [self.activityVC startAnimate];
          AnalyzeObject *anle = [AnalyzeObject new];
 //    1、user_id(用户 id) 2、nickname(昵称)
     self.user_id = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
-
     NSDictionary *dic = @{@"user_id":self.user_id,@"nickname":ypwd};
     [anle modifyNicknameWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
         [self.activityVC stopAnimate];
@@ -94,21 +93,13 @@
             [self.navigationController popViewControllerAnimated:YES];
             [Stockpile sharedStockpile].nickName=ypwd;
             [[NSNotificationCenter defaultCenter]postNotificationName:@"nicheng" object:ypwd];
-            
-            
-            
             NSLog(@"%@",[Stockpile sharedStockpile].logo);
-            
             RCUserInfo *_currentUserInfo =
             [[RCUserInfo alloc] initWithUserId:self.user_id
                                           name:ypwd
                                       portrait:[Stockpile sharedStockpile].logo];
-            
             [RCIMClient sharedRCIMClient].currentUserInfo = _currentUserInfo;
-            [RCIM sharedRCIM].currentUserInfo=_currentUserInfo;
-            
-
-            
+            [RCIM sharedRCIM].currentUserInfo=_currentUserInfo;  
         }
     }];
   

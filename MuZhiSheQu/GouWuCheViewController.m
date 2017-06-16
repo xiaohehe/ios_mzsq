@@ -33,6 +33,7 @@
 
 @end
 @implementation GouWuCheViewController
+
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
@@ -40,16 +41,19 @@
     [self newView];
     [self ReshData];
     [UmengCollection intoPage:NSStringFromClass([self class])];
+    
+    self.navigationController.navigationBarHidden = NO;
+    self.navigationController.navigationBar.hidden = YES;
 }
+
 -(void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
     [UmengCollection outPage:NSStringFromClass([self class])];
 }
+
 -(void)viewDidLoad{
     [super viewDidLoad];
-   
-    
     _daArr = [[NSMutableArray alloc] init];
     
     _dataDic = [[NSMutableDictionary alloc] init];
@@ -62,25 +66,20 @@
     _btnArr=[[NSMutableArray alloc]init];
     _GoodsListDic=[NSMutableDictionary new];
     _goodsPriceDic = [NSMutableDictionary new];
-
-    
 //    [self ReshData];
-    
-    
-    
+    if(_isShowBack)
+      [ self returnVi];
 }
--(void)jixugouwu{
 
+-(void)jixugouwu{
     [self.navigationController popToRootViewControllerAnimated:YES];
 }
+
 #pragma mark------全选按钮
 -(void)SelectedEvent{
 //    button.selected=!button.selected;
     UIButton *button = (UIButton *)[self.view viewWithTag:6666];
     button.selected=!button.selected;
-    
-    
-    
     if (button.selected)
     {
     for (NSDictionary *ShopInfo in _dataSource) {
@@ -93,22 +92,17 @@
                 
             }
         }
-        
     }else{
-        
         [_GoodsListDic removeAllObjects];
     }
-    
     [_tableView reloadData];
-    
     UILabel * carLa = (UILabel *)[_bigVi viewWithTag:100];
     NSString * heJiString = [NSString stringWithFormat:@"合计:￥%.2f",[self jiSuanAmount]];
     CGRect rect = [self getStringWithFont:12*self.scale withString:heJiString withWith:[UIScreen mainScreen].bounds.size.width];
-    carLa.frame = CGRectMake(self.view.width - rect.size.width - 90*self.scale, _bigVi.height/2-10*self.scale, rect.size.width, 20*self.scale);
+    carLa.frame = CGRectMake(self.view.width - rect.size.width - 90*self.scale-10, _bigVi.height/2-10*self.scale, rect.size.width+30, 20*self.scale);
     carLa.attributedText = [self getAmountFuWenBenWithStirng:heJiString];
-
-    
 }
+
 -(void)ReshData{
     [_tishi removeFromSuperview];
     
@@ -137,10 +131,7 @@
                     [_quanXuanDic setObject:@"" forKey:Prod_infoStr];
                 }
             }
-            
-            
             [_GoodsListDic removeAllObjects];
-            
             for (NSDictionary *ShopInfo in _dataSource) {
                 NSMutableArray *arr = [[ShopInfo objectForKey:@"prod_info"] mutableCopy];
                 for (NSDictionary *prodDic in arr) {
@@ -148,10 +139,8 @@
                     if (![prodDic[@"prod_count"] isEqualToString:@"0"]) {
                         [_GoodsListDic setObject:prodDic forKey:key];
                     }
-                    
                 }
             }
-
             
             //默认全选
             for (NSDictionary *ShopInfo in _dataSource) {
@@ -161,47 +150,36 @@
                     if (![prodDic[@"prod_count"] isEqualToString:@"0"]) {
                         [_GoodsListDic setObject:prodDic forKey:key];
                     }
-                    
                 }
             }
             UIButton *b = (UIButton *)[self.view viewWithTag:6666];
             b.selected=YES;
             [_tableView reloadData];
-            
-        }
-        else
-        {
+        }else{
             if (_dataSource.count<=0) {
                 _bigVi.hidden=YES;
-                
-                
                 _tishi = [[UILabel alloc]initWithFrame:CGRectMake(0, self.NavImg.bottom, self.view.width, 30*self.scale)];
                 _tishi.textAlignment=NSTextAlignmentCenter;
                 _tishi.font=SmallFont(self.scale);
                 _tishi.text=@"购物车暂无商品";
                 [self.view addSubview:_tishi];
                  [self huoQuGouWuCheShuLiang];
-                
                 return ;
             }
-
-        
         }
         [_tableView reloadData];
         [self BottomView:NO];
-      
-
-        
     }];
-    
-
 }
+
 -(void)newView{
     if (_tableView) {
         [_tableView removeFromSuperview];
     }
-    
-    _tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, self.NavImg.bottom, self.view.width, [UIScreen mainScreen].bounds.size.height-self.NavImg.bottom-49-44) style:(UITableViewStyleGrouped)];
+    NSInteger height= [UIScreen mainScreen].bounds.size.height-self.NavImg.bottom-44;
+    if(!_isShowBack)
+        height-=49;
+    _tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, self.NavImg.bottom, self.view.width, height) style:(UITableViewStyleGrouped)];
     _tableView.delegate=self;
     _tableView.dataSource=self;
     _tableView.backgroundColor=[UIColor clearColor];
@@ -218,8 +196,8 @@
     return _dataSource.count;
     //return 2;
 }
--(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
 
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     return [[_dataSource[section] objectForKey:@"prod_info"] count];
     //return 2;
 }
@@ -253,6 +231,7 @@
     
     CGFloat yuanJiaF = 32.0;
     CGFloat xianJiaF = [[prodDic objectForKey:@"price"] floatValue];
+    //NSLog(@"--原价：%f,现价：%f",yuanJiaF,xianJiaF);
     if (yuanJiaF>=xianJiaF)
     {
         cell.yuanJiaLab.hidden = YES;
@@ -260,7 +239,7 @@
     }
     else
     {
-        cell.yuanJiaLab.hidden = NO;
+        cell.yuanJiaLab.hidden = YES;
         NSString *  yuanJiastring = [NSString stringWithFormat:@"￥%@",@"1000"];
         
         CGRect yuanJiaRect = [self getStringWithFont:13*self.scale withString:yuanJiastring withWith:self.view.width];
@@ -434,11 +413,10 @@
     
     _lingView.backgroundColor  = [UIColor colorWithRed:220/255.0 green:220/255.0 blue:220/255.0 alpha:1];
     [HeaderViewBG addSubview:_lingView];
-    
     return HeaderViewBG;
 }
-- (UIView*)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
-{
+
+- (UIView*)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section{
     UIView * footerView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.width, 60*self.scale)];
     UILabel * yunFeiLab = [[UILabel alloc]initWithFrame:CGRectMake(10*self.scale, 10*self.scale, self.view.width - 30*self.scale - 30*self.scale/3.0*8,30*self.scale)];
     CGFloat amount = [_dataSource[section][@"amount"] floatValue];
@@ -676,7 +654,7 @@
     
    
     
-    UILabel *carLa = [[UILabel alloc]initWithFrame:CGRectMake(self.view.width - rect.size.width - 90*self.scale, _bigVi.height/2-10*self.scale, rect.size.width, 20*self.scale)];
+    UILabel *carLa = [[UILabel alloc]initWithFrame:CGRectMake(self.view.width - rect.size.width - 90*self.scale-10, _bigVi.height/2-10*self.scale, rect.size.width+30, 20*self.scale)];
     
     carLa.font=[UIFont fontWithName:@"Helvetica-Bold" size:12*self.scale];
     carLa.textColor=blueTextColor;
@@ -883,9 +861,8 @@
     [anle addProdWithDic:dicc Block:^(id models, NSString *code, NSString *msg) {
         [self.activityVC stopAnimate];
         if ([code isEqualToString:@"0"]) {
-            
+            self.appdelegate.isRefresh=true;
             NSMutableDictionary *dic = [[_dataSource objectAtIndex:indexPath.section] mutableCopy];
-            
             NSMutableArray *arr = [[dic objectForKey:@"prod_info"] mutableCopy];
             
             NSMutableDictionary *prod = [[arr objectAtIndex:indexPath.row] mutableCopy];
@@ -894,12 +871,9 @@
             [arr replaceObjectAtIndex:indexPath.row withObject:prod];
             
             [dic setObject:arr forKey:@"prod_info"];
-            
             [_dataSource replaceObjectAtIndex:indexPath.section withObject:dic];
             [self ReshData];
-            
             [_GoodsListDic removeAllObjects];
-            
             for (NSDictionary *ShopInfo in _dataSource) {
                 NSMutableArray *arr = [[ShopInfo objectForKey:@"prod_info"] mutableCopy];
                 for (NSDictionary *prodDic in arr) {
@@ -922,10 +896,7 @@
 //                [self newView];
 //            }
 
-            }
-        else
-        {
-            
+        }else{
             GouWuCheTableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
             
             NSInteger num = [number integerValue];
@@ -933,16 +904,9 @@
             cell.gnumber=[NSString stringWithFormat:@"%ld",(long)num];
             [self ShowAlertWithMessage:msg];
         }
-        
-       
-        
-        
     }];
-    
-    
-    
-
 }
+
 //选中
 -(void)GouWuCheTableViewCellSelected:(BOOL)selected indexPath:(NSIndexPath *)indexPath{
     
@@ -973,9 +937,10 @@
     UILabel * carLa = (UILabel *)[_bigVi viewWithTag:100];
     NSString * heJiString = [NSString stringWithFormat:@"合计:￥%.2f",[self jiSuanAmount]];
     CGRect rect = [self getStringWithFont:12*self.scale withString:heJiString withWith:[UIScreen mainScreen].bounds.size.width];
-    carLa.frame = CGRectMake(self.view.width - rect.size.width - 90*self.scale, _bigVi.height/2-10*self.scale, rect.size.width, 20*self.scale);
+    carLa.frame = CGRectMake(self.view.width - rect.size.width - 90*self.scale-10, _bigVi.height/2-10*self.scale, rect.size.width+30, 20*self.scale);
     carLa.attributedText = [self getAmountFuWenBenWithStirng:heJiString];
 }
+
 #pragma mark -- 获取购物车的数字
 - (void)huoQuGouWuCheShuLiang
 {
@@ -995,10 +960,10 @@
     [[NSUserDefaults standardUserDefaults] synchronize];
     [self gouWuCheShuZi];
 }
+
 #pragma mark -- 购物车的数字
 - (void)gouWuCheShuZi
 {
-    
     UITabBarItem * item=[self.appdelegate.tabBarController.tabBar.items objectAtIndex:2];
     if ([Stockpile sharedStockpile].isLogin)
     {
@@ -1020,7 +985,6 @@
 }
 #pragma mark - 导航
 -(void)newNav{
-    
      self.TitleLabel.text = @"结算中心";
 //    UIButton * popBtn = [UIButton buttonWithType:UIButtonTypeCustom];
 //    [popBtn setFrame:CGRectMake(0, self.TitleLabel.top, self.TitleLabel.height, self.TitleLabel.height)];
@@ -1028,8 +992,6 @@
 //    [popBtn setImage:[UIImage imageNamed:@"left_b"] forState:UIControlStateHighlighted];
 //    [popBtn addTarget:self action:@selector(pop) forControlEvents:UIControlEventTouchUpInside];
 //    [self.NavImg addSubview:popBtn];
-    
-    
     UIButton *qingkong =[UIButton buttonWithType:UIButtonTypeCustom];
     [qingkong setTitle:@"清空" forState:UIControlStateNormal];
     qingkong.frame=CGRectMake(self.view.width-80*self.scale, self.TitleLabel.top+10*self.scale, 70*self.scale, 25*self.scale);
@@ -1040,26 +1002,17 @@
     [qingkong sizeToFit];
     qingkong.right=self.view.width-15*self.scale;
     qingkong.bottom=60;
-    
-    
-    
-    
 }
+
 - (void)pop{
-    
-  
     if (_reshNum) {
         _reshNum(@"ok");
     }
-    
-    
     if (_popTwoVi) {
         if (_islunbo) {
-            
             [self.navigationController popViewControllerAnimated:YES];
             return;
         }
-        
         UIViewController *vi = self.navigationController.viewControllers[1];
         if ([vi isKindOfClass:[BreakInfoViewController class]]) {
             [self .navigationController popToViewController:vi animated:YES];
@@ -1090,6 +1043,7 @@
             [anle clearCartWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
                 [self.activityVC stopAnimate];
                 if ([code isEqualToString:@"0"]) {
+                    self.appdelegate.isRefresh=true;
                 //    [self ShowAlertWithMessage:msg];
                     [_dataSource removeAllObjects];
                     [self huoQuGouWuCheShuLiang];
@@ -1140,4 +1094,19 @@
 
     return amount;
 }
+
+#pragma mark -----返回按钮
+-(void)returnVi{
+    UIButton *popBtn=[[UIButton alloc]initWithFrame:CGRectMake(0, self.TitleLabel.top, self.TitleLabel.height, self.TitleLabel.height)];
+    [popBtn setImage:[UIImage imageNamed:@"left"] forState:UIControlStateNormal];
+    [popBtn setImage:[UIImage imageNamed:@"left_b"] forState:UIControlStateHighlighted];
+    [popBtn addTarget:self action:@selector(PopVC:) forControlEvents:UIControlEventTouchUpInside];
+    [self.NavImg addSubview:popBtn];
+}
+
+-(void)PopVC:(id)sender{
+    [self.navigationController  popViewControllerAnimated:YES];
+}
+
+
 @end

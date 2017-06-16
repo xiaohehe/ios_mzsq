@@ -396,14 +396,10 @@
     _nameLa.text = [_data objectForKey:@"shop_name"];
     _nameLa.font = DefaultFont(self.scale);
     [_nameCell addSubview:_nameLa];
-    
-    
 //    UILabel *startLa = [[UILabel alloc]initWithFrame:CGRectMake(_nameLa.left, _nameLa.bottom, 100*self.scale, 15*self.scale)];
 //    startLa.backgroundColor = [UIColor clearColor];
 //    [_nameCell addSubview:startLa];
-    
-        [self setStartNumber:[_data objectForKey:@"rating"]];
-    
+    [self setStartNumber:[_data objectForKey:@"rating"]];
     UIButton *shoucang = [UIButton buttonWithType:UIButtonTypeCustom];
     shoucang.layer.cornerRadius = 4.0f;
     shoucang.layer.borderWidth = .5f;
@@ -411,11 +407,9 @@
     shoucang.frame = CGRectMake(self.view.width-190/2.25*self.scale, 15*self.scale, 162/2.25*self.scale, 48/2.25*self.scale);
     [shoucang addTarget:self action:@selector(shouCangEvent:) forControlEvents:UIControlEventTouchUpInside];
     [_nameCell addSubview:shoucang];
-    
     _startImg = [[UIImageView alloc]initWithFrame:CGRectMake(0*self.scale, 0, shoucang.width, shoucang.height)];
     _startImg.tag=909;
     _startImg.image = [UIImage imageNamed:@"xq_sc"];
-
     [shoucang addSubview:_startImg];
     
     UILabel *titleLa = [[UILabel alloc]initWithFrame:CGRectMake(20*self.scale+5*self.scale, _startImg.top, shoucang.size.width-20, shoucang.height)];

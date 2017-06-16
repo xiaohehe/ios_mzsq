@@ -25,9 +25,9 @@
 #import "GanXiShopViewController.h"
 #import "GouWuCheViewController.h"
 #import "UmengCollection.h"//友盟统计
-
+#import "ChoosePlotController.h"
 #import "SuperViewController.h"
-
+#import <Math.h>
 #import <ShareSDK/ShareSDK.h>
 //#import <ShareSDK/ShareSDK.h>---
 //#import <ShareSDKConnector/ShareSDKConnector.h>
@@ -169,15 +169,13 @@
     return [WXApi handleOpenURL:url delegate:self];
 }
 
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-      [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     [[NSUserDefaults standardUserDefaults]setBool:YES forKey:@"G"];
     [[NSUserDefaults standardUserDefaults]synchronize];
-
-    
-
+    self.shopDictionary=[NSMutableDictionary dictionary];
+    self.isRefresh=false;
     _mapManager = [[BMKMapManager alloc]init];
     BOOL ret = [_mapManager start:@"KT8PaG8f62YITBtye0c7Drjr" generalDelegate:self];
     if (!ret) {
@@ -185,9 +183,7 @@
     }else{
         [self dingwei];
     }
-//
     [self newTabBarViewController:YES];
-//
     [self NavStye];
     [self newJPushWithOptions:launchOptions];
     [ShareSDK registerApp:@"c8ff5ced9020"];
@@ -197,14 +193,11 @@
 //    [self ziding];
     [self initddd];
     [self appNum];
-//
     [UmengCollection setup];//友盟
-    
-    
 //    self.window.backgroundColor=[UIColor blackColor];
-    
-    return YES;
+      return YES;
 }
+
 //
 //-(void)resh{
 //    NSString *commid = [[NSUserDefaults standardUserDefaults]objectForKey:@"commid"];
@@ -255,11 +248,7 @@
     
 }
 -(void)ziding{
-
-  
-    
     [[CCLocation sharedCCLocation]getLocation:^(CLLocationCoordinate2D locationCoordinate2D, NSString *country, NSString *city, NSString *place ,NSString *area) {
-        
         if([city isChinese] ){
             NSString *lat = [NSString stringWithFormat:@"%f",locationCoordinate2D.latitude];
             NSString *lon = [NSString stringWithFormat:@"%f",locationCoordinate2D.longitude];
@@ -270,74 +259,41 @@
             [[NSUserDefaults standardUserDefaults]setObject:lat  forKey:@"lat"];
             [[NSUserDefaults standardUserDefaults]setObject:lon forKey:@"lon"];
             [[NSUserDefaults standardUserDefaults]synchronize];
-            
-
-            
             if (_callbackLocation) {
                 _callbackLocation(@"ok");
             }
         }
-
-        
     }];
-
-    
 }
 
 -(void)dingwei{
-    
     _sre = [[BMKLocationService alloc]init];
     _sre.delegate = self;
     //启动LocationService
     or=YES;
     [_sre startUserLocationService];
-    
-
 }
 
-
-
-
-
 - (void)didUpdateBMKUserLocation:(BMKUserLocation *)userLocation{
-
-    NSLog(@"didUpdateUserLocation lat %f,long %f",userLocation.location.coordinate.latitude,userLocation.location.coordinate.longitude);
-    
+    NSLog(@"定位成功didUpdateUserLocation lat %f,long %f",fabs(userLocation.location.coordinate.latitude),fabs(userLocation.location.coordinate.longitude));
     NSString *lat = [NSString stringWithFormat:@"%f",userLocation.location.coordinate.latitude];
     NSString *lon = [NSString stringWithFormat:@"%f",userLocation.location.coordinate.longitude];
-//
-
-    
    double locaLatitude=userLocation.location.coordinate.latitude;//纬度
    double locaLongitude=userLocation.location.coordinate.longitude;//精度
-    
-    
     CLLocationCoordinate2D pt=(CLLocationCoordinate2D){0,0};
     pt=(CLLocationCoordinate2D){locaLatitude,locaLongitude};
-
-
-    
     BMKReverseGeoCodeOption *i = [BMKReverseGeoCodeOption new];
     i.reverseGeoPoint = pt;
-    
-    
     [[NSUserDefaults standardUserDefaults]setObject:lat  forKey:@"latitude"];
     [[NSUserDefaults standardUserDefaults]setObject:lon forKey:@"longitude"];
-    
     [[NSUserDefaults standardUserDefaults]setObject:lat  forKey:@"lat"];
     [[NSUserDefaults standardUserDefaults]setObject:lon forKey:@"lon"];
     [[NSUserDefaults standardUserDefaults]synchronize];
-
-
-    
-    
-   
     if (_callbackLocation) {
         _callbackLocation(@"ok");
     }
     [_sre stopUserLocationService];
-
-
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"requestNearlyPlot" object:nil];
 }
 
 //-(void)onGetAddrResult:(BMKAddrInfo *)result errorCode:(int)error{
@@ -368,27 +324,17 @@
 
 
 - (void)onGetReverseGeoCodeResult:(BMKGeoCodeSearch *)searcher result:(BMKReverseGeoCodeResult *)result errorCode:(BMKSearchErrorCode)error{
-
-    
     NSLog(@"%@",result.addressDetail);
-    
-
 }
-
-
 
 - (void)onGetNetworkState:(int)iError
 {
     if (0 == iError) {
         NSLog(@"联网成功");
-
     }
     else{
         NSLog(@"onGetNetworkState %d",iError);
-        
-        
     }
-    
 }
 
 - (void)onGetPermissionState:(int)iError
@@ -438,9 +384,7 @@
             
         }];
     }
-    
     [RCIM sharedRCIM].userInfoDataSource=self;
-    
 }
 
 
@@ -474,7 +418,6 @@
 }
 
 -(int)ReshData{
-    
     NSLog(@"%d",[[RCIMClient sharedRCIMClient]getUnreadCount: @[@(ConversationType_PRIVATE),@(ConversationType_DISCUSSION), @(ConversationType_PUBLICSERVICE), @(ConversationType_PUBLICSERVICE),@(ConversationType_GROUP)]]);
          return [[RCIMClient sharedRCIMClient]getUnreadCount: @[@(ConversationType_PRIVATE),@(ConversationType_DISCUSSION), @(ConversationType_PUBLICSERVICE), @(ConversationType_PUBLICSERVICE),@(ConversationType_GROUP)]];
 }
@@ -505,7 +448,6 @@
 }
 
 -(void)NavStye{
-    
     float scale=Scale;
     UIFont* font =Big17BoldFont(scale);
     NSDictionary* textAttributes = @{NSFontAttributeName:font,
@@ -646,12 +588,15 @@
         
         GuideViewController *guideVC=[[GuideViewController alloc]initWithBlock:^(BOOL success) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                
-            
-                ChooseQuViewController *ch = [[ChooseQuViewController alloc]initWithBlock:^(BOOL success) {
+                ChoosePlotController *ch = [[ChoosePlotController alloc]initWithBlock:^(BOOL success) {
                     [[NSUserDefaults standardUserDefaults]setBool:YES forKey:@"GuideKey"];
                     self.window.rootViewController=_tabBarController;
                 }];
+
+//                ChooseQuViewController *ch = [[ChooseQuViewController alloc]initWithBlock:^(BOOL success) {
+//                    [[NSUserDefaults standardUserDefaults]setBool:YES forKey:@"GuideKey"];
+//                    self.window.rootViewController=_tabBarController;
+//                }];
                 UINavigationController *nav = [[UINavigationController alloc]initWithRootViewController:ch];
                 
                     self.window.rootViewController = nav;
@@ -670,21 +615,20 @@
                 
 //            self.window.rootViewController=_tabBarController;
 
-                ChooseQuViewController *ch = [[ChooseQuViewController alloc]initWithBlock:^(BOOL success) {
-                    
-                    self.window.rootViewController=_tabBarController;
-                }];
+//                ChooseQuViewController *ch = [[ChooseQuViewController alloc]initWithBlock:^(BOOL success) {
+//                    
+//                    self.window.rootViewController=_tabBarController;
+//                }];
+            ChoosePlotController *ch = [[ChoosePlotController alloc]initWithBlock:^(BOOL success) {
+                [[NSUserDefaults standardUserDefaults]setBool:YES forKey:@"GuideKey"];
+                self.window.rootViewController=_tabBarController;
+            }];
+
                 UINavigationController *nav = [[UINavigationController alloc]initWithRootViewController:ch];
                 self.window.rootViewController = nav;
             [RCIM sharedRCIM].userInfoDataSource=self;
 
         }else{
-
-        
-        
-        
-        
-        
 //       NSString *ID = [[NSUserDefaults standardUserDefaults]objectForKey:@"commid"];
 //        if (!ID) {
 //            dispatch_async(dispatch_get_main_queue(), ^{
@@ -712,8 +656,6 @@
 }
 
 -(void)asdasd{
-
-
 //    NSLog(@"rescode: %d, \ntags: %@, \nalias: %@\n", iResCode, tags , alias);
 }
 
@@ -722,31 +664,19 @@
         LoginViewController *login = [LoginViewController new];
         login.f=NO;
         [self.window.rootViewController presentViewController:login animated:YES completion:nil];
-        
-        
     }else{
-        
         self.tabBarController.selectedIndex=0;
         [self.window.rootViewController dismissViewControllerAnimated:YES completion:nil];
-        
     }
-
-
-
 }
 
-
 -(BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController{
-
     if ([tabBarController.selectedViewController isEqual:viewController]) {
         return NO;
     }
     UINavigationController *nav=(UINavigationController *)viewController;
-    
     if (([nav.visibleViewController isKindOfClass:[GongGaoQiangViewController class]] || [nav.visibleViewController isKindOfClass:[GouWuCheViewController class]]) && ![Stockpile sharedStockpile].isLogin) {
-        
         NSInteger selectedIndex=0;
-        
         if ( [nav.visibleViewController isKindOfClass:[GongGaoQiangViewController class]]) {
             selectedIndex=1;
         }else{
@@ -768,12 +698,14 @@
     }
     return YES;
 }
+
 #pragma mark - 支付
 #pragma mark - WXApiDelegate(optional)
 -(void) onReq:(BaseReq*)req
 {
     
 }
+
 -(void) onResp:(BaseResp*)resp
 {
     NSString *strMsg;

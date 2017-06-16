@@ -159,21 +159,14 @@
                 {
                     self.hongDianImageView = [[UIImageView alloc]init];
                     self.hongDianImageView.backgroundColor = [UIColor redColor];
-                }
-                else
-                {
+                }else{
                     _hongDianImageView.hidden = NO;
                 }
-            
             }
             [[NSUserDefaults standardUserDefaults]setObject:[NSString stringWithFormat:@"%ld",(long)hwuyeNum] forKey:@"wuyeNum"];
             [[NSUserDefaults standardUserDefaults]synchronize];
         }
-        
     }];
-    
-    
-    
 }
 
 //- (void)gouWuCheShuZi
@@ -241,72 +234,35 @@
 
 
 
-- (CGFloat)folderSizeAtPath:(NSString *)folderPath
-
-{
-    
+- (CGFloat)folderSizeAtPath:(NSString *)folderPath{
     NSFileManager *manager = [NSFileManager defaultManager];
-    
     if (![manager fileExistsAtPath:folderPath]) {
-        
         return 0;
-        
     }
-    
-    
-    
     NSEnumerator *childFilesEnumerator = [[manager subpathsAtPath:folderPath] objectEnumerator];
-    
-    
-    
     NSString *fileName = nil;
-    
     long long folderSize = 0;
-    
     while ((fileName = [childFilesEnumerator nextObject]) != nil) {
-        
         NSString *fileAbsolutePath = [folderPath stringByAppendingPathComponent:fileName];
-        
         folderSize += [self fileSizeAtPath:fileAbsolutePath];
-        
     }
-    
     return folderSize/(1024.0*1024.0);
-    
 }
 
 
-- (long long)fileSizeAtPath:(NSString *)filePath
-
-{
-    
+- (long long)fileSizeAtPath:(NSString *)filePath{
     NSFileManager* manager = [NSFileManager defaultManager];
-    
     if ([manager fileExistsAtPath:filePath]){
-        
         return [[manager attributesOfItemAtPath:filePath error:nil] fileSize];
-        
     }
-    
     return 0;
-    
-    
-    
 }
 
 
 
--(void)clearCacheSuccess
-
-{
-    
+-(void)clearCacheSuccess{
     NSLog(@"清理成功");
-    
-    
-    
 }
-
-
  
 //- (BOOL)isBetweenFromHour:(NSInteger)fromHour toHour:(NSInteger)toHour
 //{
@@ -353,6 +309,7 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
 - (NSString*)weekdayStringFromDate:(NSDate*)inputDate {
     
     NSArray *weekdays = [NSArray arrayWithObjects: [NSNull null], @"周日", @"周一", @"周二", @"周三", @"周四", @"周五", @"周六", nil];
@@ -372,106 +329,65 @@
 }
 
 -(BOOL)getTimeWith:(NSDictionary *)shopInfo{
-
-    
     BOOL isSleep1=YES;
     BOOL isSleep2=YES;
     BOOL isSleep3=YES;
-    
-    
     NSArray *timArr  = [shopInfo[@"business_hour"] componentsSeparatedByString:@","];
-    
     NSDate *now = [NSDate date];
     NSDateFormatter *nowFo = [[NSDateFormatter alloc]init];
     [nowFo setDateFormat:@"yyyy-MM-dd"];
     NSString *noewyers = [nowFo stringFromDate:now];
-    
     for (NSString *str in timArr) {
         if ([str isEqualToString:@"1"]) {
-            
             NSString *timeStart1 = [noewyers stringByAppendingString:[NSString stringWithFormat:@" %@",shopInfo[@"business_start_hour1"]]];
             NSString *timeEnd1 =[noewyers stringByAppendingString:[NSString stringWithFormat:@" %@",shopInfo[@"business_end_hour1"]]];
-            
-            
-            
             NSDateFormatter *fo = [[NSDateFormatter alloc]init];
             [fo setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
             NSDate *das = [fo dateFromString:timeStart1];
             NSDate *dad = [fo dateFromString:timeEnd1];
-            
             NSDate *dates = [self getNowDateFromatAnDate:das];
             NSDate *dated = [self getNowDateFromatAnDate:dad];
             NSDate *daten = [self getNowDateFromatAnDate:[NSDate date]];
-            
             NSLog(@"%@",[NSDate date]);
-            
-            
             //开始的时间戳
             double times = [dates timeIntervalSince1970];
             //结束的时间戳
             double timed = [dated timeIntervalSince1970];
             //现在的时间戳
             double timen = [daten timeIntervalSince1970];
-            
-            
-            
             if (timen>times && timen<timed) {
                 isSleep1=NO;
             }else{
                 isSleep1=YES;
             }
-            
-            
-            
-        }
-        
-        
-        
-        
-        else if ([str isEqualToString:@"2"]) {
-            
+        }else if ([str isEqualToString:@"2"]) {
             NSString *timeStart1 = [noewyers stringByAppendingString:[NSString stringWithFormat:@" %@",shopInfo[@"business_start_hour2"]]];
             NSString *timeEnd1 =[noewyers stringByAppendingString:[NSString stringWithFormat:@" %@",shopInfo[@"business_end_hour2"]]];
             NSDateFormatter *fo = [[NSDateFormatter alloc]init];
             [fo setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
             NSDate *das = [fo dateFromString:timeStart1];
             NSDate *dad = [fo dateFromString:timeEnd1];
-            
-            
             NSDate *dates = [self getNowDateFromatAnDate:das];
             NSDate *dated = [self getNowDateFromatAnDate:dad];
             NSDate *daten = [self getNowDateFromatAnDate:[NSDate date]];
-            
             //开始的时间戳
             double times = [dates timeIntervalSince1970];
             //结束的时间戳
             double timed = [dated timeIntervalSince1970];
             //现在的时间戳
             double timen = [daten timeIntervalSince1970];
-            
-            
-            
             if (timen>times && timen<timed) {
                 isSleep2=NO;
             }else{
                 isSleep2=YES;
             }
-            
-            
-            
-        }
-        
-        
-        else  if ([str isEqualToString:@"3"]) {
-            
+        }else if ([str isEqualToString:@"3"]) {
             NSString *timeStart1 = [noewyers stringByAppendingString:[NSString stringWithFormat:@" %@",shopInfo[@"business_start_hour3"]]];
             NSString *timeEnd1 =[noewyers stringByAppendingString:[NSString stringWithFormat:@" %@",shopInfo[@"business_end_hour3"]]];
             NSDateFormatter *fo = [[NSDateFormatter alloc]init];
             [fo setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
             NSDate *das = [fo dateFromString:timeStart1];
             NSDate *dad = [fo dateFromString:timeEnd1];
-            
-            
             NSDate *dates = [self getNowDateFromatAnDate:das];
             NSDate *dated = [self getNowDateFromatAnDate:dad];
             NSDate *daten = [self getNowDateFromatAnDate:[NSDate date]];

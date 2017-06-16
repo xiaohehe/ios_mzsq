@@ -58,9 +58,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    if (_isPush)
-    {
-        
+    if (_isPush){
         NSDictionary *dic = @{@"shop_id":self.shop_id,@"prod_id":self.prod_id};
         if ([Stockpile sharedStockpile].isLogin) {
             dic = @{@"shop_id":self.shop_id,@"prod_id":self.prod_id,@"user_id":
@@ -68,8 +66,8 @@
         }
         AnalyzeObject *analyze=[[AnalyzeObject alloc]init];
         [analyze getprodDetailPushwithDic:dic WithBlock:^(id models, NSString *code, NSString *msg) {
-            
             if ([code isEqualToString:@"0"]) {
+                //NSLog(@"models====%@========",models);
                 self.indexs=0;
                 self.yes=NO;
                 if ([[NSString stringWithFormat:@"%@",models[0][@"shop_info"][@"is_open_chat"]] isEqualToString:@"2"]) {
@@ -88,17 +86,8 @@
                 self.shoucang= models[0][@"collect_time"];
                 self.tel = models[0][@"shop_info"][@"contact_mobile"];
             }
-            
-            
         }];
-        
     }
-    
-
-    
-    
-    
-    
 //    _data = [NSMutableArray new];
     _carNum = @"0";
     if (!_numb) {
@@ -108,27 +97,12 @@
     _popTwo=NO;
     _i=0;
     _index=_indexs;
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(shibaijian) name:@"addshibai" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(actrectstop) name:@"addact" object:nil];
-
-    
     self.view.backgroundColor = [UIColor whiteColor];
-    
     [self ReshData];
 //    [self shangJiaXiangQing];
     [self returnVi];
-
 }
 
 //-(void)viewWillAppear:(BOOL)animated{
@@ -141,16 +115,21 @@
 ////    }
 //
 //}
+
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     [UmengCollection intoPage:NSStringFromClass([self class])];
+    self.navigationController.navigationBarHidden = NO;
+    self.navigationController.navigationBar.hidden = YES;
 }
+
 -(void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
     [UmengCollection outPage:NSStringFromClass([self class])];
 }
+
 #pragma mark - 数据块
 -(void)ReshData
 {
@@ -174,6 +153,7 @@
         [self shangJiaXiangQing];
         if ([code isEqualToString:@"0"]) {
             //            [_data addObjectsFromArray:models];
+            NSLog(@"models======%@======",models);
             _data=models;
             NSString *str= [_data [0]objectForKey:@"description"];
             NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
@@ -365,17 +345,15 @@
     for (int i=1; i<10; i++) {
         NSString *str = [NSString stringWithFormat:@"img%d",i];
         str = _data[0][str];
-        
         NSLog(@"%@",_data);
         NSLog(@"%@",str);
         if (![str isEqualToString:@""]) {
-            
 //            NSString *url=@"";
             NSString *cut = str;
             NSString *imagename = [cut lastPathComponent];
             NSString *path = [cut stringByDeletingLastPathComponent];
              NSString *smallImgUrl=[NSString stringWithFormat:@"%@/%@",path,[imagename stringByReplacingOccurrencesOfString:@"." withString:@"_thumb640."]];
-            NSLog(@"%@",smallImgUrl);
+            NSLog(@"smallImgUrl==%@",smallImgUrl);
             [_arr addObject:smallImgUrl];
        
 //            if (cut.length>0) {
@@ -548,11 +526,8 @@
 //    }else{
 //        [_IntroV index:view.view.tag-10000];
 //    }
-    
     self.tabBarController.tabBar.hidden=YES;
 //    [[[UIApplication sharedApplication].delegate window] addSubview:_IntroV];
-
-
 }
 
 
@@ -760,17 +735,7 @@
 //        oldPrice.hidden=YES;
 //        lin.hidden=YES;
 //    }
-
-    
     _bigvi.height=_priceLa.bottom+15*self.scale;
-    
-    
-    
-    
-    
-    
-    
-    
     UIView *prodNameLine = [[UIView alloc]initWithFrame:CGRectMake(0, _bigvi.height-.5, self.view.width, .5)];
     prodNameLine.backgroundColor=blackLineColore;
     [_bigvi addSubview:prodNameLine];
@@ -794,10 +759,6 @@
     UIView *vi = [[UIView alloc]initWithFrame:CGRectMake(0, self.infoName.bottom, self.view.bounds.size.width, 540/2.25*self.scale) ];
     vi.backgroundColor= [UIColor whiteColor];
     [_scrollView addSubview:vi];
-    
-    
-
-    
     self.info = [[UILabel alloc]initWithFrame:CGRectMake(20*self.scale, 10*self.scale, vi.width-40*self.scale,vi.height-40*self.scale)];
     self.info.numberOfLines=0;
     self.info.textAlignment = NSTextAlignmentLeft;
@@ -924,6 +885,7 @@
             [self shangJiaXiangQing];
             [self.activityVC stopAnimate];
             if ([code isEqualToString:@"0"]) {
+                self.appdelegate.isRefresh=true;
 //                UIButton *jianBtn = (UIButton *)[self.view viewWithTag:456];
 //                UILabel *num = (UILabel *)[self.view viewWithTag:678];
 //                num.text=[NSString stringWithFormat:@"%ld",(long)_index];
@@ -1563,14 +1525,7 @@
                 }
             }
         }];
-        
-        
-        
-        
-        
-    }
-    else if (sender.tag == 12)
-    {
+    }else if (sender.tag == 12){
         self.hidesBottomBarWhenPushed = YES;
         SouViewController * souView = [[SouViewController alloc]init];
         NSLog(@"%@",_remindDic[@"shop_id"]);
@@ -1578,8 +1533,6 @@
         souView.keyword = @"";
         [self.navigationController pushViewController:souView animated:YES];
     }
-   
-    
 }
 
 #pragma mark -----返回按钮
@@ -1763,14 +1716,11 @@
 }
 
 #pragma mark -- 显示配送费
-- (NSString *)xianShiPeiSongFei
-{
-    
-    
+- (NSString *)xianShiPeiSongFei{
     NSString * peiSongFei = [NSString stringWithFormat:@"配送费%@元，满%@元免配送费",_remindDic[@"shop_info"][@"delivery_fee"],_remindDic[@"shop_info"][@"free_delivery_amount"]];
-    
     return peiSongFei;
 }
+
 #pragma mark-------去购物车，  去订单订单详情
 -(void)goShopCar{
     

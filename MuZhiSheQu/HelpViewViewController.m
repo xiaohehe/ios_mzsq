@@ -45,15 +45,18 @@
     if (_web) {
         [_web removeFromSuperview];
     }
-    
-    
      _web = [[UIWebView alloc]initWithFrame:CGRectMake(0, self.NavImg.bottom, self.view.width, self.view.height-self.NavImg.bottom)];
     [_web loadHTMLString:_data[@"content"] baseURL:nil];
     [self.view addSubview:_web];
-
-
-
 }
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    self.navigationController.navigationBarHidden = NO;
+    self.navigationController.navigationBar.hidden = YES;
+}
+
 
 #pragma mark - 导航
 -(void)newNav{
