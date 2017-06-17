@@ -21,6 +21,7 @@
 @interface GongGaoQiangViewController()<UITableViewDataSource,UITableViewDelegate,ShareTableViewCellDelegate,introlDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate>
 @property(nonatomic,strong)UITableView *tableView;
 @property(nonatomic,strong)NSMutableArray *dataSource;
+
 @property(nonatomic,strong)NSIndexPath *selectedIndex;
 @property(nonatomic,strong)GongGaoSouSuoViewController *souSuoVC;
 @property(nonatomic,assign)BOOL  selected;
@@ -29,10 +30,15 @@
 @property(nonatomic,strong)NSString *typeg;
 @property(nonatomic,strong)UILabel *la;
 @property(nonatomic,strong)IntroControll *IntroV;
+
+
+
 @property(nonatomic,strong)UITextField *mesay;
 @property(nonatomic,strong)CellView *bv;
 @property(nonatomic,strong)NSIndexPath *indexPath;
+
 @property(nonatomic,strong)NSMutableDictionary *dic;
+
 @property(nonatomic,strong)UIControl *bgCon;
 @end
 @implementation GongGaoQiangViewController
@@ -46,34 +52,41 @@
         //让tabbar的select等于0
         login.f=YES;
         [login resggong:^(NSString *str) {
+            
             [self reshData];
+            
         }];
 //        [self presentViewController:login animated:YES completion:nil];
         [self presentViewController:login animated:YES completion:^{
 //           [self.view endEditing:YES];
         }];
+
         return;
     }
+    
+    
     NSString *commid = [[NSUserDefaults standardUserDefaults]objectForKey:@"commid"];
+    
     if ([commid isEqualToString:@"0"] && [Stockpile sharedStockpile].isLogin==YES) {
         self.hidesBottomBarWhenPushed=YES;
         SheQuManagerViewController *shequ = [SheQuManagerViewController new];
         shequ.nojiantou=NO;
         [self.navigationController pushViewController:shequ animated:NO];
         self.hidesBottomBarWhenPushed=NO;
-    }
+    } 
 }
 
 -(void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-   // [[NSNotificationCenter defaultCenter] removeObserver:self name:@"reloadNearby" object:nil];
     [UmengCollection outPage:NSStringFromClass([self class])];
 }
-
 -(void)viewDidLoad{
     [super viewDidLoad];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(keybordWillChange:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(keybordWillhieeht:) name:UIKeyboardWillHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(xiala)  name:@"reloadNearby" object:nil];
+    
     _dic=[NSMutableDictionary new];//dictionaryWithObjectsAndKeys:@"张三":@"产品不错我想买",@"张三":@"产品不错我想买",@"张三":@"产品不错我想买",@"张三":@"产品不错我想买" nil] ;
     NSDictionary *d=@{@"张三":@"产品不错我想买",
                       @"李四":@"产品不错11111我想买",
@@ -90,18 +103,16 @@
     [self newView];
     [self newSearch];
     if ([Stockpile sharedStockpile].isLogin) {
-        //NSLog(@"123456");
         [self reshData];
     }
      [self fabiaovi];
     [self.view addSubview:self.activityVC];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(xiala)  name:@"reloadNearby" object:nil];
-}
+    
 
+}
 -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
     [self.view endEditing:YES];
 }
-
 -(void)keybordWillChange:(NSNotification *)notification{
     
 //    [_mesay becomeFirstResponder];
@@ -110,7 +121,10 @@
     CGFloat duration=[info[UIKeyboardAnimationDurationUserInfoKey] floatValue];
     [UIView animateWithDuration:duration animations:^{
         _bv.bottom=rect.origin.y;
-    }];   
+    }];
+    
+    
+    
 }
 
 -(void)keybordWillhieeht:(NSNotification *)notification{
@@ -125,6 +139,7 @@
         _bv.top=self.view.height;
     }];
 }
+
 
 -(void)reshData{
     [self.activityVC startAnimate];
