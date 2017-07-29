@@ -10,7 +10,6 @@
 #import "CellView.h"
 #import "ShouHuoDiZhiListViewController.h"
 #import "UmengCollection.h"
-
 @interface OrderConfirmViewController ()<UIPickerViewDataSource,UIPickerViewDelegate,UITextViewDelegate>
 @property(nonatomic,assign)float bot,botLeft,botTop, setY;
 @property(nonatomic,strong)UILabel *shouldPayPrice;
@@ -464,9 +463,6 @@
             [_shopInfo setObject:_data[i][@"delivery_fee"] forKey:@"delivery_fee"];
         }
 
-        
-        
-        
         UILabel *finishNumber = [[UILabel alloc]initWithFrame:CGRectMake(headImg.left, beizhuCell.bottom+15*self.scale, 100, 15)];
         finishNumber.text = [NSString stringWithFormat:@"共%d件商品",_num];
         finishNumber.textColor = grayTextColor;
@@ -853,35 +849,24 @@ NSInteger ta;
     }
     [self.view addSubview:self.activityVC];
     [self.activityVC startAnimate];
- 
-    
     NSMutableArray *btnarr = [NSMutableArray new];
-    
     NSInteger tag = 0;
     for (UIButton *btn in _botCon.subviews) {
         if ([btn isKindOfClass:[UIButton class]]) {
-            
             [btnarr addObject:btn];
             if (btn.selected==YES) {
                 tag=btn.tag;
             }
         }
     }
-   
-    
     //货到付款
     UIButton *btn3 = (UIButton *)[_botCon viewWithTag:23];
-    
     //支付宝
     UIButton *btn1 = (UIButton *)[_botCon viewWithTag:22];
-    
     //微信
     UIButton *btn2 = (UIButton *)[_botCon viewWithTag:21];
-    
-    
 //    NSString *p = [NSString stringWithFormat:@"%ld",(long)tag];
     NSString *type = @"";
-
     if (btn1.selected==YES) {
         type=@"1";
     }else if (btn2.selected==YES){
@@ -889,25 +874,22 @@ NSInteger ta;
     }else{
         type=@"3";
     }
-    
-    
-    
+    if(self.zongProce<0.01&&![type isEqualToString:@"3"]){
+        type=@"3";
+        btn3.selected=YES;
+        btn2.selected=NO;
+        btn1.selected=NO;
+    }
    NSMutableArray *ar = _bigDic[@"prod_info"];
     NSMutableDictionary *d = ar[0];
     [d setObject:_beizhuTF.text forKey:@"memo"];
    
     [ar replaceObjectAtIndex:0 withObject:d];
     [_bigDic setObject:ar forKey:@"prod_info"];
-
-    
-    
     NSData *dataStr = [NSJSONSerialization dataWithJSONObject:_bigDic options:NSJSONWritingPrettyPrinted error:nil];
     NSString *st = [[NSString alloc]initWithData:dataStr encoding:NSUTF8StringEncoding];
     NSString *userid = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
     NSDictionary *dic = @{@"user_id":userid,@"address_id":_ar[@"id"],@"pay_type":type,@"total_amount":[NSString stringWithFormat:@"%.2f",_zongProce],@"prod_info":st,@"community_id":[self getCommid]};
-    
-    
-
     AnalyzeObject *anle = [AnalyzeObject new];
     [anle OrdersubmitWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
         if ([code isEqualToString:@"0"]) {
@@ -916,7 +898,6 @@ NSInteger ta;
             self.appdelegate.isRefresh=true;
             if (btn1.selected==YES) {
                 [self.appdelegate AliPayPrice:[NSString stringWithFormat:@"%.2f",_zongProce] OrderID:models[@"order_no"] OrderName:@"拇指社区" OrderDescription:models[@"order_no"] complete:^(NSDictionary *resp) {
-                     
                     NSLog(@"%@",[NSString stringWithFormat:@"%.2f",_zongProce]);
                     if ([[resp objectForKey:@"resultStatus"] isEqualToString:@"9000"]) {
                         [self suessToVi];
@@ -924,57 +905,42 @@ NSInteger ta;
                         [self fileToVi];
                     }
                 }];
-
             }else if (btn2.selected==YES){
                float pric = _zongProce*100;
-                
-                
                 if (pric<=0) {
                     return;
                 }
-                
-                 
                 [self.appdelegate WXPayPrice:[NSString stringWithFormat:@"%.0f",pric] OrderID:[NSString stringWithFormat:@"%@",models[@"order_no"]] OrderName:models[@"order_no"] complete:^(BaseResp *resp) {
                     if (resp.errCode == WXSuccess) {
                         [self suessToVi];
                     }else{
                         [self fileToVi];
-                    
                     }
-                    
                 }];
-                
             }else if (btn3.selected==YES){
                 self.hidesBottomBarWhenPushed=YES;
                 HuodaoSuessViewController *huodao = [HuodaoSuessViewController new];
                 huodao.price=[NSString stringWithFormat:@"%.2f",_zongProce];
                 [self.navigationController pushViewController:huodao animated:YES];
-            
             }
         }
     }];
-
 }
 
 
 -(void)suessToVi{
-
-    
-    
     self.hidesBottomBarWhenPushed=YES;
     orderSuessViewController *suecc = [orderSuessViewController new];
     suecc.price = [NSString stringWithFormat:@"%.2f",_zongProce];
     [self.navigationController pushViewController:suecc animated:YES];
-
 }
 
 -(void)fileToVi{
     self.hidesBottomBarWhenPushed=YES;
     OrderFileViewController *file = [OrderFileViewController new];
     [self.navigationController pushViewController:file animated:YES];
-
-
 }
+
 #pragma mark -----返回按钮
 -(void)returnVi{
     

@@ -31,6 +31,8 @@
 #define AccountKey             @"isAccountKey"
 #define AccountTypeKey          @"isAccountTypeKey"
 #define karea            @"karea"
+#define UserToken          @"usertoken"
+
 // .m
 // \ 代表下一行也属于宏
 // ## 是分隔符
@@ -254,7 +256,23 @@ single_implementation(Stockpile);
     [LogPwd saveToNSDefaultsWithKey:LogPwdKey];
 }
 -(BOOL)isLogin{
-    return [[NSUserDefaults standardUserDefaults]boolForKey:ISLoginKey];
+    BOOL isLogin=[[NSUserDefaults standardUserDefaults]boolForKey:ISLoginKey];
+    if(isLogin){
+        NSString* usertoken=[self getUsertoken];
+        NSLog(@"usertoken==%@",usertoken);
+        if(usertoken==nil||[usertoken isEqualToString:@""]){
+            [self setIsLogin:NO];
+            [self setID:@""];
+            //[[NSUserDefaults standardUserDefaults]setObject:@"" forKey:@"user_id"];
+            //[[NSUserDefaults standardUserDefaults]synchronize];
+            [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"GouWuCheShuLiang"];
+            return false;
+        } else
+          return  true;
+    }else
+        return false;
+    return false;
+    //return [[NSUserDefaults standardUserDefaults]boolForKey:ISLoginKey];
 }
 
 -(BOOL)tuiS{
@@ -267,6 +285,17 @@ single_implementation(Stockpile);
 
 }
 
+-(NSString*) getUsertoken
+{
+   return [[NSUserDefaults standardUserDefaults]objectForKey:UserToken];
+}
+
+
+-(void)setUsertoken:(NSString*)usertoken
+{
+    [[NSUserDefaults standardUserDefaults]setObject:usertoken forKey:UserToken];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
 
 -(void)setIsLogin:(BOOL)isLogin
 {

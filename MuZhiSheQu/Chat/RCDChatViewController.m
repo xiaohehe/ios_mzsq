@@ -19,23 +19,20 @@
 @implementation RCDChatViewController
 -(void)viewWillAppear:(BOOL)animated{
     [RCIM sharedRCIM].disableMessageAlertSound=YES;
-    
 }
+
 - (void)viewDidLoad {
     self.navigationController.navigationBarHidden=NO;
     self.navigationController.view.backgroundColor=[UIColor redColor];
-  [super viewDidLoad];
+    [super viewDidLoad];
     self.enableSaveNewPhotoToLocalSystem = YES;
-     [self.pluginBoardView removeItemAtIndex:3];
-
+    [self.pluginBoardView removeItemAtIndex:3];
     [self setMessageAvatarStyle:RC_USER_AVATAR_CYCLE];
     [self notifyUpdateUnreadMessageCount];
     [RCIM sharedRCIM].enableMessageAttachUserInfo=YES;
     [self.pluginBoardView removeItemWithTag:104];
     [self.pluginBoardView removeItemAtIndex:3];
     [self newNav];
-    
-    
 //    UIView *vi = [[UIView alloc]initWithFrame:CGRectMake(0, 64, self.view.width, 30)];
 //    vi.backgroundColor=[UIColor colorWithRed:250/255.0 green:255/255.0 blue:182/255.0 alpha:1];
 //    [self.view addSubview:vi];
@@ -65,38 +62,29 @@
 //    frame.origin.x = -frame.size.width;
 //    la.frame = frame;
 //    [UIView commitAnimations];
-
-    
-    
 //    self.conversationMessageCollectionView.top = 64+vi.height;
 //    self.conversationMessageCollectionView.bottom=self.view.height-40;
-    
-    
    AppDelegate *app = [UIApplication sharedApplication].delegate;
    int i = [app ReshData];
 //    [[UIApplication sharedApplication]setApplicationIconBadgeNumber:i];
-    
-    
 }
+
 -(UIStatusBarStyle)preferredStatusBarStyle{
     return UIStatusBarStyleLightContent;
 }
 
--(UIImage *)ImageForColor:(UIColor *)color
-{
+-(UIImage *)ImageForColor:(UIColor *)color{
     CGRect rect = CGRectMake(0.0f, 0.0f, 10, 10);
     UIGraphicsBeginImageContext(rect.size);
     CGContextRef context = UIGraphicsGetCurrentContext();
-    
     CGContextSetFillColorWithColor(context, [color CGColor]);
     CGContextFillRect(context, rect);
-    
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return image;
 }
+
 -(void)newNav{
-    
   dispatch_async(dispatch_get_main_queue(), ^{
       UIButton *backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
       backBtn.frame = CGRectMake(0, 0, 44, 44);
@@ -126,8 +114,8 @@
 }
 
 
-//- (void)getUserInfoWithUserId:(NSString *)userId completion:(void (^)(RCUserInfo *userInfo))completion{
-//    
+- (void)getUserInfoWithUserId:(NSString *)userId completion:(void (^)(RCUserInfo *userInfo))completion{
+    
 //    NSString *str = [userId substringToIndex:1];
 //    
 //    if ([str isEqualToString:@"m"]) {
@@ -144,8 +132,9 @@
 //        
 //    }
 //    
-//    
+    
 //    AnalyzeObject *analy=[[AnalyzeObject alloc]init];
+//    NSLog(@"getUserInfoWithUserId==%@",userId);
 //    [analy GetNickAndAvatarWithUser_ID:@{@"user_id":userId} Block:^(id models, NSString *code, NSString *msg) {
 //        NSArray *Arr=models;
 //        if (Arr && Arr.firstObject && [code isEqualToString:@"0"]) {
@@ -154,8 +143,8 @@
 //            completion(info);
 //        }
 //    }];
-//    
-//}
+    
+}
 
 - (void)leftBarButtonItemPressed:(id)sender {
   //需要调用super的实现

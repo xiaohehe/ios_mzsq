@@ -18,45 +18,30 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     [self returnVi];
-    
     [self.view addSubview:self.activityVC];
 //    [self.activityVC startAnimate];
     [self webView];
     [self reshData];
-    
 }
 
-
-
 -(void)reshData{
-
-
-
-
-
 }
 
 -(void)reshWeb{
 //    UIWebView *webview = (UIWebView *)[self.view viewWithTag:666];
-   
-
 }
 
-
 -(void)webView{
-
     UIWebView *webview = [[UIWebView alloc]initWithFrame:CGRectMake(0, self.NavImg.bottom, self.view.width, self.view.height-self.NavImg.bottom )];
     webview.tag=666;
     [self.view addSubview:webview];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://fx.mzsq.cc/ruzhu.html"]];
 //    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"www.baidu.com"] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30];
-    
     [webview loadRequest:request];
 }
 
 #pragma mark -----返回按钮
 -(void)returnVi{
-    
     self.TitleLabel.text=@"商家进驻";
     self.NavImg.userInteractionEnabled=YES;
     UIButton *popBtn=[[UIButton alloc]initWithFrame:CGRectMake(0, self.TitleLabel.top, self.TitleLabel.height, self.TitleLabel.height)];
@@ -64,7 +49,6 @@
     [popBtn setImage:[UIImage imageNamed:@"left_b"] forState:UIControlStateHighlighted];
     [popBtn addTarget:self action:@selector(PopVC:) forControlEvents:UIControlEventTouchUpInside];
     [self.NavImg addSubview:popBtn];
-    
 //    UIButton *xiangqing = [UIButton buttonWithType:UIButtonTypeCustom];
 //    [xiangqing setTitle:@"商家详情" forState:UIControlStateNormal];
 //    xiangqing.titleLabel.font=DefaultFont(self.scale);

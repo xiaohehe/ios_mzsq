@@ -1,12 +1,14 @@
 /**
  * \file base64.h
  */
+#import <Foundation/Foundation.h>
+
 #ifndef XYSSL_BASE64_H
 #define XYSSL_BASE64_H
 
 #define XYSSL_ERR_BASE64_INVALID_CHARACTER              -0x0012
 #define XYSSL_ERR_BASE64_BUFFER_TOO_SMALL               -0x0010
-#import <Foundation/Foundation.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

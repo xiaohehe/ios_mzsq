@@ -24,6 +24,8 @@
 #import <RongIMKit/RongIMKit.h>
 #import "RCDUserInfo.h"
 #import "AnalyzeObject.h"
+#import "IMViewController.h"
+
 @interface RCDChatListViewController ()<RCIMGroupInfoDataSource,RCIMReceiveMessageDelegate>
 
 //@property (nonatomic,strong) NSMutableArray *myDataSource;
@@ -71,7 +73,6 @@
 //    UIView *statusBarView = [[UIView alloc]   initWithFrame:CGRectMake(0, -20,    self.view.bounds.size.width, 20)];
 //    statusBarView.backgroundColor = [UIColor colorWithRed:113/255.0 green:113/255.0 blue:113/255.0 alpha:1];
 //    [self.navigationController.navigationBar addSubview:statusBarView];
-
     [super viewDidLoad];
 //    [RCIM sharedRCIM].userInfoDataSource=self;
     [RCIM sharedRCIM].groupInfoDataSource=self;
@@ -82,6 +83,7 @@
   //  self.conversationListTableView.tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 12)];
     [self newNav];
 }
+
 -(void)newNav{
     UIButton *backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     backBtn.frame = CGRectMake(0, 0, 44, 44);
@@ -92,6 +94,7 @@
     UIBarButtonItem *leftButton = [[UIBarButtonItem alloc] initWithCustomView:backBtn];
     [self.navigationItem setLeftBarButtonItem:leftButton];
 }
+
 - (void)leftBarButtonItemPressed:(id)sender {
     if (_isPush) {
         [self dismissViewControllerAnimated:YES completion:nil];
@@ -101,9 +104,11 @@
     //需要调用super的实现
     [self.navigationController popViewControllerAnimated:YES];
 }
+
 -(UIStatusBarStyle)preferredStatusBarStyle{
     return UIStatusBarStyleLightContent;
 }
+
 -(void)GetData:(NSArray *)Arr{
 
 }
@@ -183,30 +188,26 @@
 //                
 //            }
     
-    
     NSString *str = [model.targetId substringToIndex:1];
-    
-    
+
     if ([str isEqualToString:@"m"]) {
         self.hidesBottomBarWhenPushed=YES;
         CenterViewController *center = [CenterViewController new];
         center.isPush=YES;
         center.conversationType = model.conversationType;
-        center.targetId = model.targetId;
+        center.targetId = [NSString stringWithFormat:@"%@",model.targetId];
         center.title = model.conversationTitle;
         [self.navigationController pushViewController:center animated:YES];
         return;
     }
 
-  
-            
             if (conversationModelType == RC_CONVERSATION_MODEL_TYPE_NORMAL) {
-                RCDChatViewController *_conversationVC = [[RCDChatViewController alloc]init];
+                IMViewController *_conversationVC = [[IMViewController alloc]init];
                 _conversationVC.conversationType = model.conversationType;
-                _conversationVC.targetId = model.targetId;
+                _conversationVC.targetId = model.targetId;//[NSString stringWithFormat:@"N%@",model.targetId];;
               //  _conversationVC.userName = model.conversationTitle;
-                _conversationVC.title = model.conversationTitle;
-                _conversationVC.conversation = model;
+                _conversationVC.title =model.conversationTitle;
+                //_conversationVC.conversation = model;
                 [self.navigationController pushViewController:_conversationVC animated:YES];
             }
             //聚合会话类型，此处自定设置。
@@ -219,16 +220,6 @@
                 temp.isEnteredToCollectionViewController = YES;
                 [self.navigationController pushViewController:temp animated:YES];
             }
-            
-
-        
-
-    
-    
-    
-    
-    
-    
      //自定义会话类型
    /* if (conversationModelType == RC_CONVERSATION_MODEL_TYPE_CUSTOMIZATION) {
         RCConversationModel *model = self.conversationListDataSource[indexPath.row];
@@ -247,7 +238,6 @@
         temp.userInfo = userinfo;//model.extend;
         [self.navigationController pushViewController:temp animated:YES];
     }*/
-
 }
 
 /**

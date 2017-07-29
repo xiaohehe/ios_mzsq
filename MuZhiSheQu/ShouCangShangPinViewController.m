@@ -10,6 +10,7 @@
 #import "ShangPinTableViewCell.h"
 #import "BusinessInfoViewController.h"
 #import "UmengCollection.h"
+#import "AppUtil.h"
 @interface ShouCangShangPinViewController ()<UITableViewDataSource,UITableViewDelegate>
 @property(nonatomic,strong)UITableView *tableView;
 @property(nonatomic,strong)NSMutableArray *dataSource;
@@ -145,33 +146,27 @@
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     ShangPinTableViewCell *cell=(ShangPinTableViewCell *)[tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
-    
-    
-//    
 //    NSString *url=@"";
     NSString *cut = _dataSource[indexPath.row][@"img1"];
 //    if (cut.length>0) {
 //        url = [cut substringToIndex:[cut length] - 4];
-//        
 //    }
     NSString *imagename = [cut lastPathComponent];
     NSString *path = [cut stringByDeletingLastPathComponent];
     NSString *smallImgUrl=[NSString stringWithFormat:@"%@/%@",path,[imagename stringByReplacingOccurrencesOfString:@"." withString:@"_thumb640."]];
-    
 //    [cell.HeaderImage setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_thumb640.jpg",url]] placeholderImage:[UIImage imageNamed:@"za"]];
     [cell.HeaderImage setImageWithURL:[NSURL URLWithString:smallImgUrl] placeholderImage:[UIImage imageNamed:@"za"]];
-    
-    
-    
-    
-    
-    
-    
+    NSString* isInvalid=[NSString stringWithFormat:@"%@",_dataSource[indexPath.row][@"is_invalid"]];
+    NSLog(@"isInvalid==%@",isInvalid);
+    if([isInvalid isEqualToString:@"1"]){
+        cell.coverView.hidden=NO;
+    }else{
+        cell.coverView.hidden=YES;
+    }
     cell.NameLabel.text=_dataSource[indexPath.row][@"prod_name"];
     cell.NumberLabel.text=[NSString stringWithFormat:@"销量%@",_dataSource[indexPath.row][@"sales"]];
     cell.PriceLabel.text=[NSString stringWithFormat:@"￥%@/%@",_dataSource[indexPath.row][@"price"],_dataSource[indexPath.row][@"unit"]];
     cell.selectionStyle=UITableViewCellSelectionStyleNone;
-    
     cell.price_yuan.text=[NSString stringWithFormat:@"￥%@",_dataSource[indexPath.row][@"origin_price"]];
     
 //    if ([[NSString stringWithFormat:@"%@",_dataSource[indexPath.row][@"origin_price"]] isEqualToString:[NSString stringWithFormat:@"%@",_dataSource[indexPath.row][@"price"]]]) {
@@ -192,8 +187,6 @@
         cell.price_yuan.hidden=NO;
         cell.lin.hidden=NO;
     }
-    
-    
     
     if ([_dataSource[indexPath.row][@"status"] isEqualToString:@"3"]) {
         cell.addLa=@"商铺正在休息中，您所提交的订单会在营业后第一时间处理";
@@ -288,8 +281,6 @@
                 isSleep2=YES;
             }
             
-            
-            
         }
         
         
@@ -354,52 +345,50 @@
 
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-
+    NSString* isInvalid=[NSString stringWithFormat:@"%@",_dataSource[indexPath.row][@"is_invalid"]];
+    NSLog(@"isInvalid==%@",isInvalid);
+    if([isInvalid isEqualToString:@"1"]){
+        [AppUtil showToast:tableView withContent:@"商品已失效"];
+        return;
+    }
     self.hidesBottomBarWhenPushed=YES;
-    
     BOOL issleep;
-    
     ShangPinTableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    
-    
     if ([cell.addLa isEqualToString:@"商铺正在休息中，您所提交的订单会在营业后第一时间处理"]) {
         issleep=YES;
     }else{
         issleep=NO;
     }
-    
-    
     ShopInfoViewController *buess = [ShopInfoViewController new];
-    [buess reshChoucang:^(NSString *str) {
-        _index=0;
-        [self reshData];
-        
-    }];
+//    [buess reshChoucang:^(NSString *str) {
+//        _index=0;
+//        [self reshData];
+//        
+//    }];
     if ([_dataSource[indexPath.row][@"is_open_chat"]isEqualToString:@"2"]) {
         buess.isopen=NO;
     }else{
         buess.isopen=YES;
     }
+    buess.isgo=YES;
+    buess.yes=NO;
     buess.tel=[NSString stringWithFormat:@"%@",_dataSource[indexPath.row][@"hotline"]];
     buess.price =_dataSource[indexPath.row][@"prod_price"];
     buess.shop_name=_dataSource[indexPath.row][@"shop_name"];
     buess.orshoucang=YES;
     buess.issleep=issleep;
-    buess.shop_user_id=_dataSource[indexPath.row][@"shop_user_id"];
+    buess.shop_user_id=_dataSource[indexPath.row][@"shop_id"];//shop_user_id
     NSLog(@"%@",_dataSource[indexPath.row][@"shop_user_id"]);
     buess.shop_id = _dataSource[indexPath.row][@"shop_id"];
     buess.prod_id = _dataSource[indexPath.row][@"prod_id"];
     buess.xiaoliang = _dataSource[indexPath.row][@"sales"];
     buess.shoucang = _dataSource[indexPath.row][@"collect_time"];
-//    buess.yunfei=self.
+    NSLog(@"shop_id==%@",_dataSource[indexPath.row][@"shop_id"]);
+    buess.gongGao = _dataSource[indexPath.row][@"notice"];
+
+    buess.param=_dataSource[indexPath.row];
+
     [self.navigationController pushViewController:buess animated:YES];
-
-    
- 
-    
-    
-    
-
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath{

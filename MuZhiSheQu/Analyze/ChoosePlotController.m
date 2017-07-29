@@ -14,6 +14,7 @@
 #import "SheQuManagerViewController.h"
 #import "JPUSHService.h"
 #import "ChooseQuViewController.h"
+#import "AppUtil.h"
 
 @interface ChoosePlotController (){
     //UITextField *searchTf;
@@ -73,13 +74,11 @@
     plotNameLb.userInteractionEnabled=YES;
     UITapGestureRecognizer*tapGestureSkip = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(skipMain)];
     [plotNameLb addGestureRecognizer:tapGestureSkip];
-
     if(!self.isRoot){
         plotNameLb.text=[[NSUserDefaults standardUserDefaults]objectForKey:@"commname"];
     }
     [currentPlotView addSubview:plotNameLb];
     refreshIv=[[UIImageView alloc] initWithFrame:CGRectMake(self.view.frame.size.width-40, 16, 20, 18)];
-    
      refreshIv.userInteractionEnabled=YES;
     UITapGestureRecognizer*tapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(reposition)];
     [refreshIv addGestureRecognizer:tapGesture];
@@ -185,6 +184,7 @@
 }
 
 -(void)viewWillAppear:(BOOL)animated{
+    self.navigationController.navigationBar.hidden = NO;
     self.navigationController.navigationBarHidden=NO;
     self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.227 green:0.227 blue:0.227 alpha:1.00];
     self.tabBarController.tabBar.hidden=YES;
@@ -334,6 +334,26 @@
     }
     //  self.commid = [[NSUserDefaults standardUserDefaults]objectForKey:@"commid"];
     NSString *userid = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
+    if([AppUtil isBlank:userid]){
+        [[NSUserDefaults standardUserDefaults]setObject:plot.pid forKey:@"commid"];
+        [[NSUserDefaults standardUserDefaults]setObject:plot.name forKey:@"commname"];
+        [[NSUserDefaults standardUserDefaults]setObject:plot.province forKey:@"GuideShengId"];
+        [[NSUserDefaults standardUserDefaults]setObject:plot.province_name forKey:@"GuideShengName"];
+        [[NSUserDefaults standardUserDefaults]setObject:plot.district forKey:@"GuidequId"];
+        [[NSUserDefaults standardUserDefaults]setObject:plot.district_name forKey:@"GuidequName"];
+        [[NSUserDefaults standardUserDefaults]setObject:plot.city forKey:@"GuideShiId"];
+        [[NSUserDefaults standardUserDefaults]setObject:plot.city_name forKey:@"GuideShiName"];
+        [[NSUserDefaults standardUserDefaults]setBool:YES forKey:@"changeComm"];
+        [[NSUserDefaults standardUserDefaults]setBool:YES forKey:@"changeCommShang"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        NSString *tag =[NSString stringWithFormat:@"%@", [[NSUserDefaults standardUserDefaults] objectForKey:@"commid"]];
+        NSSet * tagJihe = [NSSet setWithObjects:tag, nil];
+        NSLog(@"%@",tagJihe);
+        [JPUSHService setTags:tagJihe callbackSelector:@selector((tagsAliasCallback:tags:alias:)) object:self];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"reloadNearby" object:nil];
+        [self.navigationController popViewControllerAnimated:YES];
+        return;
+    }
     NSMutableDictionary* dic = [NSMutableDictionary new];
     [dic setObject:userid forKey:@"user_id"];
     [dic setObject:plot.province forKey:@"province_id"];
@@ -359,11 +379,6 @@
             NSLog(@"%@",tagJihe);
             [JPUSHService setTags:tagJihe callbackSelector:@selector((tagsAliasCallback:tags:alias:)) object:self];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"reloadNearby" object:nil];
-            //if (_xuanshequ==YES) {
-            //    _xuanshequ=NO;
-            //    self.tabBarController.selectedIndex=3;
-            //    return;
-            //}
             [self.navigationController popViewControllerAnimated:YES];
         }
     }];

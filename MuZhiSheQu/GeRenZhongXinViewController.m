@@ -195,16 +195,16 @@
     _HeaderImg.backgroundColor=blueTextColor;
     [HeaderView addSubview:_HeaderImg];
     _HeaderImg.userInteractionEnabled = YES;
-    NSArray *buttonArr=@[@[@"center_index_ico_01",@"center_index_ico_02",@"center_index_ico_03"],@[@"收藏的商品",@"收藏的店铺",@"我的公告"]];
-    for (int i=0; i<3; i++)
+    //NSArray *buttonArr=@[@[@"center_index_ico_01",@"center_index_ico_02",@"center_index_ico_03"],@[@"收藏的商品",@"收藏的店铺",@"我的公告"]];
+     NSArray *buttonArr=@[@[@"center_index_ico_01",@"center_index_ico_03"],@[@"收藏的商品",@"我的公告"]];
+    for (int i=0; i<2; i++)
     {
-        UIButton *button=[[UIButton alloc]initWithFrame:CGRectMake(i*self.view.width/3, _HeaderImg.bottom, self.view.width/3, 44*self.scale)];
+        UIButton *button=[[UIButton alloc]initWithFrame:CGRectMake(i*self.view.width/2, _HeaderImg.bottom, self.view.width/2, 44*self.scale)];
         button.tag = i;
         UIImageView *logo=[[UIImageView alloc]initWithFrame:CGRectMake(8*self.scale, button.height/2-10*self.scale, 20*self.scale, 20*self.scale)];
         logo.contentMode=UIViewContentModeScaleToFill;
         logo.image=[UIImage imageNamed:buttonArr[0][i]];
         [button addSubview:logo];
-        
         UILabel *title=[[UILabel alloc]initWithFrame:CGRectMake(logo.right+3*self.scale, logo.top, button.width-logo.right-2*self.scale, logo.height)];
         title.text=buttonArr[1][i];
         title.font=DefaultFont(self.scale);
@@ -223,10 +223,9 @@
     if (_tableView) {
         [_tableView removeFromSuperview];
     }
-    
 //    _dataSource=@[@[@"我的订单",@"服务类订单",@"我的购物车"],@[@"收货地址",@"所属社区管理",@"二手闲置",@"我要开店"],@[@"软件设置"]];
-
-    _dataSource=@[@[@"我的订单"],@[@"收货地址",@"所属社区管理",@"二手闲置",@"我要开店"],@[@"软件设置"]];
+    _dataSource=@[@[@"我的订单"],@[@"收货地址",@"我要开店"],@[@"软件设置"]];
+//@[@[@"我的订单"],@[@"收货地址",@"所属社区管理",@"二手闲置",@"我要开店"],@[@"软件设置"]];
     _tableView=[[UITableView alloc]initWithFrame:CGRectMake(0, self.NavImg.bottom, self.view.width, [UIScreen mainScreen].bounds.size.height-self.NavImg.bottom-49)];
     _tableView.delegate=self;
     _tableView.dataSource=self;
@@ -243,7 +242,7 @@
     return [[_dataSource objectAtIndex:section] count];
 }
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    NSArray *imgArr=@[@[@"center_index_ico_04",@"center_index_ico_06"],@[@"center_index_ico_07",@"center_index_ico_08",@"vvz",@"center_index_ico_09"],@[@"center_index_ico_10"]];
+    NSArray *imgArr=@[@[@"center_index_ico_04",@"center_index_ico_06"],@[@"center_index_ico_07",@"center_index_ico_09"],@[@"center_index_ico_10"]];//@[@[@"center_index_ico_04",@"center_index_ico_06"],@[@"center_index_ico_07",@"center_index_ico_08",@"vvz",@"center_index_ico_09"],@[@"center_index_ico_10"]];
 
 //    NSArray *imgArr=@[@[@"center_index_ico_04",@"center_index_ico_05",@"center_index_ico_06"],@[@"center_index_ico_07",@"center_index_ico_08",@"vvz",@"center_index_ico_09"],@[@"center_index_ico_10"]];
     CenterCell *Cell=(CenterCell *)[tableView dequeueReusableCellWithIdentifier:@"CenterCell" forIndexPath:indexPath];
@@ -271,7 +270,7 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
     
-    if (indexPath.section ==1  && indexPath.row == 3) {
+    if (indexPath.section ==1  && indexPath.row == 1) {
         
         self.hidesBottomBarWhenPushed=YES;
         WoYaoKaiWiDianViewController *woyao = [WoYaoKaiWiDianViewController new];
@@ -279,10 +278,7 @@
         woyao.dian=YES;
         self.hidesBottomBarWhenPushed=NO;
         return;
-        
     }
-
-    
     if (![Stockpile sharedStockpile].isLogin && indexPath.section!=2) {
         [self ShowAlertWithMessage:@"请先登录"];
         return;
@@ -338,14 +334,16 @@
     
     
     self.hidesBottomBarWhenPushed=YES;
-    if (button.tag==2)
+    if (button.tag==1)
     {
         WoDeGongGaoViewController *gonggaoVc=[[WoDeGongGaoViewController alloc]init];
         [self.navigationController pushViewController:gonggaoVc animated:YES];
-    }else if (button.tag==1){
-        ShouCangDianPuViewController *dianpuVc=[[ShouCangDianPuViewController alloc]init];
-        [self.navigationController pushViewController:dianpuVc animated:YES];
-    }else{
+    }
+//    else if (button.tag==1){
+//        ShouCangDianPuViewController *dianpuVc=[[ShouCangDianPuViewController alloc]init];
+//        [self.navigationController pushViewController:dianpuVc animated:YES];
+//    }
+    else{
         ShouCangShangPinViewController *shangpinVc=[[ShouCangShangPinViewController alloc]init];
         [self.navigationController pushViewController:shangpinVc animated:YES];
     }
@@ -382,29 +380,28 @@
         CarNum.hidden=YES;
     }
 }
+
 #pragma mark -- 购物车的数字
 - (void)gouWuCheShuZi
 {
-    
     UITabBarItem * item=[self.appdelegate.tabBarController.tabBar.items objectAtIndex:2];
-    if ([Stockpile sharedStockpile].isLogin)
-    {
-        NSString * value = [[NSUserDefaults standardUserDefaults]objectForKey:@"GouWuCheShuLiang"];
-        NSLog(@"%@",value);
-        if ([value isEqualToString:@"0"])
-        {
-            [item setBadgeValue:nil];
-        }
-        else
-        {
-            [item setBadgeValue:value];
-        }
-    }
-    else
-    {
+    //    if ([Stockpile sharedStockpile].isLogin)
+    //    {
+    NSNumber* num=[[NSUserDefaults standardUserDefaults]objectForKey:@"GouWuCheShuLiang"];
+    NSString * value = [NSString stringWithFormat:@"%@",num];
+    NSLog(@"value==%@",value);
+    if (num==nil||[value isEqualToString:@"0"]){
         [item setBadgeValue:nil];
+    }else{
+        [item setBadgeValue:value];
     }
+    //    }
+    //    else
+    //    {
+    //        [item setBadgeValue:nil];
+    //    }
 }
+
 #pragma mark - 导航
 -(void)newNav{
     self.TitleLabel.text=@"个人中心";

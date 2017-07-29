@@ -46,17 +46,11 @@
     
     [self centerDaiFuKuanOderVi];
     [self returnVi];
-    
-    
-    
-    
-    
 }
 
 -(void)reshData{
     [_la removeFromSuperview];
     [self.view addSubview:self.activityVC];
-    
     _index ++;
     [self.activityVC startAnimate];
     AnalyzeObject *anle = [AnalyzeObject new];
@@ -96,7 +90,7 @@
 
 }
 
--(void)sc0h{
+-(void)sc0h{ 
     [_la removeFromSuperview];
 
     _index=0;
@@ -131,12 +125,9 @@
             
             [self.view addSubview:_la];
         }
-
     }];
-
-
-
 }
+
 -(void)sc0f{
     
     [self reshData];
@@ -216,8 +207,6 @@
     _bigScrollView.backgroundColor=[UIColor clearColor];
     [_big addSubview:_bigScrollView];
 
-    
-    
 //    NSMutableArray * mutabArr = [NSMutableArray new];;
 //    for (NSDictionary *dic in _data[i][@"order_detail"]) {
 //        
@@ -228,8 +217,6 @@
 //        }
 //    }
 
-    
-    
     float setY = 10*self.scale;
     float nameCellY=0;
     biggg = [NSMutableArray new];
@@ -246,7 +233,6 @@
         }
     }
 
-    
     for (int i=0; i<biggg.count; i++) {
         
         
@@ -264,15 +250,10 @@
             CellView *nameCell = [[CellView alloc]initWithFrame:CGRectMake(0, 0, self.view.width, 44)];
             nameCell.topline.hidden=NO;
             [bigvi addSubview:nameCell];
-            
-            
             UILabel *nameLa = [[UILabel alloc]initWithFrame:CGRectMake(10*self.scale, nameCell.height/2-10*self.scale, self.view.width, nameCell.height-20*self.scale)];
             nameLa.text =[NSString stringWithFormat:@"订单号：%@",biggg[i][0][@"order_no"]];
             nameLa.font = DefaultFont(self.scale);
             [nameCell addSubview:nameLa];
-            
-            
-            
             UILabel *states = [[UILabel alloc]initWithFrame:CGRectMake(self.view.width-80*self.scale, nameCell.height/2-10*self.scale, 70*self.scale, 20*self.scale)];
             
             if ([biggg[i][0][@"status"] isEqualToString:@"1"]) {
@@ -283,27 +264,22 @@
                 states.text = @"待收货";
             }else if([biggg[i][0][@"status"] isEqualToString:@"5"]){
                 if ([biggg[i][0][@"is_comment"] isEqualToString:@""] || [biggg[i][0][@"is_comment"] isEqualToString:@"1"]){
-                    
                     states.text = @"待评价";
                 }else{
-                
-                states.text = @"已完成";
+                    states.text = @"已完成";
                 }
             }else{
                 states.text = @"已取消";
-            }            states.textAlignment = NSTextAlignmentRight;
+            }
+            states.textAlignment = NSTextAlignmentRight;
             states.textColor = [UIColor redColor];
             states.font = SmallFont(self.scale);
             [nameCell addSubview:states];
-
             nameCellY=nameCell.bottom;
     }else{
-        
 //            UIView *tline = [[UIView alloc]initWithFrame:CGRectMake(0, 0*self.scale, self.view.width, .5)];
 //            tline.backgroundColor=superBackgroundColor;
 //            [_bigScrollView addSubview:tline];
-        
-//------
             CellView *nameCell = [[CellView alloc]initWithFrame:CGRectMake(0, 0, self.view.width, 44)];
             nameCell.topline.hidden=NO;
             nameCell.topline.backgroundColor=blackLineColore;
@@ -821,9 +797,6 @@
         weifu.order_id=biggg[btn.tag-1000000][0][@"order_no"];
         [self.navigationController pushViewController:weifu animated:YES];
     }
-    
-
-
 }
 
 -(void)querenshouhuo:(UIButton *)btn{
@@ -866,12 +839,6 @@
             }];
         }
     }];
-    
-    
-    
-    
-
-
 }
 
 -(void)fuAndQUxiAO:(UIButton *)sender{
@@ -891,16 +858,6 @@
             [self.appdelegate WXPayPrice:[NSString stringWithFormat:@"%.0f",pric] OrderID:biggg[sender.tag-20000][0][@"order_no"] OrderName:biggg[sender.tag-20000][0][@"order_no"] complete:^(BaseResp *resp) {
                 
                 if (resp.errCode == WXSuccess) {
-                    
-                
-                
-                
-                
-                
-                
-                
-                
-                
                 }
             }];
             
@@ -908,24 +865,7 @@
             [self.activityVC stopAnimate];
             
             [self.appdelegate AliPayPrice:[NSString stringWithFormat:@"%@",biggg[sender.tag-20000][0][@"total_amount"]] OrderID:biggg[sender.tag-20000][0][@"order_no"] OrderName:@"拇指社区" OrderDescription:biggg[sender.tag-20000][0][@"order_no"] complete:^(NSDictionary *resp) {
-                
-                
-                
                 if ([[resp objectForKey:@"resultStatus"] isEqualToString:@"9000"]) {
-
-                    
-                    
-                    
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
                 
                 }else{
 //                    [self ShowAlertWithMessage:@"支付失败！"];
@@ -935,25 +875,15 @@
 
                 }
             }];
-            
         }
-        
-        
-        
-        
     }else{
         //取消  _data[sender.tag-300][@"order_detail"][0][@"order_no"]
-
-        
-        
-        
         [self ShowAlertTitle:nil Message:@"确认取消?" Delegate:self Block:^(NSInteger index) {
             if (index==1) {
                 NSString *userid = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
                 NSDictionary *dic = @{@"user_id":userid,@"order_no":biggg[sender.tag-10000][0][@"order_no"]};
                 AnalyzeObject *anle = [AnalyzeObject new];
                 [anle cancelOrderWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
-                    
                     if ([code isEqualToString:@"0"]) {
                         [self ShowAlertWithMessage:msg];
                         

@@ -186,51 +186,44 @@
     NSString* fullPathToFile = [documentsDirectory stringByAppendingPathComponent:imageName];
     [imageData writeToFile:fullPathToFile atomically:NO];
 }
+
 - (void)imagePickerController: (UIImagePickerController *)picker didFinishPickingMediaWithInfo: (NSDictionary *)info{
-    
     UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
     UIImage *newImg=[self imageWithImageSimple:image scaledToSize:CGSizeMake(300, 300)];
     HelpTableViewCell *cell=(HelpTableViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
     cell.HeaderImg.image=newImg;
-    
     float scale=1;
     if (image.size.width>800) {
         scale = 800/image.size.width;
     }
     UIImage *Img = [self scaleImage:image scaleFactor:scale];
     NSData *mydata=UIImageJPEGRepresentation(Img, .5);
-    
     NSString *base64img=[mydata base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength ];
    // 1、user_id(用户 id) 2、logo(头像)
     [self.activityVC startAnimate];
     AnalyzeObject *anle = [AnalyzeObject new];
     self.user_id = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
+    NSString* usertoken= [[NSUserDefaults standardUserDefaults]objectForKey:@"usertoken"];
 
-    NSDictionary *dic = @{@"user_id":self.user_id,@"logo":base64img};
+    NSDictionary *dic = @{@"user_id":self.user_id,@"logo":base64img,@"usertoken":usertoken};
     [anle modifyLogoWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
         [self.activityVC stopAnimate];
+        NSLog(@"modify_success====%@",models);
+
         if([code isEqualToString:@"0"]){
             [self ShowAlertWithMessage:msg];
             [[NSUserDefaults standardUserDefaults]setObject:models[@"avatar"] forKey:@"touxiang"];
             [[Stockpile sharedStockpile]setLogo:models[@"avatar"]];
             [[NSUserDefaults standardUserDefaults]synchronize];
-            
-            
             RCUserInfo *_currentUserInfo = [[RCUserInfo alloc]initWithUserId:[self getuserid] name:[Stockpile sharedStockpile].nickName portrait:[NSString stringWithFormat:@"%@",[Stockpile sharedStockpile].logo]];
             [RCIMClient sharedRCIMClient].currentUserInfo = _currentUserInfo;
-            
         }else{
-        
             [self ShowAlertWithMessage:@"上传失败"];
         }
-        
     }];
-    
-    
-    
-    
     [picker dismissViewControllerAnimated:YES completion:nil];
 }
+
 -(UIImage *) scaleImage: (UIImage *)image scaleFactor:(float)scaleBy
 {
     CGSize size = CGSizeMake(image.size.width * scaleBy, image.size.height * scaleBy);

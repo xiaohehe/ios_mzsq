@@ -12,7 +12,7 @@
 typedef void(^GuideBlock)(BOOL success);
 
 @interface ChoosePlotController : SuperViewController<UITableViewDataSource,UITableViewDelegate,PassValueDelegate>
-@property(nonatomic) BOOL* isRoot;//当前小区名称
+@property(nonatomic) BOOL* isRoot;//
 @property(nonatomic,copy) NSString* plotName;//当前小区名称
 @property(nonatomic,strong) NSMutableArray* plotArray;//附近小区数组
 @property(nonatomic,strong)GuideBlock block;

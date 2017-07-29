@@ -22,17 +22,18 @@
 
 #import "AFAppDotNetAPIClient.h"
 
-
 //static NSString * const AFAppDotNetAPIBaseURLString = @"http://api.zzwms.com/";
-static NSString * const AFAppDotNetAPIBaseURLString = @"https://app.mzsq.cc";
-
+//static NSString * const AFAppDotNetAPIBaseURLString = @"https://app.mzsq.cc";
+static NSString * const AFAppDotNetAPIBaseURLString = @"http://capi.mzsq.com/";
+//static NSString * const AFAppDotNetAPIBaseURLString = @"http://139.129.221.224:7112/";
 @implementation AFAppDotNetAPIClient
 
 + (instancetype)sharedClient {
     static AFAppDotNetAPIClient *_sharedClient = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _sharedClient = [[AFAppDotNetAPIClient alloc] initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/app/Public/mzsq/",AFAppDotNetAPIBaseURLString]]];
+        //_sharedClient = [[AFAppDotNetAPIClient alloc] initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/app/Public/mzsq/",AFAppDotNetAPIBaseURLString]]];
+         _sharedClient = [[AFAppDotNetAPIClient alloc] initWithBaseURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",AFAppDotNetAPIBaseURLString]]];
 //        NSString *cerPath = [[NSBundle mainBundle] pathForResource:@"YJHhttps" ofType:@"cer"];
 //        NSData * certData =[NSData dataWithContentsOfFile:cerPath];
 //        NSSet * certSet = [[NSSet alloc] initWithObjects:certData, nil];

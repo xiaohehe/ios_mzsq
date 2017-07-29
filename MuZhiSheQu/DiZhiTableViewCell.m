@@ -41,7 +41,7 @@
     //_EditButton.titleLabel.font=Small10Font(self.scale);
     [_EditButton setImage:[UIImage imageNamed:@"address_ico"] forState:UIControlStateNormal];
 
-    [self addSubview:_EditButton];
+    //[self addSubview:_EditButton];编辑地址 20170709隐藏
     
 //    _DeleteButton=[[UIButton alloc]init];
 //    [_DeleteButton setTitle:@"删除" forState:UIControlStateNormal];

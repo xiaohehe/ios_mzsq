@@ -12,12 +12,15 @@
 #import "SheQuManagerViewController.h"
 #import "JPUSHService.h"
 //#import "APService.h"
+#import "DataBase.h"
+
 @interface LoginViewController()<UITextFieldDelegate>
 @property(nonatomic,strong)NSString *tel;
 @property(nonatomic,strong)NSString *code;
 @property(nonatomic,strong)NSTimer *timer;
 @property(nonatomic,assign)NSInteger time;
 @property(nonatomic,strong)reshGonggao block;
+
 @end
 @implementation LoginViewController
 
@@ -195,34 +198,37 @@
     [self.view endEditing:YES];
     UITextField *TelText = (UITextField *)[self.view viewWithTag:10];
     UITextField *yan = (UITextField *)[self.view viewWithTag:11];
-    if ([TelText.text isEqualToString:@"18539466509"]) {
-        _tel=@"18539466509";
-    }
-    if ([TelText.text isEqualToString:@"13939256943"]) {
-        _tel=@"13939256943";
-    }
-    if ([[TelText.text trimString] isEmptyString]||[_tel isEmptyString] || ![[TelText.text trimString ] isEqualToString:_tel]) {
+//    if ([TelText.text isEqualToString:@"18539466509"]) {
+//        _tel=@"18539466509";
+//    }
+//    if ([TelText.text isEqualToString:@"13939256943"]) {
+//        _tel=@"13939256943";
+//    }
+    if ([[TelText.text trimString] isEmptyString]||[_tel isEmptyString] ) {//|| ![[TelText.text trimString ] isEqualToString:_tel]
         [self ShowAlertWithMessage:@"请输入正确的手机号"];
         return;
     }
-    if ([_tel isEqualToString:@"18539466509"]) {
-        yan.text=@"111111";
-        
-    }else if ([_tel isEqualToString:@"13939256943"]){
-        yan.text=@"111111";
-
-    
-    }else if ([[yan.text trimString] isEmptyString] || [_code isEmptyString] || ![[yan.text trimString] isEqualToString:_code]) {
+//    if ([_tel isEqualToString:@"18539466509"]) {
+//        yan.text=@"111111";
+//        
+//    }else if ([_tel isEqualToString:@"13939256943"]){
+//        yan.text=@"111111";
+//    }else
+    if ([[yan.text trimString] isEmptyString] || [_code isEmptyString] ) {//|| ![[yan.text trimString] isEqualToString:_code]
         [self ShowAlertWithMessage:@"请输入验证码"];
         return;
     }
     [self.activityVC startAnimate];
     AnalyzeObject *analy=[[AnalyzeObject alloc]init];
-    [analy userLoginWithTel:_tel Block:^(id models, NSString *code, NSString *msg) {
+    
+    NSDictionary* param=[NSDictionary dictionaryWithObjectsAndKeys:TelText.text,@"mobile",yan.text,@"code",@"4",@"type", nil];
+    [analy userLogin:param Block:^(id models, NSString *code, NSString *msg) {
         [self.activityVC stopAnimate];
-        NSLog(@"%@",models);
+        NSLog(@"login====%@",models);
         if (models && [models isKindOfClass:[NSDictionary class]]) {
-            [[NSUserDefaults standardUserDefaults] setObject:models[@"cart_prod_count"] forKey:@"GouWuCheShuLiang"];
+            NSInteger count= [[DataBase sharedDataBase] sumCartNum];
+            //[[NSUserDefaults standardUserDefaults] setObject:models[@"cart_prod_count"] forKey:@"GouWuCheShuLiang"];
+            [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithUnsignedInteger:count] forKey:@"GouWuCheShuLiang"];
             [[NSUserDefaults standardUserDefaults]setObject:nil forKey:@"commid"];
             [[NSUserDefaults standardUserDefaults]setObject:nil forKey:@"commname"];
             [[Stockpile sharedStockpile]setID:[NSString stringWithFormat:@"%@",[models objectForKey:@"id"]]];
@@ -263,6 +269,7 @@
             [[NSUserDefaults standardUserDefaults]setObject:[NSString stringWithFormat:@"%@",[models objectForKey:@"avatar"]] forKey:@"touxiang"];
             [[Stockpile sharedStockpile]setIsLogin:YES];
             [[Stockpile sharedStockpile]setID:[NSString stringWithFormat:@"%@",[models objectForKey:@"id"]]];
+            [[Stockpile sharedStockpile] setUsertoken:[models objectForKey:@"usertoken"]];
               [[NSUserDefaults standardUserDefaults]setObject:[models objectForKey:@"id"] forKey:@"user_id"];
             
             if (![models[@"address"][@"id"]isEqualToString:@""]) {
@@ -272,24 +279,16 @@
             }
             [Stockpile sharedStockpile].Name=models[@"mobile"];
             [[NSUserDefaults standardUserDefaults]setBool:YES forKey:@"or"];
-            
             [[NSUserDefaults standardUserDefaults]setObject:models forKey:@"logodata"];
     //----logo
             [[Stockpile sharedStockpile]setLogo:[NSString stringWithFormat:@"%@",[models objectForKey:@"avatar"]]];
-           
             [[Stockpile sharedStockpile]setToken:[NSString stringWithFormat:@"%@",[models objectForKey:@"token"]]];
-            
-                [[NSUserDefaults standardUserDefaults]setObject:models[@"community_id"] forKey:@"commid"];
-
+            [[NSUserDefaults standardUserDefaults]setObject:models[@"community_id"] forKey:@"commid"];
             [[NSUserDefaults standardUserDefaults]setObject:models[@"community"] forKey:@"commname"];
-            
             [[NSUserDefaults standardUserDefaults]setObject:models[@"province_id"] forKey:@"GuideShengId"];
             [[NSUserDefaults standardUserDefaults]setObject:models[@"province"] forKey:@"GuideShengName"];
-            
-            
             [[NSUserDefaults standardUserDefaults]setObject:models[@"district_id"] forKey:@"GuidequId"];
             [[NSUserDefaults standardUserDefaults]setObject:models[@"district"] forKey:@"GuidequName"];
-            
             [[NSUserDefaults standardUserDefaults]setObject:models[@"city_id"] forKey:@"GuideShiId"];
             [[NSUserDefaults standardUserDefaults]setObject:models[@"city"] forKey:@"GuideShiName"];
             [[NSUserDefaults standardUserDefaults]synchronize];

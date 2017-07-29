@@ -135,19 +135,15 @@
 
 
 -(void)gongGaoDian{
-    
     NSInteger num = [[[NSUserDefaults standardUserDefaults]objectForKey:@"gongnum"] integerValue];
-    
     NSInteger wuyeNum = [[[NSUserDefaults standardUserDefaults]objectForKey:@"wuyeNum"] integerValue];
-    
     AnalyzeObject *anle = [AnalyzeObject new];
     [anle GongGaoNum:@{@"community_id":[self getCommid]} Block:^(id models, NSString *code, NSString *msg) {
         if ([code isEqualToString:@"0"]) {
-
+            NSLog(@"gongGaoDian==%@",models);
             NSInteger hnum = [models[@"total_notice_count"] integerValue];
             if (hnum>num) {
                 [self.tabBarController.tabBar showBadgeOnItemIndex:1];
-                
             }
             [[NSUserDefaults standardUserDefaults]setObject:[NSString stringWithFormat:@"%ld",(long)hnum] forKey:@"gongnumc"];
             [[NSUserDefaults standardUserDefaults]synchronize];

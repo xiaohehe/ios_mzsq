@@ -23,6 +23,7 @@ single_interface(Stockpile);
 @property(nonatomic,strong)NSString *ID;
 @property(nonatomic,strong)NSString *logo;
 @property(nonatomic,strong)NSString *token;
+@property(nonatomic,strong)NSString *usertoken;
 @property(nonatomic,strong)NSString *City,*area;
 @property(nonatomic,strong)NSString *Sheng;
 @property(nonatomic,strong)NSString *Role;

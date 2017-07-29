@@ -60,13 +60,11 @@
     TiShiLabel.textAlignment=NSTextAlignmentCenter;
     TiShiLabel.textColor=[UIColor whiteColor];
     [self.view addSubview:TiShiLabel];
-    
     UILongPressGestureRecognizer *lpress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPress:)];
     lpress.minimumPressDuration = 0.3;//按0.5秒响应longPress方法
     lpress.allowableMovement = 10.0;
     //给MKMapView加上长按事件
     [self.mapView addGestureRecognizer:lpress];//mapView是MKMapView的实例
-
     [[CCLocation sharedCCLocation] getLocation:^(CLLocationCoordinate2D locationCoordinate2D, NSString *country, NSString *city, NSString *place,NSString *area) {
      _dic = [[NSDictionary alloc] initWithObjectsAndKeys:
                                  [NSString stringWithFormat:@"%f",locationCoordinate2D.latitude],
@@ -76,42 +74,30 @@
                                  city,@"city",
                                  place,@"place",
                                  nil];
-        
        MKCoordinateRegion region=MKCoordinateRegionMakeWithDistance(locationCoordinate2D,5000 ,5000);
         MKCoordinateRegion adjustedRegion = [_mapView regionThatFits:region];
         if (_annotation) {
             [self.mapView removeAnnotation:_annotation];
         }
-        
-        
        _annotation=[[CustomAnnotation alloc]initWithCoordinate:locationCoordinate2D];
         _annotation.title=place;
-      
       [self.mapView addAnnotation:_annotation];
         [_mapView setRegion:adjustedRegion animated:YES];
-     
-        
     }];
-    
 }
 
 - (void)longPress:(UIGestureRecognizer*)gestureRecognizer {
-    
     if (gestureRecognizer.state == UIGestureRecognizerStateBegan){  //这个状态判断很重要
         //坐标转换
         CGPoint touchPoint = [gestureRecognizer locationInView:self.mapView];
         CLLocationCoordinate2D touchMapCoordinate =
         [self.mapView convertPoint:touchPoint toCoordinateFromView:self.mapView];
-        
         NSLog(@"%f",touchMapCoordinate.latitude);
         NSLog(@"%f",touchMapCoordinate.longitude);
-        
         CLLocation *Location = [[CLLocation alloc] initWithLatitude:touchMapCoordinate.latitude longitude:touchMapCoordinate.longitude];
         Location = [Location locationBaiduFromMars];
-        
         CLLocation *Fir=[[CLLocation alloc]initWithLatitude:touchMapCoordinate.latitude longitude:touchMapCoordinate.longitude];
         CLGeocoder *geocoder = [[CLGeocoder alloc] init];
-      
         [geocoder reverseGeocodeLocation:Fir completionHandler:^(NSArray* placemarks,NSError *error)
          {
              if (placemarks.count >0 )
@@ -129,34 +115,23 @@
                                           city,@"city",
                                           place,@"place",
                                           nil];
-                     
                      if (_annotation) {
                          [self.mapView removeAnnotation:_annotation];
                      }
                      _annotation=[[CustomAnnotation alloc]initWithCoordinate:touchMapCoordinate];
                      _annotation.title=place;
-
                      [self.mapView addAnnotation:_annotation];
-                     
                    //  _block(dic);
                      _dic=dic;
-                   
-                     
-                     
                  });
              }
          }];
- 
-        
      //   [self.navigationController popViewControllerAnimated:YES];
- 
     }
 }
 
 - (void)newNav{
-    
     self.TitleLabel.text = @"地图";
-    
     UIButton *popBtn=[[UIButton alloc]initWithFrame:CGRectMake(0, self.TitleLabel.top, self.TitleLabel.height, self.TitleLabel.height)];
     [popBtn setImage:[UIImage imageNamed:@"left"] forState:UIControlStateNormal];
     [popBtn setImage:[UIImage imageNamed:@"left_b"] forState:UIControlStateHighlighted];
@@ -165,12 +140,10 @@
     
     UIButton* configue=[[UIButton alloc]initWithFrame:CGRectMake(self.view.width-50,self.TitleLabel.top, self.TitleLabel.height, self.TitleLabel.height)];
     [configue setTitle:@"确定" forState:UIControlStateNormal];
-    [configue setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [configue setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     configue.titleLabel.font=DefaultFont(self.scale);
     [configue addTarget:self action:@selector(configueClick) forControlEvents:UIControlEventTouchUpInside];
-    
     [self.NavImg addSubview:configue];
-
 }
 
 -(void)configueClick{

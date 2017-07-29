@@ -360,38 +360,60 @@
 }
 
 -(void)zhifu{
-    
+    self.user_id = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
     NSString *zongPrice=nil;
     if (_data.count>0) {
         zongPrice = _data[0][@"total_amount"];
     }else{
         zongPrice = @"0";
     }
-    
     float price = [zongPrice floatValue]*100;
-
-    NSLog(@"%@",zongPrice);
-    
-    
+    NSLog(@"quzhifu==%@",_data[0]);
     if ([_data[0][@"pay_type"] isEqualToString:@"2"]) {
-        
-        
-        
-        [self.appdelegate WXPayPrice:[NSString stringWithFormat:@"%.0f",price] OrderID:self.order_id OrderName:self.order_id complete:^(BaseResp *resp) {
-                    if (resp.errCode == WXSuccess) {
-                        [self suessToVi:zongPrice];
-                    }
-        
-                }];
+        AnalyzeObject *anle = [AnalyzeObject new];
+        NSMutableDictionary *param = [NSMutableDictionary dictionary];
+        [param setObject:_data[0][@"order_no"] forKey:@"orderid"];
+        [param setObject: self.user_id forKey:@"user_id"];
+        [anle resubmitOrder:[param copy] Block:^(id models, NSString *code, NSString *msg) {
+            [self.activityVC stopAnimate];
+            //NSLog(@"resubmitOrder==%@",models);
+            [self.appdelegate WXPayNewWithNonceStr:models[@"noncestr"] OrderID:models[@"order_no"] Timestamp:models[@"timestamp"] sign:models[@"sign"] complete:^(BaseResp *resp) {
+                [self.activityVC stopAnimate];
+                if (resp.errCode == WXSuccess) {
+                     [self suessToVi:zongPrice];
+                }
+            }];
+        }];
+//        [self.appdelegate WXPayPrice:[NSString stringWithFormat:@"%.0f",price] OrderID:self.order_id OrderName:self.order_id complete:^(BaseResp *resp) {
+//                    if (resp.errCode == WXSuccess) {
+//                        [self suessToVi:zongPrice];
+//                    }
+//        
+//                }];
 
     }else if ([_data[0][@"pay_type"] isEqualToString:@"1"]){
-        
-        [self.appdelegate AliPayPrice:zongPrice OrderID:self.order_id OrderName:@"拇指社区" OrderDescription:self.order_id complete:^(NSDictionary *resp) {
-            if ([[resp objectForKey:@"resultStatus"] isEqualToString:@"9000"]) {
-                [self suessToVi:zongPrice];
-            }
-            
+        AnalyzeObject *anle = [AnalyzeObject new];
+        NSMutableDictionary *param = [NSMutableDictionary dictionary];
+        [param setObject:_data[0][@"order_no"]  forKey:@"orderid"];
+        [param setObject: self.user_id forKey:@"user_id"];
+        [anle resubmitOrder:[param copy] Block:^(id models, NSString *code, NSString *msg) {
+            [self.activityVC stopAnimate];
+            //  NSLog(@"resubmitOrder==%@",models);
+            //                [self.appdelegate WXPayNewWithNonceStr:models[@"noncestr"] OrderID:models[@"order_no"] Timestamp:models[@"timestamp"] sign:models[@"sign"]];
+            [self.appdelegate AliPayNewPrice:models[@"amount"] OrderID:[NSString stringWithFormat:@"%@",models[@"order_no"]] OrderName:@"拇指社区" Sign:models[@"sign"]  OrderDescription:[NSString stringWithFormat:@"%@",models[@"order_no"]] complete:^(NSDictionary *resp) {
+                [self.activityVC stopAnimate];
+                if ([[resp objectForKey:@"resultStatus"] isEqualToString:@"9000"]) {
+                    [self suessToVi:zongPrice];
+                }
+            }];
         }];
+
+//        [self.appdelegate AliPayPrice:zongPrice OrderID:self.order_id OrderName:@"拇指社区" OrderDescription:self.order_id complete:^(NSDictionary *resp) {
+//            if ([[resp objectForKey:@"resultStatus"] isEqualToString:@"9000"]) {
+//                [self suessToVi:zongPrice];
+//            }
+//            
+//        }];
 
         
     }

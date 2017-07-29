@@ -88,7 +88,8 @@
     [self.activityVC startAnimate];
   //  1、user_id(用户 id) 2、login_pass(登录密码)
     NSDictionary *dic = @{@"user_id":self.user_id,@"login_pass":npwd};
-    [AnalyzeObject modifyPayPassWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
+    AnalyzeObject *analyze=[[AnalyzeObject alloc]init];
+    [analyze modifyPayPassWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
         [self.activityVC startAnimate];
         if ([code isEqualToString:@"0"]) {
             [self.navigationController popViewControllerAnimated:YES];

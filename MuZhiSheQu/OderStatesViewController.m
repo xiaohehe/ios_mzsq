@@ -30,7 +30,8 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    self.navigationController.navigationBarHidden=YES;
+    self.navigationController.navigationBarHidden = NO;
+    self.navigationController.navigationBar.hidden = YES;
     [UmengCollection intoPage:NSStringFromClass([self class])];
 }
 -(void)viewWillDisappear:(BOOL)animated
@@ -66,6 +67,7 @@
     
     
     [anle myOrderDetailWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
+        NSLog(@"myOrderDetailWithDic==%@",models);
         if ([code isEqualToString:@"0"]) {
             [_data addObjectsFromArray:models];
             [self BigVi];
@@ -718,37 +720,26 @@
 -(void)myPingJiaCellVi{
     _PingJiaCellVi = [[UIView alloc]initWithFrame:CGRectMake(0, _dingDanCellVi.bottom+10*self.scale, self.view.width, 1000)];
     [_bigXaingQingVi addSubview:_PingJiaCellVi];
-    
     CellView *pingjiaCell = [[CellView alloc]initWithFrame:CGRectMake(0, 0, self.view.width, 44)];
     [_PingJiaCellVi addSubview:pingjiaCell];
-    
     UIImageView *dingDanImg = [[UIImageView alloc]initWithFrame:CGRectMake(10*self.scale, pingjiaCell.height/2-7.5*self.scale, 15*self.scale, 15*self.scale)];
-    
     dingDanImg.image = [UIImage imageNamed:@"pingjia"];
     [pingjiaCell addSubview:dingDanImg];
-    
     UILabel *xiangQingLa = [[UILabel alloc]initWithFrame:CGRectMake(dingDanImg.right+5*self.scale, dingDanImg.top, self.view.width-20*self.scale, 15*self.scale)];
     xiangQingLa.text = @"我的评价";
     xiangQingLa.font = DefaultFont(self.scale);
     [pingjiaCell addSubview:xiangQingLa];
-    
-    
     CellView *contextCell = [[CellView alloc]initWithFrame:CGRectMake(0, pingjiaCell.bottom, self.view.width, 200)];
     [_PingJiaCellVi addSubview:contextCell];
-    
     UIImageView *headImg = [[UIImageView alloc]initWithFrame:CGRectMake(10*self.scale, 10*self.scale, 50*self.scale, 50*self.scale)];
     [headImg setImageWithURL:[NSURL URLWithString:_data[0][@"comment"][@"avatar"]] placeholderImage:[UIImage imageNamed:@"center_img"]];
     headImg.layer.cornerRadius=25.0f*self.scale;
     headImg.layer.masksToBounds=YES;
     [contextCell addSubview:headImg];
-    
     UILabel *nameLa = [[UILabel alloc]initWithFrame:CGRectMake(headImg.right+5*self.scale, headImg.top, self.view.width-70*self.scale, 20*self.scale)];
-    
     if (![_data[0][@"comment"][@"nick_name"] isKindOfClass:[NSNull class]]) {
         nameLa.text = _data[0][@"comment"][@"nick_name"];
     }
-    
-    
     nameLa.font = DefaultFont(self.scale);
     [contextCell addSubview:nameLa];
     

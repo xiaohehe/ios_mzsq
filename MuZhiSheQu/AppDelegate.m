@@ -29,6 +29,7 @@
 #import "SuperViewController.h"
 #import <Math.h>
 #import <ShareSDK/ShareSDK.h>
+#import "DataBase.h"
 //#import <ShareSDK/ShareSDK.h>---
 //#import <ShareSDKConnector/ShareSDKConnector.h>
 
@@ -111,28 +112,18 @@
 
 
 - (BOOL)application:(UIApplication *)app handleOpenURL:(nonnull NSURL *)url{
-
-
-
     if ([url.host isEqualToString:@"safepay"]) {
-        
         [[AlipaySDK defaultService] processOrderWithPaymentResult:url standbyCallback:^(NSDictionary *resultDic) {
             NSLog(@"result = %@",resultDic);
             if (_ApiBlock) {
                 _ApiBlock(resultDic);
             }
-            
         }];
         return YES;
     }
-    
-    
     return  [WXApi handleOpenURL:url delegate:self];
-
-
     return YES;
 }
-
 
 - (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)url
@@ -140,10 +131,8 @@
          annotation:(id)annotation
 {
     if ([url.host isEqualToString:@"safepay"]) {
-        
         [[AlipaySDK defaultService] processOrderWithPaymentResult:url standbyCallback:^(NSDictionary *resultDic) {
             NSLog(@"result = %@",resultDic);
-
             if (_ApiBlock) {
                 _ApiBlock(resultDic);
             }
@@ -169,6 +158,15 @@
     return [WXApi handleOpenURL:url delegate:self];
 }
 
+-(void) clearHistoryData{
+    //if([Stockpile sharedStockpile].isLogin){
+        [[DataBase sharedDataBase] clearHistoryCart];
+        [[NSUserDefaults standardUserDefaults] setObject:@"0" forKey:@"GouWuCheShuLiang"];
+        double sum=[[DataBase sharedDataBase] sumCartPrice];
+        NSLog(@"sum==%f",sum);
+  //  }
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
@@ -177,6 +175,7 @@
     self.shopDictionary=[NSMutableDictionary dictionary];
     self.isRefresh=false;
     _mapManager = [[BMKMapManager alloc]init];
+    [WXApi registerApp:APPI_ID withDescription:@"demo 2.0"];
     BOOL ret = [_mapManager start:@"KT8PaG8f62YITBtye0c7Drjr" generalDelegate:self];
     if (!ret) {
         NSLog(@"manager start failed!");
@@ -194,6 +193,7 @@
     [self initddd];
     [self appNum];
     [UmengCollection setup];//友盟
+    [self clearHistoryData];
 //    self.window.backgroundColor=[UIColor blackColor];
       return YES;
 }
@@ -211,33 +211,28 @@
 //        }
 //        
 //    }];
-//    
-//    
-//    
 //}
 
-
 - (void)getUserInfoWithUserId:(NSString *)userId completion:(void (^)(RCUserInfo *userInfo))completion{
-    
-    NSString *str = [userId substringToIndex:1];
-    
-    if ([str isEqualToString:@"m"]) {
-        NSString *commid = [[NSUserDefaults standardUserDefaults]objectForKey:@"commid"];
-        AnalyzeObject *nale = [AnalyzeObject new];
-        [nale getGJidWithDic:@{@"community_id":commid} Block:^(id models, NSString *code, NSString *msg) {
-            if ([models isKindOfClass:[NSDictionary class]]) {
-                RCUserInfo *info = [[RCUserInfo alloc]initWithUserId:[NSString stringWithFormat:@"%@",models[@"id"]] name:[NSString stringWithFormat:@"%@",models[@"user_name"]] portrait:[NSString stringWithFormat:@"%@",models[@"logo"]]];
-                completion(info);
-                
-            }
-            
-        }];
-        
+    NSLog(@"getUserInfoWithUserId==%@",userId);
+    NSString *uid=userId;
+    if([userId hasPrefix:@"N"]==1){
+       uid=[userId  substringFromIndex:1];
     }
-    
-    
+//    NSString *str = [userId substringToIndex:1];
+//    if ([str isEqualToString:@"m"]) {
+//        NSString *commid = [[NSUserDefaults standardUserDefaults]objectForKey:@"commid"];
+//        AnalyzeObject *nale = [AnalyzeObject new];
+//        [nale getGJidWithDic:@{@"community_id":commid} Block:^(id models, NSString *code, NSString *msg) {
+//            if ([models isKindOfClass:[NSDictionary class]]) {
+//                RCUserInfo *info = [[RCUserInfo alloc]initWithUserId:[NSString stringWithFormat:@"%@",models[@"id"]] name:[NSString stringWithFormat:@"%@",models[@"user_name"]] portrait:[NSString stringWithFormat:@"%@",models[@"logo"]]];
+//                completion(info);
+//            }
+//        }];
+//    }
     AnalyzeObject *analy=[[AnalyzeObject alloc]init];
-    [analy GetNickAndAvatarWithUser_ID:@{@"user_id":userId} Block:^(id models, NSString *code, NSString *msg) {
+    [analy GetNickAndAvatarWithUser_ID:@{@"user_id":uid} Block:^(id models, NSString *code, NSString *msg) {
+       // NSLog(@"GetNickAndAvatarWithUser_ID==%@",models);
         NSArray *Arr=models;
         if (Arr && Arr.firstObject && [code isEqualToString:@"0"]) {
             NSDictionary *dic = Arr.firstObject;
@@ -322,35 +317,29 @@
 //    }
 //}
 
-
 - (void)onGetReverseGeoCodeResult:(BMKGeoCodeSearch *)searcher result:(BMKReverseGeoCodeResult *)result errorCode:(BMKSearchErrorCode)error{
     NSLog(@"%@",result.addressDetail);
 }
 
-- (void)onGetNetworkState:(int)iError
-{
+- (void)onGetNetworkState:(int)iError{
     if (0 == iError) {
         NSLog(@"联网成功");
-    }
-    else{
+    }else{
         NSLog(@"onGetNetworkState %d",iError);
     }
 }
 
-- (void)onGetPermissionState:(int)iError
-{
+- (void)onGetPermissionState:(int)iError{
     if (0 == iError) {
         NSLog(@"授权成功");
-
-    }
-    else {
+    }else {
         NSLog(@"onGetPermissionState %d",iError);
     }
 }
 
 #pragma mark - 融云
 -(void)RongRunInit{
-    [[RCIM sharedRCIM] initWithAppKey:@"z3v5yqkbvnbm0"];
+    [[RCIM sharedRCIM] initWithAppKey:@"uwd1c0sxur0i1"];//测试pvxdm17jpc1zr    原来z3v5yqkbvnbm0
     [[RCIM sharedRCIM] setConnectionStatusDelegate:self];
     if (iPhone6Plus) {
         [RCIM sharedRCIM].globalConversationPortraitSize = CGSizeMake(56, 56);
@@ -360,20 +349,21 @@
     }
     [RCIM sharedRCIM].receiveMessageDelegate=self;
     [RCIM sharedRCIM].userInfoDataSource=self;
-
     [RCIM sharedRCIM].globalConversationAvatarStyle=RC_USER_AVATAR_CYCLE;
     [RCIM sharedRCIM].globalMessageAvatarStyle=RC_USER_AVATAR_CYCLE;
     NSString *token =[Stockpile sharedStockpile].token;
     NSString *userId=[Stockpile sharedStockpile].ID;
+    //userId=[NSString stringWithFormat:@"N%@",userId];
     NSString *userName = [Stockpile sharedStockpile].nickName;
     if (token.length && userId.length &&[Stockpile sharedStockpile].isLogin) {
-        RCUserInfo *_currentUserInfo =
-        [[RCUserInfo alloc] initWithUserId:userId
-                                      name:userName
-                                  portrait:[Stockpile sharedStockpile].logo];
-        [RCIMClient sharedRCIMClient].currentUserInfo = _currentUserInfo;
-        [RCIM sharedRCIM].currentUserInfo=_currentUserInfo;
+       // RCUserInfo *_currentUserInfo =
+     //   [[RCUserInfo alloc] initWithUserId:userId
+      //                                name:userName
+      //                            portrait:[Stockpile sharedStockpile].logo];
+      //  [RCIMClient sharedRCIMClient].currentUserInfo = _currentUserInfo;
+     //   [RCIM sharedRCIM].currentUserInfo=_currentUserInfo;
         [[RCIM sharedRCIM] connectWithToken:token success:^(NSString *userId) {
+            NSLog(@"登陆成功。当前登录的用户ID：%@", userId);
             RCUserInfo *_currentUserInfo = [[RCUserInfo alloc]initWithUserId:userId name:[Stockpile sharedStockpile].nickName portrait:[NSString stringWithFormat:@"%@",[Stockpile sharedStockpile].logo]];
             NSLog(@"%@",[Stockpile sharedStockpile].logo);
             [RCIMClient sharedRCIMClient].currentUserInfo = _currentUserInfo;
@@ -387,15 +377,8 @@
     [RCIM sharedRCIM].userInfoDataSource=self;
 }
 
-
-
-
-
 #pragma mark - RCIMConnectionStatusDelegate
 - (void)onRCIMReceiveMessage:(RCMessage *)message left:(int)left{
-
-
-    
     int unreadMsgCount = [[RCIMClient sharedRCIMClient]getUnreadCount: @[@(ConversationType_PRIVATE),@(ConversationType_DISCUSSION), @(ConversationType_PUBLICSERVICE), @(ConversationType_PUBLICSERVICE),@(ConversationType_GROUP)]];
     NSLog(@"%d",unreadMsgCount);
     // UINavigationController *nav=(UINavigationController *)_tabBarController.viewControllers[1];
@@ -407,6 +390,7 @@
         }
     });
 }
+
 - (void)onRCIMConnectionStatusChanged:(RCConnectionStatus)status
 {
     if (status == ConnectionStatus_KICKED_OFFLINE_BY_OTHER_CLIENT) {
@@ -423,7 +407,6 @@
 }
 
 -(int)appNum{
-    
     if (![Stockpile sharedStockpile].isLogin) {
 //        [[UIApplication sharedApplication]setApplicationIconBadgeNumber:0];
         return 0;
@@ -434,17 +417,12 @@
 //    NSLog(@"%d",[UIApplication sharedApplication].applicationIconBadgeNumber);
 //    NSLog(@"%d",i);
 //    [[UIApplication sharedApplication]setApplicationIconBadgeNumber:i];
-
     if (i>0) {
-        
         dispatch_async(dispatch_get_main_queue(), ^{
             AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
         });
-
     }
-    
     return i;
-    
 }
 
 -(void)NavStye{
@@ -455,16 +433,13 @@
     [[UINavigationBar appearance] setTitleTextAttributes:textAttributes];
     [[UINavigationBar appearance] setTintColor:[UIColor blackColor]];
     [[UINavigationBar appearance] setBarTintColor:[UIColor blackColor]];
+    //[[UINavigationBar appearance] setBarTintColor:[UIColor blackColor]];
+    //[UINavigationBar appearance]
     [[UINavigationBar appearance]setBackgroundColor:[UIColor whiteColor]];
     [[UINavigationBar appearance]setBackgroundImage:[UIImage ImageForColor:[UIColor whiteColor]] forBarMetrics:UIBarMetricsDefault];
 }
 
-
-
 -(void)initddd{
-    
-    
-    
 //    [ShareSDK registerApp:@"c8ff5ced9020"
 //     
 //          activePlatforms:@[@(SSDKPlatformTypeWechat),
@@ -502,47 +477,31 @@
 //                 break;
 //         }
 //     }];
-
-    
     [ShareSDK connectQZoneWithAppKey:@"1105091993"
                            appSecret:@"9u6v7VT9isn0AWya"
                    qqApiInterfaceCls:[QQApiInterface class]
                      tencentOAuthCls:[TencentOAuth class]];
-    
-    
     [ShareSDK connectWeChatWithAppId:APPI_ID
                            appSecret:APP_SECRET
                            wechatCls:[WXApi class]];
-    
-    
     [ShareSDK connectQQWithQZoneAppKey:@"1105091993"
                      qqApiInterfaceCls:[QQApiInterface class]
                        tencentOAuthCls:[TencentOAuth class]];
-    
-    
     [ShareSDK connectQQWithAppId:@"1105091993" qqApiCls:[QQApiInterface class]];
 }
-
-
-
 
 #pragma mark - TabBarViewController
 -(void)newTabBarViewController:(BOOL)orgen{
     UITabBarItem *homeItem=[[UITabBarItem alloc]initWithTitle:@"社区精选" image:[[UIImage setImgNameBianShen:@"ico1"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:[[UIImage imageNamed:@"ico_1"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
-   
     [self unSelectedTapTabBarItems:homeItem];
     [self selectedTapTabBarItems:homeItem];
-    
     UINavigationController *homeNav=[[UINavigationController alloc]initWithRootViewController:[[ViewController alloc]init]];
     homeNav.tabBarItem = homeItem;
-    
 //    UITabBarItem *shopItem=[[UITabBarItem alloc]initWithTitle:@"生活服务" image:[[UIImage imageNamed:@"fuwu"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:[[UIImage imageNamed:@"fuwu_11"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
 //    [self unSelectedTapTabBarItems:shopItem];
 //    [self selectedTapTabBarItems:shopItem];
 //    UINavigationController *shopNav=[[UINavigationController alloc]initWithRootViewController:[[ShangJiaViewController alloc]init]];
 //    shopNav.tabBarItem = shopItem;
-    
-    
 //    UITabBarItem *centerItem=[[UITabBarItem alloc]initWithTitle:@"物业中心" image:[[UIImage imageNamed:@"Oval 6_1"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:[[UIImage imageNamed:@"Oval 6_1"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
 //    [self unSelectedTapTabBarItems:centerItem];
 //    [self selectedTapTabBarItems:centerItem];
@@ -552,22 +511,16 @@
 //    //centerItem.titlePositionAdjustment
 //    UINavigationController *centerNav=[[UINavigationController alloc]initWithRootViewController:[[WuYeZhongXinViewController alloc]init]];
 //    centerNav.tabBarItem = centerItem;
-    
-    
     UITabBarItem *gonggaoItem=[[UITabBarItem alloc]initWithTitle:@"邻里圈" image:[[UIImage imageNamed:@"ico2"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:[[UIImage imageNamed:@"ico_2"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
     [self unSelectedTapTabBarItems:gonggaoItem];
     [self selectedTapTabBarItems:gonggaoItem];
     UINavigationController *gonggaoNav=[[UINavigationController alloc]initWithRootViewController:[[GongGaoQiangViewController alloc]init]];
     gonggaoNav.tabBarItem = gonggaoItem;
-    
-    
-    
     UITabBarItem * gouWuChe = [[UITabBarItem alloc]initWithTitle:@"结算中心" image:[[UIImage imageNamed:@"ico3"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]selectedImage:[[UIImage imageNamed:@"ioc_3"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
     [self unSelectedTapTabBarItems:gouWuChe];
     [self selectedTapTabBarItems:gouWuChe];
     UINavigationController * gouWuCheNav = [[UINavigationController alloc]initWithRootViewController:[[GouWuCheViewController alloc]init]];
     gouWuCheNav.tabBarItem = gouWuChe;
-    
     UITabBarItem *presonItem=[[UITabBarItem alloc]initWithTitle:@"个人中心" image:[[UIImage imageNamed:@"ico4"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:[[UIImage imageNamed:@"ico_4"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
     [self unSelectedTapTabBarItems:presonItem];
     [self selectedTapTabBarItems:presonItem];
@@ -580,54 +533,37 @@
     _tabBarController.selectedIndex = 0;
     _tabBarController.tabBar.backgroundColor=tabBarBackgroundColor;
     _tabBarController.delegate=self;
-    
-    
-    
-    
     if (![[NSUserDefaults standardUserDefaults]boolForKey:@"GuideKey"]) {
-        
         GuideViewController *guideVC=[[GuideViewController alloc]initWithBlock:^(BOOL success) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 ChoosePlotController *ch = [[ChoosePlotController alloc]initWithBlock:^(BOOL success) {
                     [[NSUserDefaults standardUserDefaults]setBool:YES forKey:@"GuideKey"];
                     self.window.rootViewController=_tabBarController;
                 }];
-
 //                ChooseQuViewController *ch = [[ChooseQuViewController alloc]initWithBlock:^(BOOL success) {
 //                    [[NSUserDefaults standardUserDefaults]setBool:YES forKey:@"GuideKey"];
 //                    self.window.rootViewController=_tabBarController;
 //                }];
                 UINavigationController *nav = [[UINavigationController alloc]initWithRootViewController:ch];
-                
                     self.window.rootViewController = nav;
-
-                
                 [RCIM sharedRCIM].userInfoDataSource=self;
-
             });
         }];
         
         self.window.rootViewController = guideVC;
     }else{
-        
         if ([Stockpile sharedStockpile].isLogin==NO && orgen) {
-          
-                
 //            self.window.rootViewController=_tabBarController;
-
 //                ChooseQuViewController *ch = [[ChooseQuViewController alloc]initWithBlock:^(BOOL success) {
-//                    
 //                    self.window.rootViewController=_tabBarController;
 //                }];
             ChoosePlotController *ch = [[ChoosePlotController alloc]initWithBlock:^(BOOL success) {
                 [[NSUserDefaults standardUserDefaults]setBool:YES forKey:@"GuideKey"];
                 self.window.rootViewController=_tabBarController;
             }];
-
                 UINavigationController *nav = [[UINavigationController alloc]initWithRootViewController:ch];
                 self.window.rootViewController = nav;
             [RCIM sharedRCIM].userInfoDataSource=self;
-
         }else{
 //       NSString *ID = [[NSUserDefaults standardUserDefaults]objectForKey:@"commid"];
 //        if (!ID) {
@@ -648,6 +584,12 @@
 }
 
 -(void)outLogin{
+    [[DataBase sharedDataBase] clearCart];
+    if(self.shopDictionary.count>0){
+        [self.shopDictionary removeAllObjects];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"refreshPage" object:nil];
+
+    }
     [[UIApplication sharedApplication] unregisterForRemoteNotifications];
     [JPUSHService setAlias:nil callbackSelector:@selector(asdasd) object:self];
     [[Stockpile  sharedStockpile] setIsLogin:NO];
@@ -675,7 +617,8 @@
         return NO;
     }
     UINavigationController *nav=(UINavigationController *)viewController;
-    if (([nav.visibleViewController isKindOfClass:[GongGaoQiangViewController class]] || [nav.visibleViewController isKindOfClass:[GouWuCheViewController class]]) && ![Stockpile sharedStockpile].isLogin) {
+    //|| [nav.visibleViewController isKindOfClass:[GouWuCheViewController class]]
+    if (([nav.visibleViewController isKindOfClass:[GongGaoQiangViewController class]] ) && ![Stockpile sharedStockpile].isLogin) {
         NSInteger selectedIndex=0;
         if ( [nav.visibleViewController isKindOfClass:[GongGaoQiangViewController class]]) {
             selectedIndex=1;
@@ -727,12 +670,24 @@
         }
     }
 }
+
+#pragma mark - 微信支付
+-(void)WXPayNewWithNonceStr:(NSString *)nonceStr OrderID:(NSString *)orderId Timestamp:(NSString *)timestamp sign:(NSString *)sign complete:(WXPayBlock)complete{
+     _wxpay=complete;
+    PayReq *request = [[PayReq alloc] init];
+    request.openID=APPI_ID;
+    request.partnerId = PARTNER_ID;
+    request.prepayId= orderId;
+    request.package = @"Sign=WXPay";
+    request.nonceStr= nonceStr;
+    request.timeStamp=[timestamp intValue];
+    request.sign= sign;
+    [WXApi sendReq:request]; 
+}
+
 #pragma mark - 微信支付
 -(void)WXPayPrice:(NSString *)price OrderID:(NSString *)orderId OrderName:(NSString *)orderName complete:(WXPayBlock)complete{
-    
-    
     NSLog(@"%@",price);
-    
     _wxpay=complete;
     payRequsestHandler *req=[payRequsestHandler alloc];
     //初始化支付签名对象
@@ -744,10 +699,9 @@
         NSString *debug = [req getDebugifo];
         NSLog(@"%@\n\n",debug);
     }else{
-        NSLog(@"%@\n\n",[req getDebugifo]);
+        NSLog(@"wx====%@\n\n",[req getDebugifo]);
         //[self alert:@"确认" msg:@"下单成功，点击OK后调起支付！"];
         NSMutableString *stamp  = [dict objectForKey:@"timestamp"];
-        
         //调起微信支付
         PayReq* req             = [[PayReq alloc] init];
         req.openID              = [dict objectForKey:@"appid"];
@@ -757,15 +711,12 @@
         req.timeStamp           = stamp.intValue;
         req.package             = [dict objectForKey:@"package"];
         req.sign                = [dict objectForKey:@"sign"];
-        
-        
 //        NSLog(@"%@  --   %@   ---  %@  ---  %@  ----  %@  ----  %@",req.openID,req.partnerId,req.nonceStr,req.timeStamp,req.package,req.sign);
-        
 //     BOOL or =   [WXApi openWXApp];
         [WXApi sendReq:req];
     }
-    
 }
+
 #pragma mark - 支付宝支付
 -(void)AliPayPrice:(NSString *)price OrderID:(NSString *)orderId OrderName:(NSString *)orderName OrderDescription:(NSString *)description  complete:(ApiPayBlock)complete{
     NSString *appScheme = @"MZSQZFB";
@@ -780,26 +731,85 @@
         //NSString *Code=[resultDic objectForKey:@"resultStatus"];
         _ApiBlock(resultDic);
     }];
-    
 }
+
+-(void)AliPayNewPrice:(NSString *)price OrderID:(NSString *)orderId OrderName:(NSString *)orderName Sign:(NSString*)sign OrderDescription:(NSString *)description  complete:(ApiPayBlock)complete{
+    NSString *appScheme = @"MZSQZFB";
+//    NSString* orderInfo = [self getOrderInfoPrice:price OrderID:orderId OrderName:orderName OrderDescription:description];
+//    
+//    
+//    
+//    
+//    /*
+//     *生成订单信息及签名
+//     */
+//    //将商品信息赋予AlixPayOrder的成员变量
+//    Order* order = [Order new];
+//    // NOTE: app_id设置
+//    order.app_id = @"2015072400185895";
+//    // NOTE: 支付接口名称
+//    order.method = @"alipay.trade.app.pay";
+//    // NOTE: 参数编码格式
+//    order.charset = @"utf-8";
+//    // NOTE: 当前时间点
+//    NSDateFormatter* formatter = [NSDateFormatter new];
+//    [formatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+//    order.timestamp = [formatter stringFromDate:[NSDate date]];
+//    
+//    // NOTE: 支付版本
+//    order.version = @"1.0";
+//    
+//    // NOTE: sign_type 根据商户设置的私钥来决定
+//    order.sign_type = (rsa2PrivateKey.length > 1)?@"RSA2":@"RSA";
+//    
+//    // NOTE: 商品数据
+//    order.biz_content = [BizContent new];
+//    order.biz_content.body = @"我是测试数据";
+//    order.biz_content.subject = @"1";
+//    order.biz_content.out_trade_no = [self generateTradeNO]; //订单ID（由商家自行制定）
+//    order.biz_content.timeout_express = @"30m"; //超时时间设置
+//    order.biz_content.total_amount = [NSString stringWithFormat:@"%.2f", 0.01]; //商品价格
+//    
+//    //将商品信息拼接成字符串
+//    NSString *orderInfo = [order orderInfoEncoded:NO];
+//    NSString *orderInfoEncoded = [order orderInfoEncoded:YES];
+//    NSLog(@"orderSpec = %@",orderInfo);
+//
+    
+    
+    
+    //NSString* signedStr = [self doRsa:orderInfo andKey:sign];
+   // NSLog(@"sign==%@",signedStr);
+    //NSString *orderString = [NSString stringWithFormat:@"%@&sign=\"%@\"&sign_type=\"%@\"",orderInfo, sign, @"RSA"];
+    NSString *orderString = [NSString stringWithFormat:@"%@",sign];
+    _ApiBlock=complete;
+    [[AlipaySDK defaultService] payOrder:orderString fromScheme:appScheme callback:^(NSDictionary *resultDic) {
+        NSLog(@"reslut = %@",resultDic);
+        //NSString *Code=[resultDic objectForKey:@"resultStatus"];
+        _ApiBlock(resultDic);
+    }];
+}
+
+
 -(NSString*)getOrderInfoPrice:(NSString *)price OrderID:(NSString *)orderId OrderName:(NSString *)orderName OrderDescription:(NSString *)description
 {
     Order *order = [[Order alloc] init];
-    order.partner = PartnerID;
-    order.seller = SellerID;
-    //#warning 商品信息
-    order.tradeNO =[NSString stringWithFormat:@"%@",orderId]   ; //订单ID（由商家自行制定）
-    order.productName =[NSString stringWithFormat:@"%@",orderName];//商品标题
-    order.productDescription = [NSString stringWithFormat:@"%@",description];//商品描述
-    order.amount =[NSString stringWithFormat:@"%@",price] ; //商品价格 （单位：元）
-    order.notifyURL =  [NSString stringWithFormat:@"%@",CallBackWeb]; //回调URL
-    order.service = @"mobile.securitypay.pay";
-    order.paymentType = @"1";
-    order.inputCharset = @"utf-8";
-    order.itBPay = @"30m";
-    order.showUrl = @"m.alipay.com";
+//    order.partner = PartnerID;
+//    order.seller = SellerID;
+//    //#warning 商品信息
+//    order.tradeNO =[NSString stringWithFormat:@"%@",orderId]   ; //订单ID（由商家自行制定）
+//    order.productName =[NSString stringWithFormat:@"%@",orderName];//商品标题
+//    order.productDescription = [NSString stringWithFormat:@"%@",description];//商品描述
+//    order.amount =[NSString stringWithFormat:@"%@",price] ; //商品价格 （单位：元）
+//    order.notifyURL =  [NSString stringWithFormat:@"%@",CallBackWeb]; //回调URL
+//    order.service = @"mobile.securitypay.pay";
+//    order.paymentType = @"1";
+//    order.inputCharset = @"utf-8";
+//    order.itBPay = @"30m";
+//    order.showUrl = @"m.alipay.com";
     return [order description];
 }
+
 -(NSString*)doRsa:(NSString*)orderInfo
 {
     id<DataSigner> signer = CreateRSADataSigner(PartnerPrivKey);
@@ -807,6 +817,12 @@
     return signedString;
 }
 
+-(NSString*)doRsa:(NSString*)orderInfo andKey:(NSString*)sign
+{
+    id<DataSigner> signer = CreateRSADataSigner(sign);
+    NSString *signedString = [signer signString:orderInfo];
+    return signedString;
+}
 
 #pragma mark - TabBar字体颜色
 -(void)unSelectedTapTabBarItems:(UITabBarItem *)tabBarItem
@@ -1063,12 +1079,8 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo {
             oder.orderid=[NSString stringWithFormat:@"%@",[dic objectForKey:@"order_no"]];
             oder.smallOder=[NSString stringWithFormat:@"%@",[dic objectForKey:@"sub_order_no"]];
             [_tabBarController presentViewController:[[UINavigationController alloc]initWithRootViewController:oder] animated:NO completion:nil];
-            
-            
         }
-
     }else if ([push_type isEqualToString:@"3"]){
-        
         //零售商家 BreakInfoViewController 零售商家
         BreakInfoViewController *oder = [BreakInfoViewController new];
         oder.isPush=YES;
@@ -1081,8 +1093,6 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo {
         oder.shop_id=[NSString stringWithFormat:@"%@",[dic objectForKey:@"shop_id"]];
 //        oder.smallOder=[NSString stringWithFormat:@"%@",[dic objectForKey:@"sub_order_no"]];
         [_tabBarController presentViewController:[[UINavigationController alloc]initWithRootViewController:oder] animated:NO completion:nil];
-        
-        
     }else if ([push_type isEqualToString:@"4"]){
         //ShopInfoViewController  商品详情
         ShopInfoViewController *oder = [ShopInfoViewController new];

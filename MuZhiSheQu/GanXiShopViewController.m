@@ -59,7 +59,6 @@
     _btnArry = [NSMutableArray new];
     // Do any additional setup after loading the view.
     ii=1;
-
     //@"今天",
     _DayArr=[NSArray arrayWithObjects:@"今天", @"明天", nil];
     _TimeArr=[[NSMutableArray alloc]init];
@@ -70,13 +69,8 @@
     {
         NSString *Time=[NSString stringWithFormat:@"%d:00-%d:00",i,i+1];
         [_TimeArr addObject:Time];
-        
     }
-
     _DataArr=_TimeArr;
-
-    
-    
     [self BigScrollView];
     [self topImageVi];
     [self BusinessNameAndAdress];
@@ -164,7 +158,7 @@
             if ([code isEqualToString:@"0"]) {
                 
                 _data = models[0];
-                NSLog(@"%@",_data);
+                NSLog(@"reshData====%@",_data);
                 self.TitleLabel.text =_data[@"shop_name"];
                  [self BigScrollView];
                 
@@ -220,7 +214,7 @@
 #pragma mark ------顶部图片
 -(void)topImageVi{
     
-    
+    NSLog(@"topImageVi==%@",_data);
     _imgScroll = [[UIScrollView alloc]initWithFrame:CGRectMake(0,0, self.view.width, self.view.width*3/4)];
     _imgScroll.pagingEnabled=YES;
     _imgScroll.delegate=self;
@@ -231,19 +225,16 @@
     if ([_data[@"shop_zhaopai"] isKindOfClass:[NSArray class]]) {
         count=[_data[@"shop_zhaopai"] count];
     }
-    
     _imgScroll.contentSize=CGSizeMake(self.view.width*count, _imgScroll.height);
     
     for (int i=0; i<count; i++) {
         UIImageView *topImg = [[UIImageView alloc]initWithFrame:CGRectMake(_imgScroll.width*i, 0, self.view.width, self.view.width*3/4)];
         topImg.tag=1000+i;
-        
-        
         NSString *url=@"";
         NSString *cut = [NSString stringWithFormat:@"%@",[_data objectForKey:@"shop_zhaopai"][i]];
         NSString *imagename = [cut lastPathComponent];
         NSString *path = [cut stringByDeletingLastPathComponent];
-        NSString *smallImgUrl=[NSString stringWithFormat:@"%@/%@",path,[imagename stringByReplacingOccurrencesOfString:@"." withString:@"_thumb640."]];
+        NSString *smallImgUrl=[NSString stringWithFormat:@"%@/%@",path,[imagename stringByReplacingOccurrencesOfString:@"." withString:@"."]];
 //        NSArray * tuPianarray = [cut componentsSeparatedByString:@"."];
 //        if (cut.length>0) {
 //            url = [cut substringToIndex:[cut length] - 4];
@@ -1121,49 +1112,32 @@
     }else{
         subOrder.text = @"拨打电话";
     }
-    
     [rightVi addSubview:subOrder];
-    
     UIButton *submit = [UIButton buttonWithType:UIButtonTypeCustom];
     submit.frame = subOrder.frame;
     [submit addTarget:self action:@selector(submintOder:) forControlEvents:UIControlEventTouchUpInside];
     [rightVi addSubview:submit];
-
-  
-
 }
+
 //提交订单；
 -(void)submintOder:(UIButton *)sender{
-    
-    
     if (_isHaveItem) {
-        
         if ([Stockpile sharedStockpile].isLogin==NO) {
-            
             [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
                 if (index==1) {
                     [self login];
                 }
-                
             }];
-            
             return;
         }
-
-        
         NSMutableArray *projectIndex = [NSMutableArray new];
         BOOL project = NO;
         for (UIButton *btn in _btnArry) {
             if (btn.selected==YES) {
                 project=YES;
-                
-                
                 NSString *str = [NSString stringWithFormat:@"%ld",(long)btn.tag];
                 NSString *tag = [str substringFromIndex:str.length-1];
-                
-                
                 //           NSString *ID = [_data objectForKey:@"serve_item"][btn.tag][@"item_id"];
-                
                 [projectIndex addObject:tag];
             }
         }
@@ -1254,36 +1228,23 @@
 //    chatService.title = [_data objectForKey:@"shop_name"];
 //
 //    [self.navigationController pushViewController:chatService animated:YES];
-    
-    
-
 }
-
-
-
 //点击电话的事件
 
 -(void)phoneEvent:(UIButton *)sender{
-    
-    
     [self.view addSubview:self.activityVC];
     [self.activityVC startAnimate];
     AnalyzeObject *anle = [AnalyzeObject new];
     NSMutableDictionary *dic = [NSMutableDictionary dictionary];
-    if (_isPush)
-    {
+    if (_isPush){
          [dic setObject:self.shop_id forKey:@"shop_id"];
-    }
-    else
-    {
+    }else{
        [dic setObject:self.ID forKey:@"shop_id"];
     }
-   
     [dic setObject:[NSString stringWithFormat:@"%@",[_data objectForKey:@"hotline"]] forKey:@"tel"];
     if ([Stockpile sharedStockpile].isLogin) {
         [dic setObject:[Stockpile sharedStockpile].ID forKey:@"user_id"];
     }
-    
     [anle telTongJi:dic Block:^(id models, NSString *code, NSString *msg) {
         [self.activityVC stopAnimate];
         if ([code isEqualToString:@"0"]) {
@@ -1291,38 +1252,25 @@
         NSMutableString * str=[[NSMutableString alloc] initWithFormat:@"telprompt://%@",[_data objectForKey:@"hotline"]];
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:str]];
     }];
-    
-
-    
-    
-    
-    
 }
+
 #pragma mark -----返回按钮
 -(void)returnVi{
-    
     self.TitleLabel.text=_titlee;
-    
     UIButton *popBtn=[[UIButton alloc]initWithFrame:CGRectMake(0, self.TitleLabel.top, self.TitleLabel.height, self.TitleLabel.height)];
     [popBtn setImage:[UIImage imageNamed:@"left"] forState:UIControlStateNormal];
     [popBtn setImage:[UIImage imageNamed:@"left_b"] forState:UIControlStateHighlighted];
     [popBtn addTarget:self action:@selector(PopVC:) forControlEvents:UIControlEventTouchUpInside];
     [self.NavImg addSubview:popBtn];
-    
-    
 //    UIButton *xiangqing = [UIButton buttonWithType:UIButtonTypeCustom];
 //    [xiangqing setTitle:@"商家详情" forState:UIControlStateNormal];
 //    xiangqing.titleLabel.font=DefaultFont(self.scale);
 //    xiangqing.frame=CGRectMake(self.view.width-70*self.scale, self.TitleLabel.top, 60*self.scale, self.TitleLabel.height);
 //    [xiangqing addTarget:self action:@selector(xiangqingBtn) forControlEvents:UIControlEventTouchUpInside];
 //    [self.NavImg addSubview:xiangqing];
-    
-    
 }
 
 -(void)xiangqingBtn{
-    
-    
     self.hidesBottomBarWhenPushed=YES;
     BusinessInfoViewController *shopInfo = [BusinessInfoViewController new];
     [shopInfo reshShopList:^(NSString *str) {

@@ -27,6 +27,23 @@
 
     [self.contentView addSubview:_HeaderImage];
     
+    _coverView=[[UIImageView alloc]init];
+    _coverView.contentMode=UIViewContentModeScaleAspectFill;
+    _coverView.backgroundColor=[UIColor colorWithRed:0.000 green:0.000 blue:0.000 alpha:0.4];
+    _coverView.clipsToBounds=YES;
+    
+    _loseEfficacy=[[UILabel alloc]init];
+    _loseEfficacy.font=DefaultFont(self.scale);
+    _loseEfficacy.backgroundColor=[UIColor clearColor];
+    _loseEfficacy.textAlignment=NSTextAlignmentCenter;
+    _loseEfficacy.textColor = [UIColor whiteColor];
+    _loseEfficacy.text=@"已失效";
+    [_coverView addSubview:_loseEfficacy];
+    
+    
+    
+    [self.contentView addSubview:_coverView];
+    
     _NameLabel=[[UILabel alloc]init];
     _NameLabel.font=DefaultFont(self.scale);
     _NameLabel.backgroundColor=[UIColor clearColor];
@@ -51,7 +68,6 @@
     _lin = [[UILabel alloc]init];
     _lin.backgroundColor=grayTextColor;
     [_price_yuan addSubview:_lin];
-
     
     _RigthImage=[[UIImageView alloc]init];
      _RigthImage.image=[UIImage imageNamed:@"xq_right"];
@@ -63,6 +79,9 @@
 }
 -(void)layoutSubviews{
     _HeaderImage.frame=CGRectMake(10*self.scale, 10*self.scale, 80*self.scale, self.height-20*self.scale);
+    _coverView.frame=CGRectMake(10*self.scale, 10*self.scale, 80*self.scale, self.height-20*self.scale);
+    _loseEfficacy.frame=CGRectMake(0, 0, 80*self.scale, self.height-20*self.scale);
+
     _NameLabel.frame=CGRectMake(_HeaderImage.right+10*self.scale, _HeaderImage.top, self.width-_HeaderImage.right-40*self.scale, 20*self.scale);
     _NumberLabel.frame=CGRectMake(_NameLabel.left, _NameLabel.bottom, _NameLabel.width, _NameLabel.height);
     _PriceLabel.frame=CGRectMake(_NameLabel.left, _NumberLabel.bottom, _NameLabel.width, _NameLabel.height);

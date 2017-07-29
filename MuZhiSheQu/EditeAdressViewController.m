@@ -538,6 +538,7 @@
     [CarBtn addTarget:self action:@selector(SaveBtnVC:) forControlEvents:UIControlEventTouchUpInside];
     [self.NavImg addSubview:CarBtn];
 }
+
 -(void)SaveBtnVC:(id)sender{
     if ([_nameTF.text isEqualToString:@"" ] || [_xiaoqux.text isEqualToString:@"" ] ||  [_shoujix.text isEqualToString:@""]) {
         [self ShowAlertWithMessage:@"请完善信息后保存"];
@@ -553,9 +554,7 @@
         [self ShowAlertWithMessage:@"联系人姓名应在0-30个字符"];
         return;
     }
-    
-    
-    
+
     AnalyzeObject *anle = [AnalyzeObject new];
     NSString *userid = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
   //  NSString *adress = [_xiaoqux.text stringByAppendingString:_dizhix.text];
@@ -563,6 +562,8 @@
     NSDictionary *dic = @{@"user_id":userid,@"real_name":_nameTF.text,@"sex":_sex,@"house_number":_dizhix.text,@"address":_xiaoqux.text,@"mobile":_shoujix.text,@"address_id":self.adressid,@"lng":[NSString stringWithFormat:@"%@",_jing],@"lat":[NSString stringWithFormat:@"%@",_wei]};
     [anle addAddressWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
         if ([code isEqualToString:@"0"]) {
+            NSLog(@"ShopInfoViewController   goodsEvent");
+
            // [self ShowAlertWithMessage:msg]
             if (_orfanData) {
               [[NSNotificationCenter defaultCenter]postNotificationName:@"shopAddress" object:models];

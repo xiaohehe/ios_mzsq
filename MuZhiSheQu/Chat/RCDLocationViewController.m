@@ -21,8 +21,7 @@
 }
 -(void)viewDidLoad{
     [super viewDidLoad];
-    
-    
+    NSLog(@"RCDLocationViewController");
     _btn = [[UIButton alloc]initWithFrame:CGRectMake(12.5, self.view.width-35, self.view.width-25, 30)];
     _btn.layer.borderColor=blackLineColore.CGColor;
     _btn.layer.borderWidth=.5;
@@ -151,7 +150,7 @@
     
     UIButton *SaveBtn=[[UIButton alloc]initWithFrame:CGRectMake(0, 6, 44, 44)];
     [SaveBtn setTitle:@"完成" forState:UIControlStateNormal];
-    [SaveBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [SaveBtn setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
     SaveBtn.titleLabel.font=[UIFont systemFontOfSize:14];
     [SaveBtn addTarget:self action:@selector(rightBarButtonItemPressed:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *rightButton = [[UIBarButtonItem alloc] initWithCustomView:SaveBtn];

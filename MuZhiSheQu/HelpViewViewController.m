@@ -31,14 +31,12 @@
     AnalyzeObject *anle = [AnalyzeObject new];
     [anle helpInfoWithDic:@{@"terminal_type":@"1"} Block:^(id models, NSString *code, NSString *msg) {
         if ([code isEqualToString:@"0"]) {
-            _data=models;
+            //NSLog(@"helpinfo1111==%@",models[0]);
+            _data=models[0];
             [self newView];
-            
         }
         [self.activityVC stopAnimate];
     }];
-   
-
 }
 
 -(void)newView{
@@ -46,6 +44,7 @@
         [_web removeFromSuperview];
     }
      _web = [[UIWebView alloc]initWithFrame:CGRectMake(0, self.NavImg.bottom, self.view.width, self.view.height-self.NavImg.bottom)];
+    NSLog(@"help_content==%@",_data);
     [_web loadHTMLString:_data[@"content"] baseURL:nil];
     [self.view addSubview:_web];
 }

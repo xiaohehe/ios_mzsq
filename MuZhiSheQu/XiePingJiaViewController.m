@@ -275,10 +275,6 @@
     }else{
         _imgscroll.contentOffset=CGPointMake((tap.view.tag-200)*self.view.width, 0);
     }
-
-
-
-
 }
 
 
@@ -402,9 +398,8 @@
     [_assetss addObject:im];
     [self imgView];
     [self dismissViewControllerAnimated:YES completion:nil];
-
-
 }
+
 -(BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
     if ([text isEqualToString:@"\n"]) {
@@ -441,13 +436,9 @@
     [popBtn setImage:[UIImage imageNamed:@"left_b"] forState:UIControlStateHighlighted];
     [popBtn addTarget:self action:@selector(PopVC:) forControlEvents:UIControlEventTouchUpInside];
     [self.NavImg addSubview:popBtn];
-    
-    
-
-    
     UIButton *rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     [rightBtn setTitle:@"发表" forState:UIControlStateNormal];
-    [rightBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [rightBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     rightBtn.titleLabel.font = BigFont(self.scale);
     [rightBtn setTitleColor:[UIColor clearColor] forState:UIControlStateHighlighted];
     rightBtn.frame = CGRectMake(self.view.right-80*self.scale,self.TitleLabel.top,80*self.scale,self.TitleLabel.height);
@@ -463,24 +454,15 @@
     [talkImg addTarget:self action:@selector(talk) forControlEvents:UIControlEventTouchUpInside];
     [self.NavImg addSubview:talkImg];
 
-
-    
 }
 
 
 -(void)talk{
-    
-    
-    
     [_assetss removeObjectAtIndex:_imgscroll.contentOffset.x/self.view.width];
-    
     [self tuichu:nil];
     [self imgView];
     [self imgBing:nil];
-    
-    
 }
-
 
 -(void)allOder{
     [self.view endEditing:YES];
@@ -496,12 +478,9 @@
     if (self.is_order_on) {
         [dic setObject:self.order_on forKey:@"sub_order_no"];
     }
-    
     int i=1;
     float scale = 1.0;
     for (ALAsset *asset in self.assetss) {
-
-        
         ZLPickerBrowserPhoto *zlp = [ZLPickerBrowserPhoto photoAnyImageObjWith:asset];
         UIImage *image = zlp.photoImage;
         if (image.size.width>800) {
@@ -509,46 +488,27 @@
         }else{
             scale= 1.0;
         }
-        
-        
         UIImage *im = [self scaleImage:image scaleFactor:scale];
-        
-        
-        
         NSData *data = UIImageJPEGRepresentation(im, .6);
         NSString *encodedImageStr = [data base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
         [dic setObject:encodedImageStr forKey:[NSString stringWithFormat:@"img%d",i++]];
     }
-        
-
-    
+    NSString* usertoken= [[NSUserDefaults standardUserDefaults]objectForKey:@"usertoken"];
+    [dic setObject:usertoken forKey:@"usertoken"];
     [AnalyzeObject addCommentWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
         if ([code isEqualToString:@"0"]) {
-          
-            
             dispatch_async(dispatch_get_main_queue(), ^{
-                
                 [self.activityVC stopAnimate];
-                
                 [self.navigationController popViewControllerAnimated:YES];
                 if (_lingshou) {
                     if (_block) {
                         _block(nil);
                     }
                 }
-                
-                
-                
-                
                 [[NSNotificationCenter defaultCenter]postNotificationName:@"pingjiresh" object:nil];
-
             });
-            
         }
     }];
-    
-    
-    
 }
 
 -(UIImage *) scaleImage: (UIImage *)image scaleFactor:(float)scaleBy
@@ -566,13 +526,13 @@
     [image drawAtPoint:CGPointMake(0.0f, 0.0f)];
     UIImage *newimg = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
-    
     return newimg;
 }
+
 -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
     [self.view endEditing:YES];
-
 }
+
 #pragma mark ------返回按钮方法
 -(void)PopVC:(UIButton *)sender{
     

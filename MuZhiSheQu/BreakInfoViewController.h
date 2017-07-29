@@ -34,5 +34,6 @@ typedef void(^reshshoucang) (NSString *str);
 
 @property(nonatomic,strong)NSString * shop_id;
 @property(nonatomic,strong)NSString * user_id;
+@property(nonatomic,strong)NSString * type;
 
 @end

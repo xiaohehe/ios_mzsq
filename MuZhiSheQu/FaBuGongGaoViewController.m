@@ -448,15 +448,11 @@
 }
 
 -(void)PostButtonEvent:(id)sender{
-    
-    
     NSString *str = [_contentText.text trimString];
-    
     if ([str isEmptyString] && self.assetss.count<=0) {
         [self ShowAlertWithMessage:@"内容不能为空"];
         return;
     }
-
     if (_contentText.text.length>140) {
         [self ShowAlertWithMessage:@"信息应小于140个字符"];
         return;
@@ -466,18 +462,12 @@
     [self.activityVC startAnimate];
     AnalyzeObject *anle = [AnalyzeObject new];
     self.user_id = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
-
-    
     NSString *type = @"1";
     if (_isershou) {
         type=@"4";
     }
-    
-    
     NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithObjectsAndKeys:self.user_id,@"user_id",@"",@"title",_contentText.text
 ,@"content",type,@"notice_type", nil];
-    
-    
     float scale = 1.0;
     int i=1;
     for (ALAsset *asset in self.assetss) {
@@ -497,10 +487,12 @@
         NSData *data = UIImageJPEGRepresentation(im, .6);
         
         NSString *encodedImageStr = [data base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
-       
+       // NSLog(@"base64====%@",encodedImageStr);
         [dic setObject:encodedImageStr forKey:[NSString stringWithFormat:@"img%d",i++]];
     }
-    
+    NSString* usertoken= [[NSUserDefaults standardUserDefaults]objectForKey:@"usertoken"];
+    [dic setObject:usertoken forKey:@"usertoken"];
+
     if (_bian) {
         [dic setObject:self.gongid forKey:@"notice_id"];
         

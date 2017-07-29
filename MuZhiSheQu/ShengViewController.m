@@ -43,6 +43,7 @@
 -(void)reshData{
     AnalyzeObject *anle = [AnalyzeObject new];
     [anle getProvinceListWithDic:nil Block:^(id models, NSString *code, NSString *msg) {
+        NSLog(@"getProvinceListWithDic==%@",models);
         [self.activityVC stopAnimate];
         if ([code isEqualToString:@"0"]) {
             [_data addObjectsFromArray:models];

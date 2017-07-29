@@ -25,9 +25,11 @@
 #define SellerID  @"mzsq2015@gmail.com"
 //安全校验码（MD5）密钥，以数字和字母组成的32位字符
 //jz980njaoohyb7n174kdvnb4i1saitmg
-#define MD5_KEY @"ej9519j7oj1yij88gstlrafkpdo0sgpi"
+//#define MD5_KEY @"ej9519j7oj1yij88gstlrafkpdo0sgpi"
 //回调网址
-#define CallBackWeb @"https://app.mzsq.cc/PayAli/notify_url.php"
+//#define CallBackWeb @"https://app.mzsq.cc/PayAli/notify_url.php"
+#define CallBackWeb @"http://139.129.221.224:7112/SmPay/AlipayNotify"
+
 //商户私钥，自助生成
 #define PartnerPrivKey @"MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAOwkQTkLStPeSLWlGQfz9caeSr4WqHNU1XcOJJY2dbNf6uOEfPeX7EnfUbvpwCYQ9CmoTEUYtw/+2/qRj115mtc23IlCE0q02VyVO166yc7iPZNdHsrWHRK35BuoC6kyBckjIs3fjCJsHF3yFhSt+gcNNYpGEa1EuxX3XAX1dq0xAgMBAAECgYA+dDQ/1wm6UT7fs8OUA+TL3A+eiLWSkyxF6Zqpk8u7XjHsbJz0ity2iPbAAUmNh8xbvCQ33hqEg35AngDR0xitMrA2WyEHwlw4TaOTumFaN7NngIt6vFaMXPrmbGYGWQGmTCf55BrUOZfiVQacat9SFmkd449Yq+x8bAzJWhNgBQJBAP+9VZk8gGg2m2KAH3jQ8oqJok46PjS5iOqzNZH7OdeFLnyFWpMvCe8qDmGXqw3eHSPqIVwenABHVTFnE4xrT+MCQQDsYc/IdHESKd8FGGwsJD6lz0bqA3j5kspWJRPDjhkGdr+T1sUqHgZjoUWFwdf54cvYNAZ3Dc/GftM2ZOEO5TLbAkEArChy9UMrVfxcwgRqK1TN0cExh+PheHDl4MlfaLRsjc9UKfNDtA1YbK4tHDmTpzQ8/a5hYrggYHekvCsdl8ut7QJANNrSGSJgPg16vqrtVRltoKmuU5kfLb7y2zxDJRDa66UVxTrar0Yza4eeAgCMCGXCrL9FSs2dzeaB18HKyQfazQJBAINBmQt+/qgYx6Bq6cCYBtgH2Ar26we8KXA6Fw1DWWQLAozM0vcbl48s+MQoa//NDFSwcguXDHER0/jJiiYViGU="
 

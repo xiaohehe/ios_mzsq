@@ -7,6 +7,8 @@
 //
 
 #import "OrderViewController.h"
+#import "DataBase.h"
+#import "AppUtil.h"
 
 @interface OrderViewController ()<UIPickerViewDataSource,UIPickerViewDelegate,UITextViewDelegate>
 {
@@ -26,6 +28,8 @@
 @property(nonatomic,strong)NSMutableDictionary *ar;
 @property(nonatomic,strong)UITextView *beizhuTF;
 @property(nonatomic,strong)NSMutableDictionary *data;
+@property(nonatomic,strong)NSString *shopID;
+
 @end
 
 @implementation OrderViewController
@@ -34,7 +38,22 @@
     [super viewWillAppear:YES];
     self.navigationController.navigationBarHidden=YES;
     [self.activityVC stopAnimate];
+    //增加监听，当键盘出现或改变时收出消息
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillShow:)
+                                                 name:UIKeyboardWillShowNotification
+                                               object:nil];
+    //增加监听，当键退出时收出消息
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillHide:)
+                                                 name:UIKeyboardWillHideNotification
+                                               object:nil];
+}
 
+-(void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 }
 
 - (void)viewDidLoad {
@@ -52,15 +71,11 @@
     [self returnVi];
     [self MoreList];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(topvi:) name:@"shopAddress" object:nil];
-    
-    
 }
+
 -(void)topvi:(NSNotification *)not{
-    
     _ar = not.object;
     [self topVi];
-    
-    
 }
 
 #pragma mark - 数据块
@@ -95,53 +110,38 @@
 
 #pragma mark ---顶部收货人信息
 -(void)topVi{
-   
-    
     _topCon = [[UIControl alloc]initWithFrame:CGRectMake(0, 7.5*self.scale, self.view.bounds.size.width, 145/2.25*self.scale)];
     _topCon.backgroundColor = [UIColor whiteColor];
     [_bigScrollVi addSubview:_topCon];
-    
-    
     _stripVi = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 5*self.scale)];
     _stripVi.image = [UIImage imageNamed:@"dian_xq_line"];
     [_topCon addSubview:_stripVi];
-    
-    
     _shouHuoer = [[UILabel alloc]initWithFrame:CGRectMake(10*self.scale, 15*self.scale, 60*self.scale, 15*self.scale)];
     _shouHuoer.text = @"收货人 :";
     _shouHuoer.font = DefaultFont(self.scale);
     [_topCon addSubview:_shouHuoer];
     float r = _shouHuoer.right;
     float t = _shouHuoer.top;
-    
-    
     _shouName = [[UILabel alloc]initWithFrame:CGRectMake(r, t,100*self.scale, 15)];
     _shouName.text = [_ar objectForKey:@"real_name"];
     _shouName.font = DefaultFont(self.scale);
     [_topCon addSubview:_shouName];
     r = _shouName.right;
-    
     _shouTal = [[UILabel alloc]initWithFrame:CGRectMake(r+10, t, 130*self.scale, 15)];
     _shouTal.text = [_ar objectForKey:@"mobile"];
     _shouTal.font = DefaultFont(self.scale);
     [_topCon addSubview:_shouTal];
     float b = _shouTal.bottom;
-    
-    
-    
     _shouAddressLa = [[UILabel alloc]initWithFrame:CGRectMake(10*self.scale, b+15, 70*self.scale, 35*self.scale)];
     _shouAddressLa.text = @"收货地址 :";
     _shouAddressLa.font =DefaultFont(self.scale);
     [_topCon addSubview:_shouAddressLa];
     r = _shouAddressLa.right;
-    
     _addressLa = [[UILabel alloc]initWithFrame:CGRectMake(r, _shouAddressLa.top, self.view.width-_shouAddressLa.right-50*self.scale, 35*self.scale)];
     _addressLa.numberOfLines=0;
     _addressLa.font = DefaultFont(self.scale);
     _addressLa.text = [_ar objectForKey:@"address"];
     [_topCon addSubview:_addressLa];
-    
-    
     _topArrow = [[UIImageView alloc]initWithFrame:CGRectMake(self.view.width-30*self.scale, _shouHuoer.top+5*self.scale, 22.5*self.scale, 22.5*self.scale)];
     _topArrow.image = [UIImage imageNamed:@"dd_right"];
     [_topCon addSubview:_topArrow];
@@ -177,9 +177,10 @@
     NSMutableArray *keys = [NSMutableArray new];
     for (NSString *key in [_data allKeys]) {
         NSString *shopid = [_data objectForKey:key][@"shop_id"];
+        _shopID=shopid;
         [keys addObject:shopid];
     }
-    
+   
     NSMutableDictionary *dict = [NSMutableDictionary dictionary];
     
     for (NSString *key in keys) {
@@ -187,24 +188,21 @@
         [dict setObject:key forKey:key];
         
     }
-    
     dataSouse=[NSMutableArray new];
     for (NSString *key in [dict allValues]) {
         NSMutableArray *ar = [NSMutableArray new];
         for (NSString *k in [_data allKeys]) {
             NSString *shopid = [_data objectForKey:k][@"shop_id"];
-            if ([shopid isEqualToString:key]) {
-                
+//NSLog(@"shopid==%@   key==%@",shopid,key);
+            if ([shopid intValue]==[key intValue]) {
+               // if ([shopid isEqualToString:key]) {
                 [ar addObject:[_data objectForKey:k]];
-                
             }
             
         }
         [dataSouse addObject:ar];
         
     }
-    
-    
 
     for (int i=0; i<dataSouse.count; i++) {
         NSMutableArray *prodArr = [NSMutableArray new];
@@ -292,15 +290,12 @@
             cellShopName.text =dataSouse[i][j][@"prod_name"];
             cellShopName.font = DefaultFont(self.scale);
             [ViewCell addSubview:cellShopName];
-            
-            
-            
-            
+
             UILabel *sales = [[UILabel alloc]initWithFrame:CGRectMake(cellShopName.left, cellShopName.bottom+5*self.scale, 100, 10)];
             sales.text = [NSString stringWithFormat:@"销量%@",dataSouse[i][j][@"sales"]];
             sales.font = SmallFont(self.scale);
             sales.textColor = grayTextColor;
-            [ViewCell addSubview:sales];
+            //[ViewCell addSubview:sales];
             
             UILabel *price = [[UILabel alloc]initWithFrame:CGRectMake(self.view.width-90*self.scale, cellShopName.top, 80*self.scale,20*self.scale)];
             price.textColor = [UIColor redColor];
@@ -330,18 +325,8 @@
             
             [prod setObject:dataSouse[i][j][@"prod_id"] forKey:@"prod_id"];
                                 [prod setObject:dataSouse[i][j][@"prod_count"]  forKey:@"prod_count"];
-            
-            
-  
-            
            
                 [prodArr addObject:prod];
-            
-                
-     
-
-
-            
 
        //商品数量;
          int znum = [dataSouse[i][j][@"prod_count"] intValue];
@@ -371,9 +356,6 @@
         [shopInfo setObject:[NSString stringWithFormat:@"%.2f",self.zongProce] forKey:@"amount"];
         
         [_shopArr addObject:shopInfo];
-
-        
-        
      //-------
         
         CellView *timeCell=[[CellView alloc]initWithFrame:CGRectMake(0, line1BotFloat, self.view.width, 44)];
@@ -393,27 +375,21 @@
         [peisong addTarget:self action:@selector(timeselectBtn:) forControlEvents:UIControlEventTouchUpInside];
         peisong.contentHorizontalAlignment=NSTextAlignmentRight;
         [timeCell addSubview:peisong];
-
-        
-        
         CellView *beizhuCell=[[CellView alloc]initWithFrame:CGRectMake(0, timeCell.bottom, self.view.width, 44)];
         beizhuCell.titleLabel.text=@"备注";
         beizhuCell.titleLabel.font=DefaultFont(self.scale);
         [_bigCenterCon addSubview:beizhuCell];
         
         [beizhuCell.titleLabel sizeToFit];
-        
-        
         _beizhuTF = [[UITextView alloc]initWithFrame:CGRectMake(beizhuCell.titleLabel.right+10*self.scale, beizhuCell.titleLabel.top, self.view.width-beizhuCell.titleLabel.right-10*self.scale, 35*self.scale)];
         _beizhuTF.delegate=self;
         _beizhuTF.tag=i+100000000000;
         //        _beizhuTF.placeholder = @"可以输入特殊要求";
         _beizhuTF.textAlignment=NSTextAlignmentLeft;
+        _beizhuTF.returnKeyType=UIReturnKeyDone;
         _beizhuTF.font=DefaultFont(self.scale);
         [beizhuCell addSubview:_beizhuTF];
         beizhuCell.height=_beizhuTF.bottom+10*self.scale;
-        
-        
         UILabel *b = [[UILabel alloc]initWithFrame:CGRectMake(_beizhuTF.left+10*self.scale, 0*self.scale, self.view.width, beizhuCell.height)];
         b.text=@"请输入特殊要求";
         b.tag=i+1000000000000;
@@ -422,7 +398,16 @@
         [beizhuCell addSubview:b];
 
         beizhuCell.titleLabel.top = b.height/2-10*self.scale;
+
         
+        UIToolbar * topView = [[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 30)];
+        [topView setBarStyle:UIBarStyleDefault];
+        UIBarButtonItem * btnSpace = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
+        UIBarButtonItem * doneButton = [[UIBarButtonItem alloc]initWithTitle:@"收起" style:UIBarButtonItemStyleDone target:self action:@selector(dismissKeyBoard)];
+        NSArray * buttonsArray = [NSArray arrayWithObjects:btnSpace,doneButton,nil];
+        [topView setItems:buttonsArray];
+        [_beizhuTF setInputAccessoryView:topView];
+
         
         //@"今天",
         _DayArr=[NSArray arrayWithObjects:@"今天", @"明天", nil];
@@ -436,13 +421,7 @@
             [_TimeArr addObject:Time];
             
         }
-
         _DataArr=_TimeArr;
-        
-        
-        
-        
-        
 //        ----------
         
         UILabel *finishNumber = [[UILabel alloc]initWithFrame:CGRectMake(headImg.left, beizhuCell.bottom+15*self.scale, 100, 15)];
@@ -464,16 +443,10 @@
         combined.textAlignment=NSTextAlignmentRight;
         combined.font=DefaultFont(self.scale);
         
-        
-        
-        
         [_bigCenterCon addSubview:combined];
         
         _bigCenterCon.size=CGSizeMake(self.view.width, combined.bottom+10*self.scale);
         _setY=_bigCenterCon.bottom+10*self.scale;
-        
-        
-        
         _bot = _bigCenterCon.bottom;
         _botLeft = headImg.left;
  
@@ -499,11 +472,6 @@
       [finishPrice sizeToFit];
 
     }
-    
-    
-    
-    
-   
     [_bigDic setObject:_shopArr forKey:@"prod_info"];
     
     UILabel *allPrice = [[UILabel alloc]initWithFrame:CGRectMake(_botLeft, _bigCenterCon.height, 100*self.scale, 40*self.scale)];
@@ -521,8 +489,41 @@
     
     allPriceNum.attributedText = allprice;//[self zstringColorAllString:[NSString stringWithFormat:@"￥%.2f元",_botPrice] redString:[NSString stringWithFormat:@"￥%.2f",_botPrice]];
     [self payWay];
+}
+
+-(void)dismissKeyBoard
+{
+    [_beizhuTF resignFirstResponder];
+}
+
+
+//当键盘出现或改变时调用
+- (void)keyboardWillShow:(NSNotification *)aNotification{
+    NSDictionary *info = [aNotification userInfo];
+    CGSize kbSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
+    NSLog(@"keyboard changed, keyboard width = %f, height = %f",  kbSize.width, kbSize.height);
     
+    // 在这里调整UI位置
+    CGPoint pt = [_beizhuTF convertPoint:CGPointMake(0, 0) toView:[UIApplication sharedApplication].keyWindow];
+    float txDistanceToBottom = self.view.frame.size.height - pt.y - _beizhuTF.frame.size.height;  // 距离底部多远
+    if( txDistanceToBottom >= kbSize.height )  // 键盘不会覆盖
+        return;
     
+    _bigScrollVi.contentSize = CGSizeMake(_bigScrollVi.contentSize.width, _bigScrollVi.contentSize.height + kbSize.height); //原始滑动距离增加键盘高度
+    
+    // 差多少
+    float offsetY = txDistanceToBottom - kbSize.height - 80;  // 补一些给各种输入法
+    [_bigScrollVi setContentOffset:CGPointMake(0, _bigScrollVi.contentOffset.y - offsetY-64) animated:YES];
+}
+
+//当键退出时调用
+- (void)keyboardWillHide:(NSNotification *)aNotification{
+    // 键盘动画时间
+    double duration = [[aNotification.userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    //视图下沉恢复原状
+    [UIView animateWithDuration:duration animations:^{
+        self.view.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+    }];
 }
 
 
@@ -689,12 +690,6 @@ NSInteger ta1;
         
         
     }
-
-    
-    
-    
-    
-    
     NSMutableArray *ar = _bigDic[@"prod_info"];
     NSMutableDictionary *d = ar[ta1-800];
     [d setObject:str forKey:@"delivery_time"];
@@ -731,21 +726,14 @@ NSInteger ta1;
         //        if (i>=2) {
         //            break;
         //        }
-        
         UIView *line = [[UILabel alloc]initWithFrame:CGRectMake(0, i*360/2.25*self.scale/4, self.view.bounds.size.width, .5)];
         line.backgroundColor = [UIColor colorWithRed:221/255.0 green:226/255.0 blue:227/255.0 alpha:1];
         [_botCon addSubview:line];
-        
-        
-        
-        
         UILabel *payway = [[UILabel alloc]initWithFrame:CGRectMake(10*self.scale, line.top+15*self.scale, 100*self.scale, 15)];
         payway.text = payArr[i];
         payway.font = [UIFont systemFontOfSize:12.0f*self.scale];
         [_botCon addSubview:payway];
-        
         _botCon.height=payway.bottom+15*self.scale;
-        
         if (i!=0) {
             UIButton *selectImg = [UIButton buttonWithType:UIButtonTypeCustom];
             selectImg.frame = CGRectMake(self.view.bounds.size.width-35*self.scale, line.top+10*self.scale, 20*self.scale, 20*self.scale);
@@ -754,15 +742,11 @@ NSInteger ta1;
             selectImg.tag = 20+i;
             [selectImg addTarget:self action:@selector(choosePayWay:) forControlEvents:UIControlEventTouchUpInside];
             [_botCon addSubview:selectImg];
-            
             if (i==1) {
                 selectImg.selected=YES;
             }
-            
         }
     }
-    
-    
     UIView *boLine = [[UILabel alloc]initWithFrame:CGRectMake(0, _botCon.height, self.view.bounds.size.width, .5)];
     boLine.backgroundColor = [UIColor colorWithRed:221/255.0 green:226/255.0 blue:227/255.0 alpha:1];
     [_botCon addSubview:boLine];
@@ -800,14 +784,9 @@ NSInteger ta1;
 }
 
 -(void)botPayButtonVi{
-    
-    
-    
     UIView *botPayBigVi = [[UIView alloc]initWithFrame:CGRectMake(0, self.view.bounds.size.height-49*self.scale, self.view.bounds.size.width, 49*self.scale)];
     botPayBigVi.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:botPayBigVi];
-    
-    
     _shouldPayPrice = [[UILabel alloc]initWithFrame:CGRectMake(20*self.scale, 10*self.scale, 200*self.scale, 30*self.scale)];
     _shouldPayPrice.textColor = blueTextColor;
     _shouldPayPrice.font = [UIFont systemFontOfSize:16.0f*self.scale];
@@ -824,16 +803,12 @@ NSInteger ta1;
     shouldPay.titleLabel.font=DefaultFont(self.scale);
     [shouldPay addTarget:self action:@selector(pay) forControlEvents:UIControlEventTouchUpInside];
     [botPayBigVi addSubview:shouldPay];
-    
-    
     UIView *payBotLine = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, .5)];
     payBotLine.backgroundColor = [UIColor colorWithRed:221/255.0 green:226/255.0 blue:227/255.0 alpha:1];
     [botPayBigVi addSubview:payBotLine];
-    
 }
 
 -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
-
     [self.view endEditing:YES];
 }
 
@@ -841,13 +816,10 @@ NSInteger ta1;
 -(void)pay{
 //    [self.view addSubview:self.activityVC];
 //    [self.activityVC startAnimate];
-    
     NSMutableArray *btnarr = [NSMutableArray new];
-    
     NSInteger tag = 0;
     for (UIButton *btn in _botCon.subviews) {
         if ([btn isKindOfClass:[UIButton class]]) {
-            
             [btnarr addObject:btn];
             if (btn.selected==YES) {
                 tag=btn.tag;
@@ -856,13 +828,10 @@ NSInteger ta1;
     }
     //货到付款
     UIButton *btn3 = (UIButton *)[_botCon viewWithTag:23];
-    
     //支付宝
     UIButton *btn1 = (UIButton *)[_botCon viewWithTag:22];
-    
     //微信
     UIButton *btn2 = (UIButton *)[_botCon viewWithTag:21];
-
     if (!btn1.selected && !btn2.selected && !btn3.selected) {
         [self ShowAlertWithMessage:@"请选择支付方式"];
         return;
@@ -871,8 +840,6 @@ NSInteger ta1;
         [self ShowAlertWithMessage:@"请选择地址"];
         return;
     }
-    
-    
     NSString *type = @"";
     
     if (btn1.selected==YES) {
@@ -882,88 +849,87 @@ NSInteger ta1;
     }else{
         type=@"3";
     }
-    
-    
+    if(self.zongProce<0.01&&![type isEqualToString:@"3"]){
+        type=@"3";
+        btn3.selected=YES;
+        btn2.selected=NO;
+        btn1.selected=NO;
+        [AppUtil showToast:self.view withContent:@"该订单仅支付货到付款"];
+    }
     NSMutableArray *ar = _bigDic[@"prod_info"];
-    
     for (int i=0; i<ar.count; i++) {
         UITextField *tf = (UITextField *)[self.view viewWithTag:100000000000+i];
-        
-        
         NSMutableDictionary *d = ar[i];
-        
-//        if ([tf.text isEqualToString:@"立即配送"]) {
-//            tf.text=@"1";
-//        }
-        
         [d setObject:[NSString stringWithFormat:@"%@",tf.text] forKey:@"memo"];
          [ar replaceObjectAtIndex:i withObject:d];
     }
     [_bigDic setObject:ar forKey:@"prod_info"];
-    
-
-    
-//
     NSData *dataStr = [NSJSONSerialization dataWithJSONObject:_bigDic options:NSJSONWritingPrettyPrinted error:nil];
     NSString *st = [[NSString alloc]initWithData:dataStr encoding:NSUTF8StringEncoding];
     NSString *userid = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
-    
-    
-    NSDictionary *dic = @{@"user_id":userid,@"address_id":_ar[@"id"],@"pay_type":type,@"total_amount":[NSString stringWithFormat:@"%.2f",_botPrice],@"prod_info":st};
-    NSLog(@"%.2f",_botPrice);
+    NSString *commid=[[NSUserDefaults standardUserDefaults]objectForKey:@"commid"];
+    NSDictionary *dic = @{@"user_id":userid,@"address_id":_ar[@"id"],@"pay_type":type,@"total_amount":[NSString stringWithFormat:@"%.2f",_botPrice],@"prod_info":st,@"community_id":commid};
+    //NSLog(@"%.2f",_botPrice);
+    //NSLog(@"prod_info_param==%@",dic);
     [self.view addSubview:self.activityVC];
     [self.activityVC startAnimate];
-
     AnalyzeObject *anle = [AnalyzeObject new];
     [anle OrdersubmitWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
         [self.activityVC stopAnimate];
+        NSLog(@"prod_info_models==%@==%@==%@",models,code,msg);
         if ([code isEqualToString:@"0"]) {
-            [self.appdelegate.shopDictionary removeAllObjects];
+            //[self.appdelegate.shopDictionary removeAllObjects];
+           // [self.appdelegate.shopDictionary setObject:number forKey:@([prodID intValue])];
+            for(NSString* key in [_data allKeys]){
+                NSNumber* number=[NSNumber numberWithInt:0];
+                [self.appdelegate.shopDictionary setObject:number forKey:@([key intValue])];
+            }
             self.appdelegate.isRefresh=true;
             [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"GouWuCheShuLiang"];
+            //[[DataBase sharedDataBase] clearCart];
+            [[DataBase sharedDataBase] deleteCartWithShopID:_shopID];
             if (btn1.selected==YES) {
-                [self.appdelegate AliPayPrice:[NSString stringWithFormat:@"%.2f",_botPrice] OrderID:[NSString stringWithFormat:@"%@",models[@"order_no"]] OrderName:@"拇指社区" OrderDescription:[NSString stringWithFormat:@"%@",models[@"order_no"]] complete:^(NSDictionary *resp) {
+                [self.appdelegate AliPayNewPrice:[NSString stringWithFormat:@"%.2f",_botPrice] OrderID:[NSString stringWithFormat:@"%@",models[@"order_no"]] OrderName:@"拇指社区" Sign:models[@"sign"]  OrderDescription:[NSString stringWithFormat:@"%@",models[@"order_no"]] complete:^(NSDictionary *resp) {
                     [self.activityVC stopAnimate];
-
                     if ([[resp objectForKey:@"resultStatus"] isEqualToString:@"9000"]) {
                         [self suessToVi];
                     }
                 }];
-                
             }else if (btn2.selected==YES){
-                
                 float pric = _botPrice*100;
                 if (pric<=0) {
                     return;
                 }
-                
-                
-                [self.appdelegate WXPayPrice:[NSString stringWithFormat:@"%.0f",pric] OrderID:[NSString stringWithFormat:@"%@",models[@"order_no"]] OrderName:[NSString stringWithFormat:@"%@",models[@"order_no"]] complete:^(BaseResp *resp) {
+                if (![WXApi isWXAppInstalled]){
+                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"未安装微信" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+                    [alert show];
+                }
+                [self.appdelegate WXPayNewWithNonceStr:models[@"noncestr"] OrderID:models[@"order_no"] Timestamp:models[@"timestamp"] sign:models[@"sign"]complete:^(BaseResp *resp) {
                     [self.activityVC stopAnimate];
-
+                    NSLog(@"wxresult====%d==%@",resp.errCode,resp.errStr);
                     if (resp.errCode == WXSuccess) {
                         [self suessToVi];
+                    }else{
+//                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:resp.errStr delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+//                        [alert show];
                     }
-                    
                 }];
             }else if (btn3.selected==YES){
-
                 self.hidesBottomBarWhenPushed=YES;
                 HuodaoSuessViewController *huodao = [HuodaoSuessViewController new];
                 huodao.price=[NSString stringWithFormat:@"%.2f",_botPrice];
                 [self.navigationController pushViewController:huodao animated:YES];
-                
             }
-        
-        
-        
+        }else if ([code isEqualToString:@"-1"]) {
+            [self ShowAlertTitle:@"请先登录" Message:msg Delegate:self Block:^(NSInteger index) {
+                if (index==1) {
+                    [self login];
+                }
+            }];
         }else{
-            
             [self ShowAlertWithMessage:msg];
         }
-        
     }];
-    
 }
 
 -(void)suessToVi{
@@ -971,53 +937,33 @@ NSInteger ta1;
     orderSuessViewController *suecc = [orderSuessViewController new];
     suecc.price = [NSString stringWithFormat:@"%.2f",_zongProce];
     [self.navigationController pushViewController:suecc animated:YES];
-    
 }
+
 #pragma mark -----返回按钮
 -(void)returnVi{
-    
     self.TitleLabel.text=@"确认订单";
-    
     UIButton *popBtn=[[UIButton alloc]initWithFrame:CGRectMake(0, self.TitleLabel.top, self.TitleLabel.height, self.TitleLabel.height)];
     [popBtn setImage:[UIImage imageNamed:@"left"] forState:UIControlStateNormal];
     [popBtn setImage:[UIImage imageNamed:@"left_b"] forState:UIControlStateHighlighted];
     [popBtn addTarget:self action:@selector(PopVC:) forControlEvents:UIControlEventTouchUpInside];
     [self.NavImg addSubview:popBtn];
-    
-    
-    
 }
+
 #pragma mark ------返回按钮方法
 -(void)PopVC:(UIButton *)sender{
-    
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-
 -(NSMutableAttributedString *)zstringColorAllString:(NSString *)string redString:(float)redfloat{
-    
     NSMutableAttributedString *str = [[NSMutableAttributedString alloc]initWithString:string];
-    
-    
     NSRange range=[string rangeOfString:[NSString stringWithFormat:@"￥%.2f",redfloat]];
-    
     [str addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:range];
-    
     return str;
-    
 }
 
 -(void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component
 {
-    if (component == 0)
-    {
-        //            if (row == 0)
-        //            {
-        //                _DataArr=_TodayArr;
-        //            }else
-        //            {
-        //                _DataArr=_TimeArr;
-        //            }
+    if (component == 0){
         [_TimePickerView reloadAllComponents];
     }
     else if (component == 1)
@@ -1031,6 +977,7 @@ NSInteger ta1;
 {
     return 2;
 }
+
 - (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
 {
     if (component == 0) {
@@ -1038,12 +985,12 @@ NSInteger ta1;
     }
     return _DataArr.count;
 }
+
 #pragma mark - UIPickerViewDatasource
 - (UIView *)pickerView:(UIPickerView *)pickerView
             viewForRow:(NSInteger)row
           forComponent:(NSInteger)component
            reusingView:(UIView *)view {
-    
     // Custom View created for each component
     
     UILabel *pickerLabel = (UILabel *)view;
@@ -1073,14 +1020,12 @@ NSInteger ta1;
     // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text{
+    if ([text isEqualToString:@"\n"]){ //判断输入的字是否是回车，即按下return
+        [_beizhuTF resignFirstResponder];
+        return NO; //这里返回NO，就代表return键值失效，即页面上按下return，不会出现换行，如果为yes，则输入页面会换行
+    }
+    
+    return YES;
 }
-*/
-
 @end

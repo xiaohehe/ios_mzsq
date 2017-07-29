@@ -152,7 +152,7 @@
     bv.backgroundColor=superBackgroundColor;
     [self.view addSubview:bv];
     
-    _tf = [[UITextField alloc]initWithFrame:CGRectMake(10*self.scale, 7, self.view.width-90*self.scale, 30*self.scale)];
+    _tf = [[UITextField alloc]initWithFrame:CGRectMake(10*self.scale, 7, self.view.width-20*self.scale, 30*self.scale)];
     _tf.layer.borderWidth=.5;
     _tf.backgroundColor=[UIColor whiteColor];
     _tf.layer.borderColor=blackLineColore.CGColor;
@@ -166,11 +166,11 @@
     rightv.layer.cornerRadius=5;
     rightv.layer.borderWidth=.5;
     rightv.layer.borderColor=blackLineColore.CGColor;
-    [bv addSubview:rightv];
+    //[bv addSubview:rightv];
     
     UIImageView *im = [[UIImageView alloc]initWithFrame:CGRectMake(6*self.scale, rightv.height/2-9*self.scale, 20*self.scale, 18*self.scale)];
     im.image=[UIImage imageNamed:@"gg_pingjia_ico"];
-    [rightv addSubview:im];
+    //[rightv addSubview:im];
     
     UILabel *num = [[UILabel alloc]initWithFrame:CGRectMake(im.right+3*self.scale, rightv.height/2-10*self.scale, rightv.width-im.right-5*self.scale, 17*self.scale)];
     if (_dataSource.count<=0) {
@@ -182,7 +182,7 @@
     num.textAlignment=NSTextAlignmentCenter;
     num.font=SmallFont(self.scale);
     num.textColor=blueTextColor;
-    [rightv addSubview:num];
+    //[rightv addSubview:num];
     
     [self fabiaovi];
     

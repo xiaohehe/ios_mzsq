@@ -42,17 +42,14 @@
 }
 
 #pragma mark -- 设置导航
-- (void)createDaoHang
-{
+- (void)createDaoHang{
     self.TitleLabel.text = @"物业中心";
     UIButton * wuYeTelBtn = [[UIButton alloc]initWithFrame:CGRectMake([UIScreen mainScreen].bounds.size.width - self.TitleLabel.height/60*144,self.TitleLabel.top, self.TitleLabel.height/60*144, self.TitleLabel.height)];
-    [wuYeTelBtn setImage:[UIImage imageNamed:@"wuyeTel"] forState:(UIControlStateNormal)];
+    [wuYeTelBtn setImage:[UIImage imageNamed:@"wuyeCall"] forState:(UIControlStateNormal)];
     [wuYeTelBtn setTitle:@"呼叫物业" forState:(UIControlStateNormal)];
     wuYeTelBtn.titleLabel.font = [UIFont systemFontOfSize:13*self.scale];
-
     [wuYeTelBtn addTarget:self action:@selector(callWuYe) forControlEvents:(UIControlEventTouchUpInside)];
-    
-    [wuYeTelBtn setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
+    [wuYeTelBtn setTitleColor:[UIColor grayColor] forState:(UIControlStateNormal)];
     [wuYeTelBtn setImageEdgeInsets:UIEdgeInsetsMake(0, -5, 0, 5)];
 //    wuYeTelBtn.backgroundColor = [UIColor redColor];
     [self.NavImg addSubview:wuYeTelBtn];
@@ -65,12 +62,11 @@
 
 #pragma mark ------返回按钮方法
 -(void)PopVC:(UIButton *)sender{
-    
     [self.navigationController popViewControllerAnimated:YES];
 }
+
 #pragma mark -- 创建tabelView
-- (void)createTableView
-{
+- (void)createTableView{
     _wuyetableView = [[UITableView alloc]initWithFrame:CGRectMake(0, self.NavImg.bottom, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 64 ) style:(UITableViewStylePlain)];
     _wuyetableView.delegate = self;
     _wuyetableView.dataSource =self;
@@ -79,6 +75,7 @@
     [_wuyetableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(xiala)];
     [self.view addSubview:_wuyetableView];
 }
+
 #pragma mark -- tableView代理方法
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {

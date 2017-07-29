@@ -230,7 +230,7 @@
     
     UIButton * SaveBtn=[[UIButton alloc]initWithFrame:CGRectMake(self.view.width-self.TitleLabel.height,self.TitleLabel.top,self.TitleLabel.height, self.TitleLabel.height)];
     [SaveBtn setTitle:@"确定" forState:UIControlStateNormal];
-    [SaveBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [SaveBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     SaveBtn.titleLabel.font=DefaultFont(self.scale) ;
     [SaveBtn addTarget:self action:@selector(SaveButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
     [self.NavImg addSubview:SaveBtn];

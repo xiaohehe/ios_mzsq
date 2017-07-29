@@ -201,23 +201,14 @@
     [_defArry addObject:cell];
     
     cell.NameLabel.text=[NSString stringWithFormat:@"收货人：%@      %@", [_dataSource[indexPath.row] objectForKey:@"real_name"],[_dataSource[indexPath.row] objectForKey:@"mobile"]];
-    
-    
-    
-  
     cell.delegate=self;
-    [cell.EditButton addTarget:self action:@selector(bianjiAdress:) forControlEvents:UIControlEventTouchUpInside];
+    //[cell.EditButton addTarget:self action:@selector(bianjiAdress:) forControlEvents:UIControlEventTouchUpInside];
     cell.EditButton.tag=indexPath.row;
     cell.indexPath=indexPath;
-    
-    
-    
     if (_dataSource.count==1) {
         [[NSUserDefaults standardUserDefaults]setObject:_dataSource[0] forKey:@"address"];
         [[NSUserDefaults standardUserDefaults]synchronize];
     }
-    
-    
     return cell;
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -232,6 +223,7 @@
 }
 
 -(void)bianjiAdress:(UIButton *)sender{
+    NSLog(@"bianjiAdress");
     self.hidesBottomBarWhenPushed=YES;
     EditeAdressViewController *edite = [EditeAdressViewController new];
     edite.data=_dataSource;

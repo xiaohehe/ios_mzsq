@@ -96,16 +96,12 @@
 
 
 -(void)shopNumberClinck:(UIButton *)sender{
-    if ([Stockpile sharedStockpile].isLogin==NO) {
-        
-        
-        if (_delegate && [_delegate respondsToSelector:@selector(BreakInfoCellChangeNumber:IndexPath:jiaAndJian:)]) {
-            [_delegate BreakInfoCellChangeNumber:[NSNumber numberWithInt:0] IndexPath:_indexpath jiaAndJian:NO];
-        }
-       
-        return;
-    }
-
+//    if ([Stockpile sharedStockpile].isLogin==NO) {
+//        if (_delegate && [_delegate respondsToSelector:@selector(BreakInfoCellChangeNumber:IndexPath:jiaAndJian:)]) {
+//            [_delegate BreakInfoCellChangeNumber:[NSNumber numberWithInt:0] IndexPath:_indexpath jiaAndJian:NO];
+//        }
+//        return;
+//    }
     BOOL starts = '\0';
     _shopModel.virtuale=_shopModel.selectNum;
     switch (sender.tag) {
@@ -124,7 +120,6 @@
         default:
             break;
     }
-    
     if (_shopModel.selectNum < 0) {
         _shopModel.selectNum = 0;
         _shopModel.virtuale=0;
@@ -134,17 +129,14 @@
         self.jianBt.hidden=YES;
         self.numberLa.hidden=YES;
     }
-    
 //    self.shopModel = self.shopModel;
-
         if (_delegate && [_delegate respondsToSelector:@selector(BreakInfoCellChangeNumber:IndexPath:jiaAndJian:)]) {
             [_delegate BreakInfoCellChangeNumber:[NSNumber numberWithInt:_shopModel.selectNum] IndexPath:_indexpath jiaAndJian:starts];
         }
-   
 }
 
 -(void)layoutSubviews{
-    self.headImg.frame = CGRectMake(10*self.scale, 10*self.scale, 70*self.scale, 52*self.scale);
+    self.headImg.frame = CGRectMake(10*self.scale, 10*self.scale, 60*self.scale, 60*self.scale);
     float r = self.headImg.right;
     float t = self.headImg.top;
     

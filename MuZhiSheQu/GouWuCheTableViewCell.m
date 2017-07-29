@@ -33,34 +33,26 @@
     }
     return self;
 }
+
 -(void)newView{
     _SelectedBtn=[[UIButton alloc]init];
     [_SelectedBtn setBackgroundImage:[UIImage imageNamed:@"na3"] forState:UIControlStateNormal];
     [_SelectedBtn setBackgroundImage:[UIImage imageNamed:@"green"] forState:UIControlStateSelected];
     [_SelectedBtn addTarget:self action:@selector(SelectedEvent:) forControlEvents:UIControlEventTouchUpInside];
-    
-
-    [self.contentView addSubview:_SelectedBtn];
-    
+    //[self.contentView addSubview:_SelectedBtn];
     _GoodsImg=[[UIImageView alloc]init];
     _GoodsImg.clipsToBounds=YES;
     _GoodsImg.contentMode=UIViewContentModeScaleAspectFill;
     [self.contentView addSubview:_GoodsImg];
-    
-    
-    
     _detailView=[[UIView alloc]init];
     [self.contentView addSubview:_detailView];
-    
-
     [self DetailView];
     [self addViewDetail];
-    
     _lingView=[[UIImageView alloc]initWithFrame:CGRectZero];
       _lingView.backgroundColor  = [UIColor colorWithRed:220/255.0 green:220/255.0 blue:220/255.0 alpha:1];
     [self.contentView addSubview:_lingView];
- 
 }
+
 -(void)DetailView{
     _GoodsName=[[UILabel alloc]init];
     _GoodsName.font=DefaultFont(self.ZSY);
@@ -173,7 +165,7 @@
 }
 -(void)layoutSubviews{
      _SelectedBtn.frame=CGRectMake(10*self.ZSY, self.height/2-10*self.ZSY,20*self.ZSY, 20*self.ZSY);
-     _GoodsImg.frame=CGRectMake(_SelectedBtn.right+10*self.ZSY, 10*self.ZSY, 70*self.ZSY, 52*self.ZSY);
+     _GoodsImg.frame=CGRectMake(10*self.ZSY, 10*self.ZSY, 60*self.ZSY, 60*self.ZSY);
     _detailView.frame=CGRectMake(_GoodsImg.right+10*self.ZSY, _GoodsImg.top, self.width-_GoodsImg.right-100*self.ZSY,_GoodsImg.height);
     _GoodsName.frame=CGRectMake(0, 0, _detailView.width, 40*self.ZSY);
 //    _xiaoliangLa.frame=CGRectMake(0, _GoodsName.bottom, _detailView.width, 20*self.ZSY);
@@ -181,8 +173,6 @@
 //    _yuanJiaLab.frame = CGRectMake(_GoodsPrice.right, _GoodsPrice.top, _GoodsPrice.width, _GoodsPrice.height);
 //    
 //    _lin.frame = CGRectMake(0, _yuanJiaLab.height/2, _yuanJiaLab.width, 0.5);
-    
-   
     UIButton *subBtn=(UIButton *)[self.contentView viewWithTag:5];
     subBtn.frame=CGRectMake(self.width-100*self.ZSY, self.height/2-0*self.ZSY, 22*self.ZSY, 22*self.ZSY);
     _SumLabel.frame=CGRectMake(subBtn.right+5*self.ZSY, subBtn.top,subBtn.width+13*self.ZSY, subBtn.height);

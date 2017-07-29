@@ -43,6 +43,7 @@
 
 -(void)reshData{
     [_data removeAllObjects];
+    //NSLog(@"getCityListWithDicWithDic==%@",self.ID);
     AnalyzeObject *anle = [AnalyzeObject new];
     NSDictionary *dic = @{@"province_id":self.ID};
     [anle getCityListWithDicWithDic:dic Block:^(id models, NSString *code, NSString *msg) {

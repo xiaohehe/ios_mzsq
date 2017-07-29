@@ -82,7 +82,8 @@
  *用户登录接口
  */
 -(void)userLoginWithTel:(NSString *)mobile Block:(void(^)(id models, NSString *code ,NSString * msg))block;
-
+-(void)userLoginWithTelAndCode:(NSString *)mobile andCode:(NSString*) code Block:(void(^)(id models, NSString *code ,NSString * msg))block;
+-(void)userLogin:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
 
 /**
  *添加商品到购物车接口
@@ -216,7 +217,7 @@
  *修改密码
  */
 
-+(void)modifyPayPassWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
+-(void)modifyPayPassWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
 
 /**
  *发表评价
@@ -432,5 +433,12 @@
  *附近的社区接口
  */
 -(void)getNearbyCommunity:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
-
+/**
+ *重新提交订单（下单后未支付的情况）
+ */
+-(void)resubmitOrder:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
+/**
+ *获取该店铺营业情况
+ */
+-(void)getShopOnlineTime:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
 @end

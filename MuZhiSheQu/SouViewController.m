@@ -12,6 +12,8 @@
 #import "BreakfastCellTableViewCell.h"
 #import "GouWuCheViewController.h"
 #import "BreakInfoViewController.h"
+#import "DataBase.h"
+#import "AppUtil.h"
 
 @interface SouViewController ()<UITableViewDelegate,UITableViewDataSource,UITextFieldDelegate>
 @property(nonatomic,strong)UITableView *tableView;
@@ -31,6 +33,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    NSLog(@"index_dic====1111==%@",self.appdelegate.shopDictionary);
+
     _data=[NSMutableArray new];
     _index=0;
     if ([_shop_id isEqualToString:@""] || [_shop_id isEqual:[NSNull null]] || _shop_id == nil)
@@ -44,7 +48,7 @@
     tf.text=_keyword;
     _dataSource=[[NSMutableArray alloc]init];
     [self reshData];
-    [self loadShopingCart];
+   // [self loadShopingCart];
     //NSLog(@"shop_ip:%@",_shop_id);
 }
 
@@ -53,6 +57,11 @@
     [super viewWillAppear:animated];
     self.navigationController.navigationBarHidden = NO;
     self.navigationController.navigationBar.hidden = YES;
+    if(self.appdelegate.isRefresh){
+        self.appdelegate.isRefresh=false;
+        [self xiala];
+    }
+
 }
 
 -(void)reshData{
@@ -66,8 +75,10 @@
                         @"lat":[NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults] objectForKey:@"latitude"]],
                         @"pindex":[NSString stringWithFormat:@"%ld",(long)_index],
                         @"community_id":self.commid,@"shop_id":_shop_id};
-    NSLog(@"shop_ip:%@",dic);
+    NSLog(@"sou_param====:%@",dic);
     [anal shouYeSouList:dic Block:^(id models, NSString *code, NSString *msg) {
+        NSLog(@"sou_result====:%@",models);
+
         [self shangJiaXiangQing];
         [self.activityVC stopAnimate];
         [_tableView.header endRefreshing];
@@ -312,21 +323,21 @@
     cell.numLb.tag=200000+indexPath.row;
     [cell.jianBtn addTarget:self action:@selector(changeShopingCartNum:) forControlEvents:UIControlEventTouchUpInside];
     cell.jianBtn.tag=300000+indexPath.row;
-    if (![Stockpile sharedStockpile].isLogin) {
+//    if (![Stockpile sharedStockpile].isLogin) {
+//        cell.numLb.hidden=YES;
+    //        cell.jianBtn.hidden=YES;
+    //    }else{
+    NSString* prodID=_data[indexPath.row][@"id"];
+    int index=[self.appdelegate.shopDictionary[@([prodID intValue])] intValue];
+    if(index>0){
+        cell.numLb.hidden=NO;
+        cell.jianBtn.hidden=NO;
+    }else{
         cell.numLb.hidden=YES;
         cell.jianBtn.hidden=YES;
-    }else{
-        NSString* prodID=_data[indexPath.row][@"id"];
-        int* index=[self.appdelegate.shopDictionary[prodID] intValue];
-        if(index>0){
-            cell.numLb.hidden=NO;
-            cell.jianBtn.hidden=NO;
-        }else{
-            cell.numLb.hidden=YES;
-            cell.jianBtn.hidden=YES;
-        }
-        cell.numLb.text=[NSString stringWithFormat:@"%d",index];
     }
+    cell.numLb.text=[NSString stringWithFormat:@"%d",index];
+    //}
     return cell;
 }
 
@@ -426,30 +437,31 @@
     
 //    }
     ShopInfoViewController *buess = [ShopInfoViewController new];
-    buess.isgo=YES;
-    [buess reshChoucang:^(NSString *str) {
-        _index=0;
-        [self reshData];
-        
-    }];
+//    [buess reshChoucang:^(NSString *str) {
+//        _index=0;
+//        [self reshData];
+//        
+//    }];
     if ([_data[indexPath.row][@"is_open_chat"]isEqualToString:@"2"]) {
         buess.isopen=NO;
     }else{
         buess.isopen=YES;
     }
-    buess.tel=[NSString stringWithFormat:@"%@",_data[indexPath.row][@"hotline"]];
+    buess.isgo=YES;
+    buess.issleep=issleep;
+    buess.yes=NO;
     buess.price =_data[indexPath.row][@"prod_price"];
     buess.shop_name=_data[indexPath.row][@"shop_name"];
     buess.orshoucang=YES;
-    buess.issleep=issleep;
     buess.shop_user_id=_data[indexPath.row][@"shop_user_id"];
-    NSLog(@"%@",_data[indexPath.row][@"shop_user_id"]);
     buess.shop_id = _data[indexPath.row][@"shop_id"];
     buess.prod_id = _data[indexPath.row][@"id"];
     buess.xiaoliang = _data[indexPath.row][@"sales"];
     buess.shoucang = _data[indexPath.row][@"collect_time"];
     buess.gongGao = _data[indexPath.row][@"notice"];
-    //    buess.yunfei=self.
+    buess.tel=[NSString stringWithFormat:@"%@",_data[indexPath.row][@"hotline"]];
+    NSLog(@"ShopInfoViewController==%@==%@==%@",_data[indexPath.row],_data[indexPath.row][@"id"],self.appdelegate.shopDictionary);
+    buess.param=_data[indexPath.row];
     [self.navigationController pushViewController:buess animated:YES];
 }
 
@@ -501,35 +513,37 @@
 
 /*更改购车车内商品数量*/
 -(void)changeShopingCartNum:(UIButton *)btn{
-    if ([Stockpile sharedStockpile].isLogin==NO) {
-        [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
-            if (index==1) {
-                LoginViewController *login = [self login];
-                [login resggong:^(NSString *str) {//登录成功后需要加载的数据
-                    NSLog(@"登录成功");
-                    [self requestShopingCart:true];
-                }];
-            }
-        }];
-        return;
-    }
-    [self.view addSubview:self.activityVC];
-    //[self.activityVC startAnimate];
+//    if ([Stockpile sharedStockpile].isLogin==NO) {
+//        [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
+//            if (index==1) {
+//                LoginViewController *login = [self login];
+//                [login resggong:^(NSString *str) {//登录成功后需要加载的数据
+//                    NSLog(@"登录成功");
+//                    [self requestShopingCart:true];
+//                }];
+//            }
+//        }];
+//        return;
+//    }
+//    
     NSInteger num=0;//购物车商品数量
     NSInteger index=-1;//商品项，为了获取商品id
     NSInteger tag=btn.tag;
     UILabel* numLb=nil;
+    BOOL isAdd=false;
     //UIScrollView * bScrollView = (UIScrollView *)[_fenLeiScrollView viewWithTag:2000+fenleiIndex];
     if (tag<200000) {
         numLb=(UILabel *)[self.view viewWithTag:200000+tag-100000];
         num=[numLb.text intValue];
         num++;
         index=tag-100000;
+        isAdd=true;
     }else{
         numLb=(UILabel *)[self.view viewWithTag:200000+tag-300000];
         num=[numLb.text intValue];
         num--;
         index=tag-300000;
+        //isAdd=false;
     }
     if (num<0) {
         num=0;
@@ -537,75 +551,193 @@
     NSDictionary *shopInfo = _data[index];
     NSString* prodID=shopInfo[@"id"];
     NSString* shopID=shopInfo[@"shop_id"];
-    NSString *userid = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
-    //NSLog(@"prodid==%@     shopid==%@    userid==%@   num==%d",prodID,shopID,userid,num);
-    NSDictionary *dicc = @{@"user_id":userid,@"prod_id":prodID,@"prod_count":[NSNumber numberWithInt:num],@"shop_id":shopID};
-    AnalyzeObject *anle = [AnalyzeObject new];
-    [anle addProdWithDic:dicc Block:^(id models, NSString *code, NSString *msg) {
-        NSLog(@"addcart=%@  code==%@  msg==%@",models,code,msg);
-        //[self ReshBotView];
-        [self.activityVC stopAnimate];
-        if ([code isEqualToString:@"0"]) {
-            numLb.text=[NSString stringWithFormat:@"%d",num];
-            UIButton* subBtn=(UIButton *)[self.view viewWithTag:300000+index];
-            if(num==0){
-                numLb.hidden=YES;
-                subBtn.hidden=YES;
-            }else{
-                numLb.hidden=NO;
-                subBtn.hidden=NO;
-            }
-            [self.appdelegate.shopDictionary setObject:[NSString stringWithFormat:@"%d",num] forKey:prodID];
-            NSString * value = [[NSUserDefaults standardUserDefaults]objectForKey:@"GouWuCheShuLiang"];
-            int cartNum=[value intValue];
-            CGFloat price=[shopInfo[@"price"] floatValue];
-            if(tag<200000){
-                cartNum++;
-                _totalPrice+=price;
-            }else{
-                _totalPrice-=price;
-                cartNum--;
-                if(cartNum<0)cartNum=0;
-            }
-            [[NSUserDefaults standardUserDefaults] setObject:[NSString stringWithFormat:@"%d",cartNum] forKey:@"GouWuCheShuLiang"];
-            [self gouWuCheShuZi];
-            _peiSongLab.text = [self xianShiPeiSongFei];
-            [self.tableView reloadData];
-        }else{
-            UIAlertView *alert = [[UIAlertView alloc]
-                                 initWithTitle:@"提示" // 指定标题
-                                 message:msg  // 指定消息
-                                 delegate:nil
-                                 cancelButtonTitle:@"确定" // 为底部的取消按钮设置标题
-                                 // 不设置其他按钮
-                                 otherButtonTitles:nil];
-            [alert show];
-        }
-    }];
+   // NSLog(@"shopInfo==%@",shopInfo);
+    
+    NSInteger isOffLine=[[NSString stringWithFormat:@"%@",shopInfo[@"is_off_online"]] integerValue];
+    if(isOffLine==1){
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"临时歇业中"
+                                                            message:@"暂停营业。很快回来^_^!"
+                                                           delegate:nil
+                                                  cancelButtonTitle:@"确定"
+                                                  otherButtonTitles:nil];
+        [alertView show];
+        return;
+    }else if(![AppUtil isDoBusiness:shopInfo]){
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"歇业中"
+                                                            message:[NSString stringWithFormat:@"%@",shopInfo[@"onlinemark"]]
+                                                           delegate:nil
+                                                  cancelButtonTitle:@"确定"
+                                                  otherButtonTitles:nil];
+        [alertView show];
+        return;
+    }
+    NSMutableDictionary* param=[shopInfo mutableCopy];
+    [param setObject:prodID forKey:@"prod_id"];
+    //[param setObject:@"" forKey:@"shop_logo"];
+    int count=[self.appdelegate.shopDictionary[@([prodID intValue])] intValue];
+    //NSLog(@"index1====%d,id==%@, ====%@",count,prodID,self.appdelegate.shopDictionary);
+    NSString * value = [[NSUserDefaults standardUserDefaults]objectForKey:@"GouWuCheShuLiang"];
+    int cartNum=[value intValue];
+    if(isAdd){
+        count++;
+        [[DataBase sharedDataBase] updateCart:param withType:1];
+        [self.appdelegate.shopDictionary setObject:[NSString stringWithFormat:@"%d",count] forKey:@([prodID intValue])];
+        [[NSUserDefaults standardUserDefaults] setObject:[NSString stringWithFormat:@"%d",cartNum+1] forKey:@"GouWuCheShuLiang"];
+    }else{
+        count--;
+        [[DataBase sharedDataBase] updateCart:param withType:0];
+        [self.appdelegate.shopDictionary setObject:[NSString stringWithFormat:@"%d",count] forKey:@([prodID intValue])];
+        [[NSUserDefaults standardUserDefaults] setObject:[NSString stringWithFormat:@"%d",cartNum-1] forKey:@"GouWuCheShuLiang"];
+    }
+   // NSLog(@"index_dic====%@",self.appdelegate.shopDictionary);
+    numLb.text=[NSString stringWithFormat:@"%d",count];
+    UIButton* subBtn=(UIButton *)[self.view viewWithTag:300000+index];
+    if(num==0){
+        numLb.hidden=YES;
+        subBtn.hidden=YES;
+    }else{
+        numLb.hidden=NO;
+        subBtn.hidden=NO;
+    }
+   // [self.appdelegate.shopDictionary setObject:[NSString stringWithFormat:@"%d",num] forKey:prodID];
+    CGFloat price=[shopInfo[@"price"] floatValue];
+    if(tag<200000){
+        cartNum++;
+        _totalPrice+=price;
+    }else{
+        _totalPrice-=price;
+        cartNum--;
+        if(cartNum<0)cartNum=0;
+    }
+    self.appdelegate.isRefresh=true;
+   // [[NSUserDefaults standardUserDefaults] setObject:[NSString stringWithFormat:@"%d",cartNum] forKey:@"GouWuCheShuLiang"];
+    [self gouWuCheShuZi];
+    _peiSongLab.text = [self xianShiPeiSongFei];
+    [self.tableView reloadData];
+
+    
+//                numLb.text=[NSString stringWithFormat:@"%d",num];
+//                UIButton* subBtn=(UIButton *)[self.view viewWithTag:300000+index];
+//                if(num==0){
+//                    numLb.hidden=YES;
+//                    subBtn.hidden=YES;
+//                }else{
+//                    numLb.hidden=NO;
+//                    subBtn.hidden=NO;
+//                }
+//                [self.appdelegate.shopDictionary setObject:[NSString stringWithFormat:@"%d",num] forKey:prodID];
+//                NSString * value = [[NSUserDefaults standardUserDefaults]objectForKey:@"GouWuCheShuLiang"];
+//                int cartNum=[value intValue];
+//                CGFloat price=[shopInfo[@"price"] floatValue];
+//                if(tag<200000){
+//                    cartNum++;
+//                    _totalPrice+=price;
+//                }else{
+//                    _totalPrice-=price;
+//                    cartNum--;
+//                    if(cartNum<0)cartNum=0;
+//                }
+//                [[NSUserDefaults standardUserDefaults] setObject:[NSString stringWithFormat:@"%d",cartNum] forKey:@"GouWuCheShuLiang"];
+//                [self gouWuCheShuZi];
+//                _peiSongLab.text = [self xianShiPeiSongFei];
+//                [self.tableView reloadData];
+
+    
+//    [self.view addSubview:self.activityVC];
+//    //[self.activityVC startAnimate];
+//    NSInteger num=0;//购物车商品数量
+//    NSInteger index=-1;//商品项，为了获取商品id
+//    NSInteger tag=btn.tag;
+//    UILabel* numLb=nil;
+//    //UIScrollView * bScrollView = (UIScrollView *)[_fenLeiScrollView viewWithTag:2000+fenleiIndex];
+//    if (tag<200000) {
+//        numLb=(UILabel *)[self.view viewWithTag:200000+tag-100000];
+//        num=[numLb.text intValue];
+//        num++;
+//        index=tag-100000;
+//    }else{
+//        numLb=(UILabel *)[self.view viewWithTag:200000+tag-300000];
+//        num=[numLb.text intValue];
+//        num--;
+//        index=tag-300000;
+//    }
+//    if (num<0) {
+//        num=0;
+//    }
+//    NSDictionary *shopInfo = _data[index];
+//    NSString* prodID=shopInfo[@"id"];
+//    NSString* shopID=shopInfo[@"shop_id"];
+//    NSString *userid = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
+//    //NSLog(@"prodid==%@     shopid==%@    userid==%@   num==%d",prodID,shopID,userid,num);
+//    NSDictionary *dicc = @{@"user_id":userid,@"prod_id":prodID,@"prod_count":[NSNumber numberWithInt:num],@"shop_id":shopID};
+//    AnalyzeObject *anle = [AnalyzeObject new];
+//    [anle addProdWithDic:dicc Block:^(id models, NSString *code, NSString *msg) {
+//        NSLog(@"addcart=%@  code==%@  msg==%@",models,code,msg);
+//        //[self ReshBotView];
+//        [self.activityVC stopAnimate];
+//        if ([code isEqualToString:@"0"]) {
+//            numLb.text=[NSString stringWithFormat:@"%d",num];
+//            UIButton* subBtn=(UIButton *)[self.view viewWithTag:300000+index];
+//            if(num==0){
+//                numLb.hidden=YES;
+//                subBtn.hidden=YES;
+//            }else{
+//                numLb.hidden=NO;
+//                subBtn.hidden=NO;
+//            }
+//            [self.appdelegate.shopDictionary setObject:[NSString stringWithFormat:@"%d",num] forKey:prodID];
+//            NSString * value = [[NSUserDefaults standardUserDefaults]objectForKey:@"GouWuCheShuLiang"];
+//            int cartNum=[value intValue];
+//            CGFloat price=[shopInfo[@"price"] floatValue];
+//            if(tag<200000){
+//                cartNum++;
+//                _totalPrice+=price;
+//            }else{
+//                _totalPrice-=price;
+//                cartNum--;
+//                if(cartNum<0)cartNum=0;
+//            }
+//            [[NSUserDefaults standardUserDefaults] setObject:[NSString stringWithFormat:@"%d",cartNum] forKey:@"GouWuCheShuLiang"];
+//            [self gouWuCheShuZi];
+//            _peiSongLab.text = [self xianShiPeiSongFei];
+//            [self.tableView reloadData];
+//        }else{
+//            UIAlertView *alert = [[UIAlertView alloc]
+//                                 initWithTitle:@"提示" // 指定标题
+//                                 message:msg  // 指定消息
+//                                 delegate:nil
+//                                 cancelButtonTitle:@"确定" // 为底部的取消按钮设置标题
+//                                 // 不设置其他按钮
+//                                 otherButtonTitles:nil];
+//            [alert show];
+//        }
+ //   }];
 }
 
 #pragma mark -- 购物车的数字
 - (void)gouWuCheShuZi
 {
     UITabBarItem * item=[self.appdelegate.tabBarController.tabBar.items objectAtIndex:2];
-    if ([Stockpile sharedStockpile].isLogin)
-    {
+//    if ([Stockpile sharedStockpile].isLogin)
+//    {
         NSString * value = [[NSUserDefaults standardUserDefaults]objectForKey:@"GouWuCheShuLiang"];
         NSLog(@"%@",value);
-        if ([value isEqualToString:@"0"])
+        if (value==nil||[value isEqualToString:@""]||[value isEqualToString:@"0"])
         {
             //[item setBadgeValue:nil];
             [item setBadgeValue:@"0"];
+            _numberImg.hidden=YES;
         }
         else
         {
             [_numberImg setTitle:[NSString stringWithFormat:@"%@",value] forState:UIControlStateNormal];
+            _numberImg.hidden=NO;
             [item setBadgeValue:value];
         }
-    }else{
-        //[item setBadgeValue:nil];
-        [item setBadgeValue:@"0"];
-    }
+//    }else{
+//        //[item setBadgeValue:nil];
+//        [item setBadgeValue:@"0"];
+//    }
 }
 
 #pragma mark -- 计算本店消费多少元
@@ -645,18 +777,20 @@
     [shopcarImgL setBackgroundImage:[UIImage imageNamed:@"gw"] forState:UIControlStateNormal];
     [shopcarImgL addTarget:self action:@selector(goShopCar) forControlEvents:UIControlEventTouchUpInside];
     [self.bottomR addSubview:shopcarImgL];
-    
     //购物车左上角的红色数字;
     _numberImg = [[UIButton alloc]initWithFrame:CGRectMake(shopcarImgL.width-15*self.scale,3*self.scale, 15*self.scale, 15*self.scale)];
     _numberImg.backgroundColor = [UIColor redColor];
     _numberImg.layer.cornerRadius=_numberImg.width/2;
-    
-    
     NSString * value = [[NSUserDefaults standardUserDefaults]objectForKey:@"GouWuCheShuLiang"];
-
-    
-    [_numberImg setTitle:[NSString stringWithFormat:@"%@",value] forState:UIControlStateNormal];
-   // [[NSUserDefaults standardUserDefaults] setObject:_numberImg.titleLabel.text forKey:@"GouWuCheShuLiang"];
+    if (value==nil||[value isEqualToString:@""]||[value isEqualToString:@"0"])
+    {
+        _numberImg.hidden=YES;
+    }
+    else
+    {
+        [_numberImg setTitle:[NSString stringWithFormat:@"%@",value] forState:UIControlStateNormal];
+        _numberImg.hidden=NO;
+    }
     _numberImg.titleLabel.font = Small10Font(self.scale);
     [shopcarImgL addSubview:_numberImg];
     float r = shopcarImgL.right;
@@ -711,42 +845,62 @@
 {
 //    NSString * peiSongFei = [NSString stringWithFormat:@"配送费%@元，满%@元免配送费",_remindDic[@"shop_info"][@"delivery_fee"],_remindDic[@"shop_info"][@"free_delivery_amount"]];
    
-    NSString * string = [NSString stringWithFormat:@"合计:￥%.2f",self.totalPrice];
+    NSString * string = [NSString stringWithFormat:@"已消费:￥%.2f",[self jiSuanAmount]];
 //    NSMutableAttributedString * attributedString = [[NSMutableAttributedString alloc]initWithString:string];
 //    [attributedString addAttribute:NSForegroundColorAttributeName value:blackTextColor range:NSMakeRange(0, 3)];
 //    [attributedString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:10*self.scale] range:NSMakeRange(3, 1)];
     return string;
 }
 
--(void)godingdan{
-    if ([Stockpile sharedStockpile].isLogin==NO) {
-        [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
-            if (index==1) {
-                LoginViewController *login = [self login];
-                [login resggong:^(NSString *str) {
-                    [self requestShopingCart:true];
-                }];
-            }
-        }];
-        return;
+
+#pragma mark -- 计算总价格
+- (CGFloat)jiSuanAmount{
+    CGFloat amount = 0.0;
+    NSArray* array=[[DataBase sharedDataBase] getAllFromCart];
+    for (NSDictionary *ShopInfo in array) {
+        NSMutableArray *arr = [[ShopInfo objectForKey:@"prod_info"] mutableCopy];
+        for (NSDictionary *prodDic in arr) {
+            NSString* prodShopID= [NSString stringWithFormat:@"%@",prodDic[@"shop_id"]];;
+            //if([self.shop_id isEqualToString:prodShopID]){
+                NSString *key = [NSString stringWithFormat:@"%@",prodDic[@"prod_id"]];
+                if (![prodDic[@"prod_count"] isEqualToString:@"0"]) {
+                    amount = amount + [prodDic[@"price"] floatValue]*[prodDic[@"prod_count"] integerValue];
+                }
+            //}
+        }
     }
+    return amount;
+}
+
+-(void)godingdan{
+//    if ([Stockpile sharedStockpile].isLogin==NO) {
+//        [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
+//            if (index==1) {
+//                LoginViewController *login = [self login];
+//                [login resggong:^(NSString *str) {
+//                    [self requestShopingCart:true];
+//                }];
+//            }
+//        }];
+//        return;
+//    }
     self.tabBarController.selectedIndex = 2;
     [self.navigationController popToRootViewControllerAnimated:YES];
  }
 
 #pragma mark-------去购物车，  去订单订单详情
 -(void)goShopCar{
-    if ([Stockpile sharedStockpile].isLogin==NO) {
-        [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
-            if (index==1) {
-                LoginViewController *login = [self login];
-                [login resggong:^(NSString *str) {
-                    [self requestShopingCart:true];
-                }];
-            }
-        }];
-        return;
-    }
+//    if ([Stockpile sharedStockpile].isLogin==NO) {
+//        [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
+//            if (index==1) {
+//                LoginViewController *login = [self login];
+//                [login resggong:^(NSString *str) {
+//                    [self requestShopingCart:true];
+//                }];
+//            }
+//        }];
+//        return;
+//    }
     self.hidesBottomBarWhenPushed=YES;
     GouWuCheViewController *gouwuceh = [GouWuCheViewController new];
     gouwuceh.isShowBack=true;

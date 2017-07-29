@@ -12,7 +12,7 @@
 
 @protocol shopInfoDelegate <NSObject>
 
--(void)addNumberindex:(NSInteger)index number:(NSInteger)number;
+-(void)addNumberindex:(NSInteger)index number:(NSInteger)number  jiaAndJian:(BOOL) isAdd;
 -(void)returnNum:(NSInteger)num;
 @end
 
@@ -36,33 +36,9 @@ typedef void (^reshChoucang)(NSString *str);
 @property(nonatomic,retain)NSString * gongGao;
 //是否是从收藏进来的 ，从收藏进来的只让本页面增加
 @property(nonatomic,assign)BOOL orshoucang,isgo;
-
 @property(nonatomic,assign)BOOL isPush;
-
 @property(nonatomic,strong)NSDictionary * pushArray;
-
-
-
-
-
-
-
-
-
-
+@property(nonatomic,strong)NSDictionary * param;
 @property(nonatomic,strong)NSString *hotlineLs;
-
-
-
 -(void)reshChoucang:(reshChoucang)block;
-
-
-
-
-
-
-
-
-
-
 @end

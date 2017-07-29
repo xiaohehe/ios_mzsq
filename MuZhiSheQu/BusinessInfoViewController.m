@@ -164,12 +164,12 @@
 //                       switch (state) {
 //                           case SSDKResponseStateSuccess:
 //                           {
-//                               UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"分享成功"
-//                                                                                   message:nil
-//                                                                                  delegate:nil
-//                                                                         cancelButtonTitle:@"确定"
-//                                                                         otherButtonTitles:nil];
-//                               [alertView show];
+    //                               UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"分享成功"
+    //                                                                                   message:nil
+    //                                                                                  delegate:nil
+    //                                                                         cancelButtonTitle:@"确定"
+    //                                                                         otherButtonTitles:nil];
+    //                               [alertView show];
 //                               break;
 //                           }
 //                           case SSDKResponseStateFail:

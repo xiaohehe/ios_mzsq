@@ -102,7 +102,7 @@
     //输出Debug Info
     [debugInfo appendFormat:@"服务器返回：\n%@\n\n",[[NSString alloc] initWithData:res encoding:NSUTF8StringEncoding]];
     
-    XMLHelper *xml  = [[XMLHelper alloc] autorelease];
+    XMLHelper *xml  = [XMLHelper alloc];// autorelease];
     
     //开始解析
     [xml startParse:res];

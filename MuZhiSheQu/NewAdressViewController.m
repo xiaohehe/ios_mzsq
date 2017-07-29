@@ -37,13 +37,10 @@
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
     _commData=[NSMutableArray new];
     // Do any additional setup after loading the view.
     [self newNav];
-    
     [self topView];
-    
 //    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(keybordy:) name:UIKeyboardWillShowNotification object:nil];
 //    
 //     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(keybordyhide:) name:UIKeyboardWillHideNotification object:nil];
@@ -95,28 +92,22 @@
 }
 
 -(void)topView{
-    
     CellView *infoCell = [[CellView alloc]initWithFrame:CGRectMake(0, self.NavImg.bottom+10*self.scale, self.view.width, 200)];
-    
     [self.view addSubview:infoCell];
-    
     UILabel *nameLa = [[UILabel alloc]initWithFrame:CGRectMake(10*self.scale, 10*self.scale, 60*self.scale, 20*self.scale)];
     nameLa.text = @"联系人";
     nameLa.font=DefaultFont(self.scale);
     [infoCell addSubview:nameLa];
-    
     _nameTF = [[UITextField alloc]initWithFrame:CGRectMake(nameLa.right, nameLa.top, self.view.width-nameLa.right-30*self.scale, nameLa.height)];
     _nameTF.delegate=self;
     _nameTF.placeholder=@"请输入联系人姓名";
     _nameTF.font=DefaultFont(self.scale);
     _nameTF.clearButtonMode=UITextFieldViewModeAlways;
     [infoCell addSubview:_nameTF];
-    
 //    UIButton *cha = [UIButton buttonWithType:UIButtonTypeCustom];
 //    [cha setImage:[UIImage imageNamed:@"fu_no"] forState:UIControlStateNormal];
 //    cha.frame=CGRectMake(self.view.width-30*self.scale, nameLa.top, 15*self.scale, 15*self.scale);
 //    [infoCell addSubview:cha];
-    
     UIView *line =[[UIView alloc]initWithFrame:CGRectMake(_nameTF.left, _nameTF.bottom+5*self.scale, self.view.width-_nameTF.left-10*self.scale, .5)];
     line.backgroundColor=blackLineColore;
     [infoCell addSubview:line];
@@ -132,39 +123,29 @@
         btn.selected=NO;
         btn.tag=i+1;
         [btn addTarget:self action:@selector(selectEvent:) forControlEvents:UIControlEventTouchUpInside];
-     
-        
-        
         setX = line.right-100*self.scale;
-        
         if (btn.tag==1) {
             btn.selected=YES;
             _sex=@"1";
         }
-        
         UILabel *sex = [[UILabel alloc]initWithFrame:CGRectMake(btn.right, btn.top, 30*self.scale, 20*self.scale)];
         sex.text=arr[i];
         sex.tag=10+i;
         sex.userInteractionEnabled=YES;
         sex.font=DefaultFont(self.scale);
         [infoCell addSubview:sex];
-        
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(sexsele:)];
         [sex addGestureRecognizer:tap];
-        
         setY = sex.bottom+10*self.scale;
     }
     UIView *botline = [[UIView alloc]initWithFrame:CGRectMake(line.left, setY, line.width, .5)];
     botline.backgroundColor=blackLineColore;
     [infoCell addSubview:botline];
-    
     UILabel *xiaoqu = [[UILabel alloc]initWithFrame:CGRectMake(10*self.scale, botline.bottom+10*self.scale, 70*self.scale, 20*self.scale)];
     xiaoqu.text = @"详细地址";
     xiaoqu.font=DefaultFont(self.scale);
     [infoCell addSubview:xiaoqu];
     [xiaoqu sizeToFit];
-    
-    
     _xiaoqux = [[UITextField alloc]initWithFrame:CGRectMake(xiaoqu.right+10*self.scale, xiaoqu.top, self.view.width-xiaoqu.right-50*self.scale, 20*self.scale)];
     _xiaoqux.font=DefaultFont(self.scale);
     _xiaoqux.placeholder=@"请输入详细地址";
@@ -173,32 +154,23 @@
     [infoCell addSubview:_xiaoqux];
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(seleArdess)];
     [_xiaoqux addGestureRecognizer:tap];
-    
-    
     UIButton *biao = [[UIButton alloc]initWithFrame:CGRectMake(self.view.width-40*self.scale, xiaoqu.top, 20*self.scale, 20*self.scale)];
     [biao setImage:[UIImage imageNamed:@"xq_dibiao"] forState:UIControlStateNormal];
     [biao addTarget:self action:@selector(seleArdess) forControlEvents:UIControlEventTouchUpInside];
     [infoCell addSubview:biao];
-    
     UIView *line1 = [[UIView alloc]initWithFrame:CGRectMake(0, xiaoqu.bottom+10*self.scale, self.view.width, .5)];
     line1.backgroundColor=blackLineColore;
     [infoCell addSubview:line1];
-    
-    
     UILabel *dizhi = [[UILabel alloc]initWithFrame:CGRectMake(10*self.scale, line1.bottom+10*self.scale, 70*self.scale, 20*self.scale)];
     dizhi.text = @"门牌号";
     dizhi.font=DefaultFont(self.scale);
     [infoCell addSubview:dizhi];
-    
-    
     _dizhix = [[UITextField alloc]initWithFrame:CGRectMake(dizhi.right, dizhi.top, self.view.width-80*self.scale, 20*self.scale)];
     _dizhix.font=DefaultFont(self.scale);
     _dizhix.placeholder=@"请输入门牌号（可选）";
     _dizhix.delegate=self;
     _dizhix.clearButtonMode = UITextFieldViewModeAlways;
     [infoCell addSubview:_dizhix];
-    
-    
 //    UIImageView *cha1 = [[UIImageView alloc]initWithFrame:CGRectMake(self.view.width-40*self.scale, dizhi.top, 20*self.scale, 20*self.scale)];
 //    cha1.image = [UIImage imageNamed:@"fu_no"];
 //    [infoCell addSubview:cha1];
@@ -206,13 +178,6 @@
     UIView *line2 = [[UIView alloc]initWithFrame:CGRectMake(0, _dizhix.bottom+10*self.scale, self.view.width, .5)];
     line2.backgroundColor=blackLineColore;
     [infoCell addSubview:line2];
-    
-    
-    
-    
-    
-    
-    
     UILabel *shouji = [[UILabel alloc]initWithFrame:CGRectMake(10*self.scale, line2.bottom+10*self.scale, 70*self.scale, 20*self.scale)];
     shouji.text = @"手机";
     shouji.font=DefaultFont(self.scale);
@@ -235,19 +200,13 @@
     line3.backgroundColor=blackLineColore;
     [infoCell addSubview:line3];
     
-    infoCell.height=line3.bottom;
-    
-    
-
-    
+    infoCell.height=line3.bottom; 
 }
 
 
 
 -(void)seleArdess{
     [self.view endEditing:YES];
-    
-    
     GetBaiDuMapViewController *baidu = [GetBaiDuMapViewController new];
     [self.navigationController pushViewController:baidu animated:YES];
     [baidu getZuoBiaoBlock:^(NSDictionary *dic) {
@@ -264,15 +223,9 @@
                 loca=ar[1];
             }
         }
-        
         _jing = [NSString stringWithFormat:@"%@",dic[@"longitude"]];
         _wei= [NSString stringWithFormat:@"%@",dic[@"latitude"]];
-        
         _xiaoqux.text=loca;
-
-
-
-    
     }];
     
 //    
@@ -411,8 +364,6 @@
         }];
         return;
     }
-    
-    
     NSString *str =@"";
     str =[NSString stringWithFormat:@"%@",[_commData objectAtIndex:[_TimePickerView selectedRowInComponent:1]][@"name"]];
     
@@ -424,11 +375,6 @@
             _shequid = dic[@"id"];
         }
     }
-    
-    
-    
-    
-    
     [UIView animateWithDuration:.5 animations:^{
         _SelectImg.frame=CGRectMake(0, self.view.height, self.view.width, self.view.height+180*self.scale);
         _big.alpha=0;
@@ -538,35 +484,39 @@
     [CarBtn addTarget:self action:@selector(SaveBtnVC:) forControlEvents:UIControlEventTouchUpInside];
     [self.NavImg addSubview:CarBtn];
 }
+
 -(void)SaveBtnVC:(id)sender{
     if ([_nameTF.text isEqualToString:@"" ] || [_xiaoqux.text isEqualToString:@"" ] || [_shoujix.text isEqualToString:@""]) {
         [self ShowAlertWithMessage:@"请完善信息后保存"];
         return;
     }
-    
     if (![_shoujix.text isValidateMobile]) {
         [self ShowAlertWithMessage:@"请输入正确的手机号"];
         return;
     }
-    
     [self.view addSubview:self.activityVC];
     [self.activityVC startAnimate];
     AnalyzeObject *anle = [AnalyzeObject new];
     NSString *userid = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
    // NSString *adress = [_xiaoqux.text stringByAppendingString:_dizhix.text];
     
-    NSLog(@"%@   %@",_jing,_wei);
-    
-    NSDictionary *dic = @{@"user_id":userid,@"real_name":_nameTF.text,@"sex":_sex,@"house_number":_dizhix.text,@"address":_xiaoqux.text,@"mobile":_shoujix.text,@"lng":[NSString stringWithFormat:@"%@",_jing],@"lat":[NSString stringWithFormat:@"%@",_wei]};
+    NSLog(@"jing==%@   %@",_jing,_wei);
+    if(_jing==nil||_wei==nil){
+         _jing=@"";
+         _wei=@"";
+    }
+    NSString *commid =[NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults] objectForKey:@"commid"]];
+
+    NSDictionary *dic = @{@"user_id":userid,@"real_name":_nameTF.text,@"sex":_sex,@"house_number":_dizhix.text,@"address":_xiaoqux.text,@"mobile":_shoujix.text,@"lng":[NSString stringWithFormat:@"%@",_jing],@"lat":[NSString stringWithFormat:@"%@",_wei],@"community":commid};
+    NSLog(@"addAddress_param==%@",dic);
     [anle addAddressWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
+        NSLog(@"addAddress_result==%@",models);
         if ([code isEqualToString:@"0"]) {
             [self.activityVC stopAnimate];
             [self ShowAlertWithMessage:msg];
             [self.navigationController popViewControllerAnimated:YES];
         }
-     
     }];
-    
 }
 
 -(void)PopVC:(id)sender{

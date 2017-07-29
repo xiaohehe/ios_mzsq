@@ -39,9 +39,6 @@
     self.navigationController.navigationBarHidden=YES;
 //    NSString *addrss = [[NSUserDefaults standardUserDefaults]objectForKey:@"commname"];
 //    self.TitleLabel.text=addrss;
-//    
-//    
-//    
     if ([[NSUserDefaults standardUserDefaults]boolForKey:@"changeCommShang"]) {
 //        _topData = [NSMutableArray new];
 //        _botData=[NSMutableArray new];
@@ -49,25 +46,20 @@
         _index=0;
         _Tag=1;
         [self reshData];
-        
         [[NSUserDefaults standardUserDefaults]setBool:NO forKey:@"changeCommShang"];
         [[NSUserDefaults standardUserDefaults]synchronize];
     }else{
-        
 //        self.commid = [[NSUserDefaults standardUserDefaults]objectForKey:@"commid"];
 //        if (self.commid==nil || [self.commid isEqualToString:@""]) {
 //            // [self ShowAlertWithMessage:@"没有数据，请重新选择社区"];
 //        }
 //        
 //        return;
-        
     }
     //
-    
     self.navigationController.navigationBarHidden = NO;
     self.navigationController.navigationBar.hidden = YES;
 }
-
 
 -(void)viewWillDisappear:(BOOL)animated
 {
@@ -105,7 +97,6 @@
 //    [self reshData];
 //    
 //    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(TextFieldChange) name:UITextFieldTextDidChangeNotification object:nil];
-    
     _X=0;
     _index=0;
     _Tag=1;
@@ -116,14 +107,7 @@
 //    [self newView];
 //    [self botView];
     [self reshData];
-    
-    
-    
-
 }
-
-
-
 
 //-(void)newView{
 //

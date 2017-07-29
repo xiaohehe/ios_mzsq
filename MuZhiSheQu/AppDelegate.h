@@ -28,6 +28,7 @@ typedef void(^ApiPayBlock)(NSDictionary *resp);
 -(void)dingwei;
 -(int)appNum;
 -(void)ziding;
+-(void)WXPayNewWithNonceStr:(NSString *)nonceStr OrderID:(NSString *)orderId Timestamp:(NSString *)timestamp sign:(NSString *)sign complete:(WXPayBlock)complete;
 /**
  *微信支付   价格price单位是分  并且不能有小数点
  *orderId  订单号
@@ -43,5 +44,6 @@ typedef void(^ApiPayBlock)(NSDictionary *resp);
  *返回参数  [resp objectForKey:@"resultStatus"] == @“9000”  支付成功;
  */
 -(void)AliPayPrice:(NSString *)price OrderID:(NSString *)orderId OrderName:(NSString *)orderName OrderDescription:(NSString *)description  complete:(ApiPayBlock)complete;
+-(void)AliPayNewPrice:(NSString *)price OrderID:(NSString *)orderId OrderName:(NSString *)orderName Sign:(NSString*)sign OrderDescription:(NSString *)description  complete:(ApiPayBlock)complete;
 @end
 

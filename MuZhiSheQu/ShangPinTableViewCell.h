@@ -10,6 +10,9 @@
 
 @interface ShangPinTableViewCell : SuperTableViewCell
 @property(nonatomic,strong)UIImageView *HeaderImage;
+@property(nonatomic,strong)UIView* coverView;
+@property(nonatomic,strong)UILabel* loseEfficacy;
+
 @property(nonatomic,strong)UILabel *NameLabel;
 @property(nonatomic,strong)UILabel *NumberLabel;
 @property(nonatomic,strong)UILabel *PriceLabel;

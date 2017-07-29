@@ -100,13 +100,13 @@
 
 -(void)shangla{
     [self reshData];
-
 }
+
 -(void)xiala{
     _index=0;
     [self reshData];
-
 }
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
 
     
