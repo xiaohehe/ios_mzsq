@@ -1044,10 +1044,10 @@
 		69480D511F1509FA009B74B7 /* wuyeCall@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wuyeCall@2x.png"; sourceTree = "<group>"; };
 		69480D531F151A24009B74B7 /* CannelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CannelViewController.h; sourceTree = "<group>"; };
 		69480D541F151A24009B74B7 /* CannelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CannelViewController.m; sourceTree = "<group>"; };
-		6948379F1F18AA83006728EC /* AppUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppUtil.h; sourceTree = "<group>"; };
-		694837A01F18AA83006728EC /* AppUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppUtil.m; sourceTree = "<group>"; };
-		694837A11F18AA83006728EC /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
-		694837A21F18AA83006728EC /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
+		6948379F1F18AA83006728EC /* AppUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppUtil.h; path = MuZhiSheQu/3th/AppUtil.h; sourceTree = "<group>"; };
+		694837A01F18AA83006728EC /* AppUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppUtil.m; path = MuZhiSheQu/3th/AppUtil.m; sourceTree = "<group>"; };
+		694837A11F18AA83006728EC /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MBProgressHUD.h; path = MuZhiSheQu/3th/MBProgressHUD.h; sourceTree = "<group>"; };
+		694837A21F18AA83006728EC /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MBProgressHUD.m; path = MuZhiSheQu/3th/MBProgressHUD.m; sourceTree = "<group>"; };
 		694A4B261F21E9080014AF6D /* jingxuan.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = jingxuan.png; sourceTree = "<group>"; };
 		694BD5591EF10E3800661A05 /* IMViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMViewController.h; sourceTree = "<group>"; };
 		694BD55A1EF10E3800661A05 /* IMViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IMViewController.m; sourceTree = "<group>"; };
@@ -1849,10 +1849,10 @@
 			children = (
 				749EDC831BF17EE80090275B /* 图片放大 */,
 				747B3F751E344031000EC1F2 /* MuZhiSheQu.entitlements */,
+				693F1D3C1F2EE2FD005183C0 /* 3th */,
 				74DD49C71BE9ABCA00148935 /* 照片多选 */,
 				18AEC1721B9C1A2700E89144 /* ImageSource */,
 				1830696C1B96D5F90016AC20 /* super */,
-				183069551B96D5160016AC20 /* 3th */,
 				18306A191B96D6650016AC20 /* Analyze */,
 				183069321B96D26B0016AC20 /* AppDelegate.h */,
 				183069331B96D26B0016AC20 /* AppDelegate.m */,
@@ -1964,28 +1964,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		183069551B96D5160016AC20 /* 3th */ = {
-			isa = PBXGroup;
-			children = (
-				6948379F1F18AA83006728EC /* AppUtil.h */,
-				694837A01F18AA83006728EC /* AppUtil.m */,
-				694837A11F18AA83006728EC /* MBProgressHUD.h */,
-				694837A21F18AA83006728EC /* MBProgressHUD.m */,
-				6928B6111EF3AAE50088B1C4 /* fmdb */,
-				741C39471E48185B00F3C801 /* AFNetworking */,
-				746DDA0E1E795A76006AC05A /* Lib */,
-				EA5F2F131D1CCCEC0075C498 /* 友盟统计 */,
-				74695B6C1C8587A600A0C5AA /* Baidu */,
-				74D2E0081C32683F009D7DF6 /* framework */,
-				741C38941E47202500F3C801 /* ShareSDK */,
-				74BE46411C085A8B00ADB757 /* zhifu */,
-				18306A071B96D6430016AC20 /* LinkLable */,
-				183069E21B96D6390016AC20 /* MJRefresh */,
-				183069DE1B96D6170016AC20 /* Start */,
-			);
-			path = 3th;
-			sourceTree = "<group>";
-		};
 		1830696C1B96D5F90016AC20 /* super */ = {
 			isa = PBXGroup;
 			children = (
@@ -2043,7 +2021,8 @@
 				183069DF1B96D62E0016AC20 /* CWStarRateView.h */,
 				183069E01B96D62E0016AC20 /* CWStarRateView.m */,
 			);
-			path = Start;
+			name = Start;
+			path = MuZhiSheQu/3th/Start;
 			sourceTree = "<group>";
 		};
 		183069E21B96D6390016AC20 /* MJRefresh */ = {
@@ -2074,7 +2053,8 @@
 				183069F91B96D63A0016AC20 /* UIView+MJExtension.h */,
 				183069FA1B96D63A0016AC20 /* UIView+MJExtension.m */,
 			);
-			path = MJRefresh;
+			name = MJRefresh;
+			path = MuZhiSheQu/3th/MJRefresh;
 			sourceTree = "<group>";
 		};
 		18306A071B96D6430016AC20 /* LinkLable */ = {
@@ -2083,7 +2063,8 @@
 				18306A081B96D6430016AC20 /* Extras */,
 				18306A0F1B96D6430016AC20 /* WPAttributedMarkup */,
 			);
-			path = LinkLable;
+			name = LinkLable;
+			path = MuZhiSheQu/3th/LinkLable;
 			sourceTree = "<group>";
 		};
 		18306A081B96D6430016AC20 /* Extras */ = {
@@ -2663,7 +2644,31 @@
 				6928B61C1EF3AAE50088B1C4 /* FMResultSet.m */,
 				6928B61D1EF3AAE50088B1C4 /* Info.plist */,
 			);
-			path = fmdb;
+			name = fmdb;
+			path = MuZhiSheQu/3th/fmdb;
+			sourceTree = "<group>";
+		};
+		693F1D3C1F2EE2FD005183C0 /* 3th */ = {
+			isa = PBXGroup;
+			children = (
+				6948379F1F18AA83006728EC /* AppUtil.h */,
+				694837A01F18AA83006728EC /* AppUtil.m */,
+				694837A11F18AA83006728EC /* MBProgressHUD.h */,
+				694837A21F18AA83006728EC /* MBProgressHUD.m */,
+				6928B6111EF3AAE50088B1C4 /* fmdb */,
+				741C39471E48185B00F3C801 /* AFNetworking */,
+				746DDA0E1E795A76006AC05A /* Lib */,
+				EA5F2F131D1CCCEC0075C498 /* 友盟统计 */,
+				74695B6C1C8587A600A0C5AA /* Baidu */,
+				74D2E0081C32683F009D7DF6 /* framework */,
+				741C38941E47202500F3C801 /* ShareSDK */,
+				74BE46411C085A8B00ADB757 /* zhifu */,
+				18306A071B96D6430016AC20 /* LinkLable */,
+				183069E21B96D6390016AC20 /* MJRefresh */,
+				183069DE1B96D6170016AC20 /* Start */,
+			);
+			name = 3th;
+			path = ..;
 			sourceTree = "<group>";
 		};
 		69FC6C821F0B958000A44F41 /* openssl */ = {
@@ -2757,7 +2762,8 @@
 				741C392D1E47281500F3C801 /* ShareSDK.framework */,
 				741C392E1E47281500F3C801 /* UI */,
 			);
-			path = ShareSDK;
+			name = ShareSDK;
+			path = MuZhiSheQu/3th/ShareSDK;
 			sourceTree = "<group>";
 		};
 		741C39081E47281500F3C801 /* Connection */ = {
@@ -2854,7 +2860,8 @@
 				741C39591E48185B00F3C801 /* NSError+Helper.m */,
 				741C395A1E48185B00F3C801 /* UIKit+AFNetworking */,
 			);
-			path = AFNetworking;
+			name = AFNetworking;
+			path = MuZhiSheQu/3th/AFNetworking;
 			sourceTree = "<group>";
 		};
 		741C394A1E48185B00F3C801 /* AFNetworking */ = {
@@ -3014,6 +3021,7 @@
 				74695B6E1C8587D500A0C5AA /* BaiduMapAPI_Location.framework */,
 			);
 			name = Baidu;
+			path = MuZhiSheQu/3th;
 			sourceTree = "<group>";
 		};
 		746DDA0E1E795A76006AC05A /* Lib */ = {
@@ -3023,7 +3031,8 @@
 				746DDA101E795A76006AC05A /* jpush-ios-3.0.2.a */,
 				746DDA111E795A76006AC05A /* JPUSHService.h */,
 			);
-			path = Lib;
+			name = Lib;
+			path = MuZhiSheQu/3th/Lib;
 			sourceTree = "<group>";
 		};
 		748F1D821BA3CC4200A48805 /* 商品零售订单 */ = {
@@ -3083,7 +3092,8 @@
 				74BE46B01C085A8B00ADB757 /* PartnerConfig.h */,
 				74BE46B11C085A8B00ADB757 /* WeChatSDK_1.5 */,
 			);
-			path = zhifu;
+			name = zhifu;
+			path = MuZhiSheQu/3th/zhifu;
 			sourceTree = "<group>";
 		};
 		74BE46421C085A8B00ADB757 /* Alipay */ = {
@@ -3125,7 +3135,8 @@
 				74D2E00F1C32683F009D7DF6 /* RongIMKit.framework */,
 				74D2E0101C32683F009D7DF6 /* RongIMLib.framework */,
 			);
-			path = framework;
+			name = framework;
+			path = MuZhiSheQu/3th/framework;
 			sourceTree = "<group>";
 		};
 		74DD49C71BE9ABCA00148935 /* 照片多选 */ = {
@@ -3513,7 +3524,6 @@
 				741C38C31E4726D000F3C801 /* UMMobClick.framework */,
 			);
 			name = "友盟统计";
-			path = ../..;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
