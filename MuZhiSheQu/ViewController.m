@@ -1044,6 +1044,8 @@
     _mainScrollView.delegate = self;
     [_mainScrollView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(xiala)];
     [_mainScrollView addLegendFooterWithRefreshingTarget:self refreshingAction:@selector(shangla)];
+    _mainScrollView.footer.automaticallyRefresh = YES;
+
 //    tv.mj_footer = [MJRefreshBackNormalFooter footerWithRefreshingBlock:^{
 //        isLoad=true;
 //        currentPage++;
@@ -1052,7 +1054,7 @@
 //    }];
 
     
-    _mainScrollView.footer.automaticallyRefresh=NO;
+    //_mainScrollView.footer.automaticallyRefresh=NO;
     [self.view insertSubview:_mainScrollView belowSubview:self.NavImg];
      //语音下单 [self createShangJiaJinZhuBtn];
     _ImageScrollView=[[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, self.view.width, self.view.width*336/720)];
