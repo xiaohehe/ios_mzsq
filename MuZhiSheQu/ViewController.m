@@ -1044,6 +1044,14 @@
     _mainScrollView.delegate = self;
     [_mainScrollView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(xiala)];
     [_mainScrollView addLegendFooterWithRefreshingTarget:self refreshingAction:@selector(shangla)];
+//    tv.mj_footer = [MJRefreshBackNormalFooter footerWithRefreshingBlock:^{
+//        isLoad=true;
+//        currentPage++;
+//        previousPage=currentPage;
+//        [httpDelegate requestHotWithPage:currentPage flag:0];
+//    }];
+
+    
     _mainScrollView.footer.automaticallyRefresh=NO;
     [self.view insertSubview:_mainScrollView belowSubview:self.NavImg];
      //语音下单 [self createShangJiaJinZhuBtn];
