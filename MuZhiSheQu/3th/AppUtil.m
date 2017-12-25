@@ -33,7 +33,7 @@
     if(str==nil)
         return YES;
     NSString* s=[str stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    if([s length]==0||[s isEqualToString:@""]|| s==nil){
+    if([s length]==0||[s isEqualToString:@""]|| s==nil||[s isEqualToString:@"<null>"]||[s isEqualToString:@"(null)"]){
         return  YES;
     }
     return NO;
@@ -106,4 +106,99 @@
         return [NSString stringWithFormat:@"%ld",time];
 }
 
+
++(NSString*) postSendTime:(NSString*) time{
+    NSDate *now = [NSDate date];
+    NSTimeZone *zone1 = [NSTimeZone systemTimeZone];
+    NSInteger interval1 = [zone1 secondsFromGMTForDate:now];
+    NSDate *localDate1 = [now dateByAddingTimeInterval:interval1];
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+    // 时间格式,此处遇到过坑,建议时间HH大写,手机24小时进制和12小时禁止都可以完美格式化
+    [dateFormat setDateFormat:@"yyyy-MM-dd HH:mm"];
+    NSDate *start = [dateFormat dateFromString:time];
+    NSInteger interval2 = [zone1 secondsFromGMTForDate:start];
+    NSDate *localDate2 = [start dateByAddingTimeInterval:interval2];
+    
+    // 时间2与时间1之间的时间差（秒）
+    double lTime = [localDate1 timeIntervalSinceReferenceDate] - [localDate2 timeIntervalSinceReferenceDate];
+    NSInteger minutes = lTime / 60;
+    NSInteger hours = (lTime / 3600);
+    NSInteger days = lTime/60/60/24;
+    NSInteger month = lTime/60/60/24/12;
+    NSInteger years = lTime/60/60/24/365;
+    NSString* subTime=@"刚刚";
+    if(years>0){
+        subTime=[NSString stringWithFormat:@"%ld年前",years];
+    }else if(month>0){
+        subTime=[NSString stringWithFormat:@"%ld月前",month];
+    }else if(days>0){
+        subTime=[NSString stringWithFormat:@"%ld天前",days];
+    }else if(hours>0){
+        subTime=[NSString stringWithFormat:@"%ld小时前",hours];
+    }else if(minutes>0){
+        subTime=[NSString stringWithFormat:@"%ld分钟前",minutes];
+    }
+    return subTime;
+}
+
++(NSString*) postSendTime2:(NSString*) time{
+    NSDate *now = [NSDate date];
+    NSTimeZone *zone1 = [NSTimeZone systemTimeZone];
+    NSInteger interval1 = [zone1 secondsFromGMTForDate:now];
+    NSDate *localDate1 = [now dateByAddingTimeInterval:interval1];
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+    // 时间格式,此处遇到过坑,建议时间HH大写,手机24小时进制和12小时禁止都可以完美格式化
+    [dateFormat setDateFormat:@"yyyy/MM/dd HH:mm:ss"];
+    NSDate *start = [dateFormat dateFromString:time];
+    NSInteger interval2 = [zone1 secondsFromGMTForDate:start];
+    NSDate *localDate2 = [start dateByAddingTimeInterval:interval2];
+    // 时间2与时间1之间的时间差（秒）
+    double lTime = [localDate1 timeIntervalSinceReferenceDate] - [localDate2 timeIntervalSinceReferenceDate];
+    NSInteger minutes = lTime / 60;
+    NSInteger hours = (lTime / 3600);
+    NSInteger days = lTime/60/60/24;
+    NSInteger month = lTime/60/60/24/12;
+    NSInteger years = lTime/60/60/24/365;
+    NSString* subTime=@"刚刚";
+    if(years>0){
+        subTime=[NSString stringWithFormat:@"%ld年前",years];
+    }else if(month>0){
+        subTime=[NSString stringWithFormat:@"%ld月前",month];
+    }else if(days>0){
+        subTime=[NSString stringWithFormat:@"%ld天前",days];
+    }else if(hours>0){
+        subTime=[NSString stringWithFormat:@"%ld小时前",hours];
+    }else if(minutes>0){
+        subTime=[NSString stringWithFormat:@"%ld分钟前",minutes];
+    }
+    return subTime;
+}
+
++(NSString*) getCurrentTime{
+    NSDate *date = [NSDate date];
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateStyle:NSDateFormatterMediumStyle];
+    [formatter setTimeStyle:NSDateFormatterShortStyle];
+    [formatter setDateFormat:@"YYYY-MM-dd HH:mm"];
+    NSString *DateTime = [formatter stringFromDate:date];
+    return DateTime;
+}
+
++(NSString*) getCurrentTime2{
+    NSDate *date = [NSDate date];
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateStyle:NSDateFormatterMediumStyle];
+    [formatter setTimeStyle:NSDateFormatterShortStyle];
+    [formatter setDateFormat:@"YYYY/MM/dd HH:mm:ss"];
+    NSString *DateTime = [formatter stringFromDate:date];
+    return DateTime;
+}
+
++(BOOL) arrayIsEmpty:(NSArray *) arr{
+    if([arr isKindOfClass:[NSNull class]])
+        return YES;
+    if(arr==nil||arr.count==0)
+        return YES;
+    return NO;
+}
 @end

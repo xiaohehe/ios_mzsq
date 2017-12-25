@@ -19,4 +19,13 @@
 +(BOOL) isDoBusiness:(NSDictionary*) dic;
 //时间是否有效
 +(BOOL) isTimeBlank:(NSString*) time;
+//贴子发布时间
++(NSString*) postSendTime:(NSString*) time;
++(NSString*) postSendTime2:(NSString*) time;
+//获取当前时间
++(NSString*) getCurrentTime;
++(NSString*) getCurrentTime2;
++(NSString*) getTimeWith0:(NSInteger) time;
++(BOOL) arrayIsEmpty:(NSArray *) arr;
+
 @end
