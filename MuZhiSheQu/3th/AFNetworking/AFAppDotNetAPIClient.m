@@ -24,8 +24,11 @@
 
 //static NSString * const AFAppDotNetAPIBaseURLString = @"http://api.zzwms.com/";
 //static NSString * const AFAppDotNetAPIBaseURLString = @"https://app.mzsq.cc";
-static NSString * const AFAppDotNetAPIBaseURLString = @"http://capi.mzsq.com/";
-//static NSString * const AFAppDotNetAPIBaseURLString = @"http://139.129.221.224:7112/";
+//static NSString * const AFAppDotNetAPIBaseURLString = @"http://capi.mzsq.com/";//老地址正式
+//static NSString * const AFAppDotNetAPIBaseURLString = @"http://test.capi.mzsq.com:899/";//老地址测试
+//static NSString * const AFAppDotNetAPIBaseURLString = @"http://192.168.31.203:8023/";//新接口本地测试
+static NSString * const AFAppDotNetAPIBaseURLString = @"http://test.capi.mzsq.com:899/";//新接口线上测试
+
 @implementation AFAppDotNetAPIClient
 
 + (instancetype)sharedClient {
