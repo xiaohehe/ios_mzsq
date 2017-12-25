@@ -16,9 +16,6 @@
 #import "DataBase.h"
 #import "LoginViewController.h"
 #import "ShopInfoViewController.h"
-#import "BNRoutePlanModel.h"
-#import "BNCoreServices.h"
-#import "BNaviModel.h"
 #import "MuZhiSheQu-Swift.h"
 #import "MineCollectionViewCell.h"
 #import "ForumViewController.h"
@@ -111,7 +108,6 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
 
 - (void)didUpdateBMKUserLocation:(BMKUserLocation *)userLocation{
     [sre stopUserLocationService];
-    [self startNavi:userLocation];
 }
 
 - (void)didFailToLocateUserWithError:(NSError *)error{
@@ -759,21 +755,6 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
       self.hidesBottomBarWhenPushed=NO;
 }
 
-- (BOOL)checkServicesInited{
-    if(![BNCoreServices_Instance isServicesInited])
-    {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示"
-                                                            message:@"引擎尚未初始化完成，请稍后再试"
-                                                           delegate:nil
-                                                  cancelButtonTitle:@"我知道了"
-                                                  otherButtonTitles:nil];
-        [alertView show];
-        return NO;
-    }
-    return YES;
-}
-
-
 //真实GPS导航
 - (void)realNavi:(UIButton*)button{
     BusinessLocationViewController* locationVc=[[BusinessLocationViewController alloc]init];
@@ -784,97 +765,9 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
 //    [self dingwei];
 }
 
-- (void)startNavi:(BMKUserLocation *)userLocation{
-    NSMutableArray *nodesArray = [[NSMutableArray alloc]initWithCapacity:2];
-    BNRoutePlanNode *startNode = [[BNRoutePlanNode alloc] init];
-    startNode.pos = [[BNPosition alloc] init];
-    startNode.pos.x = userLocation.location.coordinate.longitude;
-    startNode.pos.y = userLocation.location.coordinate.latitude;
-    startNode.pos.eType = BNCoordinate_BaiduMapSDK;
-    [nodesArray addObject:startNode];
-    if([AppUtil isBlank:shopData[@"latitude"]]||[AppUtil isBlank:shopData[@"longitude"]]){
-        [self ShowAlertWithMessage:@"暂无商家位置信息"];
-        return;
-    }
-    BNRoutePlanNode *endNode = [[BNRoutePlanNode alloc] init];
-    endNode.pos = [[BNPosition alloc] init];
-    endNode.pos.x =[shopData[@"longitude"] doubleValue];
-    endNode.pos.y = [shopData[@"latitude"] doubleValue];
-    endNode.pos.eType = BNCoordinate_BaiduMapSDK;
-    [nodesArray addObject:endNode];
-    //关闭openURL,不想跳转百度地图可以设为YES
-    [BNCoreServices_RoutePlan setDisableOpenUrl:YES];
-    [BNCoreServices_RoutePlan startNaviRoutePlan:BNRoutePlanMode_Recommend naviNodes:nodesArray time:nil delegete:self userInfo:nil];
-}
-
-#pragma mark - BNNaviRoutePlanDelegate
-//算路成功回调
--(void)routePlanDidFinished:(NSDictionary *)userInfo
-{
-    NSLog(@"算路成功");
-    //路径规划成功，开始导航
-    [BNCoreServices_UI showPage:BNaviUI_NormalNavi delegate:self extParams:nil];
-    //导航中改变终点方法示例
-    /*dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(15 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-     BNRoutePlanNode *endNode = [[BNRoutePlanNode alloc] init];
-     endNode.pos = [[BNPosition alloc] init];
-     endNode.pos.x = 114.189863;
-     endNode.pos.y = 22.546236;
-     endNode.pos.eType = BNCoordinate_BaiduMapSDK;
-     [[BNaviModel getInstance] resetNaviEndPoint:endNode];
-     });*/
-}
-
-//算路失败回调
-- (void)routePlanDidFailedWithError:(NSError *)error andUserInfo:(NSDictionary*)userInfo
-{
-    NSLog(@"routePlanDidFailedWithError==%@",userInfo);
-    switch ([error code]%10000)
-    {
-        case BNAVI_ROUTEPLAN_ERROR_LOCATIONFAILED:
-            NSLog(@"暂时无法获取您的位置,请稍后重试");
-            break;
-        case BNAVI_ROUTEPLAN_ERROR_ROUTEPLANFAILED:
-            NSLog(@"无法发起导航");
-            break;
-        case BNAVI_ROUTEPLAN_ERROR_LOCATIONSERVICECLOSED:
-            NSLog(@"定位服务未开启,请到系统设置中打开定位服务。");
-            break;
-        case BNAVI_ROUTEPLAN_ERROR_NODESTOONEAR:
-            NSLog(@"起终点距离起终点太近");
-            break;
-        default:
-            NSLog(@"算路失败");
-            break;
-    }
-}
-
 //算路取消回调
 -(void)routePlanDidUserCanceled:(NSDictionary*)userInfo {
     NSLog(@"算路取消");
-}
-
-
-#pragma mark - 安静退出导航
-
-- (void)exitNaviUI
-{
-    [BNCoreServices_UI exitPage:EN_BNavi_ExitTopVC animated:YES extraInfo:nil];
-}
-
-#pragma mark - BNNaviUIManagerDelegate
-
-//退出导航页面回调
-- (void)onExitPage:(BNaviUIType)pageType  extraInfo:(NSDictionary*)extraInfo
-{
-    if (pageType == BNaviUI_NormalNavi)
-    {
-        NSLog(@"退出导航");
-    }
-    else if (pageType == BNaviUI_Declaration)
-    {
-        NSLog(@"退出导航声明页面");
-    }
 }
 
 -(void)skipToSearchView{
