@@ -23,12 +23,13 @@
 #import "MJRefresh.h"
 #import "LineView.h"
 #import "UIImage+Helper.h"
-//#import "CustomButton.h"
+#import "LoadFailureView.h"
 
 typedef void(^AlertBlock)(NSInteger index);
 typedef void(^dismissBlock)(BOOL isDismiss);
 @interface SuperViewController : UIViewController
 @property(nonatomic,assign)float scale;
+@property(nonatomic,assign)BOOL isIphoneX;
 @property(nonatomic,strong)UIImageView *NavImg;
 @property(nonatomic,strong)UILabel *TitleLabel;
 @property(nonatomic,strong)UIActivityIndicatorView *activityVC;
@@ -37,6 +38,10 @@ typedef void(^dismissBlock)(BOOL isDismiss);
 @property(nonatomic,strong)NSString *commid,*user_id;
 @property(nonatomic,retain)UIImageView * hongDianImageView;
 @property(nonatomic,strong)dismissBlock dismissBlock;
+@property(nonatomic,strong)CAGradientLayer *gradientLayer;
+@property(nonatomic,strong) LoadFailureView* errorView;
+@property(nonatomic,assign) CGFloat dangerAreaHeight;
+
 -(void)getdismissBlock:(dismissBlock)dismissBlock;
 -(void)gongGaoDian;
 -(void)ShowAlertWithMessage:(NSString *)message;
@@ -54,4 +59,6 @@ typedef void(^dismissBlock)(BOOL isDismiss);
 - (NSString*)weekdayStringFromDate:(NSDate*)inputDate;
 
 - (CGRect)getStringWithFont:(float)font withString:(NSString *)string withWith:(CGFloat)with;
+-(CGFloat)getStartHeight;
+-(void) netError:(CGRect)frame;
 @end

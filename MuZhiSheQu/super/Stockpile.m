@@ -7,7 +7,7 @@
 //
 
 #import "Stockpile.h"
-
+#import "AppUtil.h"
 
 
 #define userNameKey         @"dfUserName"
@@ -32,7 +32,9 @@
 #define AccountTypeKey          @"isAccountTypeKey"
 #define karea            @"karea"
 #define UserToken          @"usertoken"
-
+#define userBirthday         @"userBirthday"
+#define FID          @"FID"
+#define Integral         @"Integral"
 // .m
 // \ 代表下一行也属于宏
 // ## 是分隔符
@@ -74,8 +76,7 @@ single_implementation(Stockpile);
 }
 
 #pragma mark 写入系统偏好
-- (void)saveToNSDefaultsWithKey1:(NSString *)key
-{
+- (void)saveToNSDefaultsWithKey1:(NSString *)key{
     [[NSUserDefaults standardUserDefaults] setObject:self forKey:key];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
@@ -90,6 +91,7 @@ single_implementation(Stockpile);
     }
     return city;
 }
+
 #pragma mark - 类型
 -(NSString *)Account{
     NSString *city=[self loadStringFromDefaultsWithKey:AccountKey];
@@ -223,12 +225,15 @@ single_implementation(Stockpile);
     [sex saveToNSDefaultsWithKey:SexKey];
 }
 
-
-
 -(NSString *)sex{
-    
-    
     return [self loadStringFromDefaultsWithKey:SexKey];
+}
+
+-(void)setBirthday:(NSString *)Name{
+    [Name saveToNSDefaultsWithKey:userBirthday];
+}
+-(NSString *)birthday{
+    return [self loadStringFromDefaultsWithKey:userBirthday];
 }
 - (NSString *)password{
     return [self loadStringFromDefaultsWithKey:passwordKey];
@@ -318,4 +323,20 @@ single_implementation(Stockpile);
     return [[NSUserDefaults standardUserDefaults]boolForKey:SecretKey];
 }
 
+- (NSString *)fID{
+    NSString* fid=[self loadStringFromDefaultsWithKey:FID];
+    if([AppUtil isBlank:fid])
+        fid=@"0";
+    return fid;
+}
+- (void)setFID:(NSString *)ID{
+    [ID saveToNSDefaultsWithKey:FID];
+}
+
+- (NSString *)integral{
+    return [self loadStringFromDefaultsWithKey:Integral];
+}
+- (void)setIntegral:(NSString *)integral{
+    [integral saveToNSDefaultsWithKey:Integral];
+}
 @end

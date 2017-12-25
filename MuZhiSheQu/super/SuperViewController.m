@@ -40,72 +40,86 @@
 
     
     self.view.backgroundColor = superBackgroundColor;
-    self.NavImg = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.view.width, 64)];
+    self.NavImg = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.view.width, [self getStartHeight]+44)];
     self.NavImg.backgroundColor=[UIColor whiteColor];
     self.NavImg.userInteractionEnabled = YES;
     self.NavImg.clipsToBounds = YES;
     [self.view  addSubview:self.NavImg];
-
     
-    self.TitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(45*self.scale, 20, self.view.width-90*self.scale, 44)];
+    self.TitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(45*self.scale, [self getStartHeight], self.view.width-90*self.scale, 44)];
     self.TitleLabel.textColor = [UIColor blackColor];
     self.TitleLabel.textAlignment = 1;
-    self.TitleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:18*_scale];
+    self.TitleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:16*_scale];
     self.TitleLabel.backgroundColor = [UIColor clearColor];
     [self.NavImg addSubview:self.TitleLabel];
     _activityVC=[[UIActivityIndicatorView alloc]initWithView:self.view];
     _activityVC.color=[UIColor blackColor];
-    
+    _gradientLayer = [CAGradientLayer layer];
+    _gradientLayer.colors = @[(__bridge id)[UIColor colorWithRed:1.000 green:0.925 blue:0.000 alpha:1.00].CGColor, (__bridge id)[UIColor colorWithRed:0.996 green:0.800 blue:0.000 alpha:1.00].CGColor];
+    _gradientLayer.startPoint = CGPointMake(0, 0);
+    _gradientLayer.endPoint = CGPointMake(1.0, 0);
+    _isIphoneX=([self getStartHeight]==44);
+    _dangerAreaHeight=self.isIphoneX?34:0;
  //   _Navline=[[UIImageView alloc]initWithFrame:CGRectMake(0, self.NavImg.height-1*self.scale, self.view.width, 1*self.scale)];
 //    _Navline.backgroundColor=blackLineColore;
    //[self.NavImg addSubview:_Navline];
-    
+}
+
+-(void) netError:(CGRect)frame {
+    if(!_errorView){
+        _errorView=[[LoadFailureView alloc] initWithFrame:frame];
+    }
+    _errorView.errorIv.image=[UIImage imageNamed:@"error_net.jpg"];
+    _errorView.errorLb.text=@"加载失败";
+    _errorView.reloadBtn.hidden=YES;
+    // [errorView.reloadBtn addTarget:self action:@selector(reloadData) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:_errorView];
     
 }
 
+-(CGFloat)getStartHeight{
+    CGRect rectStatus = [[UIApplication sharedApplication] statusBarFrame];
+    return rectStatus.size.height;
+}
+
 #pragma mark  -- 改变状态栏的颜色
-- (UIStatusBarStyle)preferredStatusBarStyle
-{
+- (UIStatusBarStyle)preferredStatusBarStyle{
     return UIStatusBarStyleDefault;
 }
+
 -(void)ShowAlertWithMessage:(NSString *)message{
-    
     if ([[NSString stringWithFormat:@"%@",message] isEmptyString]) {
         return;
     }
-    
     UIAlertView *alert=[[UIAlertView alloc]initWithTitle:nil message:message delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
     [alert show];
 }
-- (void)getdismissBlock:(dismissBlock)dismissBlock
-{
+
+- (void)getdismissBlock:(dismissBlock)dismissBlock{
     _dismissBlock = dismissBlock;
 }
+
 -(void)setName:(NSString *)name{
     self.navigationController.title=name;
 }
+
 -(void)ShowAlertTitle:(NSString *)title Message:(NSString *)message Delegate:(id)delegate Block:(AlertBlock)block{
-    
     UIAlertView *alert=[[UIAlertView alloc]initWithTitle:title message:message delegate:delegate cancelButtonTitle:@"取消" otherButtonTitles: @"确定",nil];
     [alert show];
     _alertBlock=block;
 }
+
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-    
     [alertView dismissWithClickedButtonIndex:0 animated:YES];
     if (_alertBlock) {
         _alertBlock(buttonIndex);
     }
 }
+
 #pragma mark - 屏幕选转
-- (BOOL)shouldAutorotate
-{
+- (BOOL)shouldAutorotate{
     return NO;
 }
-
-//-(UIStatusBarStyle)preferredStatusBarStyle{
-//    return UIStatusBarStyleLightContent;
-//}
 
 -(NSUInteger)supportedInterfaceOrientations{
     return UIInterfaceOrientationMaskPortrait;
@@ -465,4 +479,8 @@
     
     return stringRect;
 }
+
+//-(CGFloat)getTabbarHeight{
+//    return  self.tabBar.frame.size.height;
+//}
 @end

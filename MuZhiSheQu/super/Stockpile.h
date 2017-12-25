@@ -31,7 +31,9 @@ single_interface(Stockpile);
 @property(nonatomic,strong)NSString *AccountType;
 @property(nonatomic,strong)NSString *YUE;
 @property(nonatomic,strong)NSString *ONLine;
-
+@property (nonatomic,strong) NSString *birthday;
+@property(nonatomic,strong)NSString *fID;
+@property(nonatomic,strong)NSString *integral;
 
 @property(nonatomic,assign)BOOL isLogin;
 @property(nonatomic,assign)BOOL isSave;

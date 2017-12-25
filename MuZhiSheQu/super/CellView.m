@@ -33,7 +33,7 @@
         [self addSubview:_contentLabel];
         
         _RightImg=[[UIImageView alloc]init];
-        _RightImg.image=[UIImage imageNamed:@"dian_xq_right"];
+        _RightImg.image=[UIImage imageNamed:@"dd_right"];
         _RightImg.contentMode=UIViewContentModeScaleAspectFit;
         [self addSubview:_RightImg];
         
@@ -82,6 +82,6 @@
 }
 -(void)ShowRight:(BOOL)show{
     //_contentLabel.size=CGSizeMake(_contentLabel.width-20*self.scale, _contentLabel.height);
-    _RightImg.frame=CGRectMake(self.width-18*self.scale, self.height/2-15*self.scale, 10*self.scale, 30*self.scale);
+    _RightImg.frame=CGRectMake(self.width-30*self.scale, self.height/2-10*self.scale, 20*self.scale, 20*self.scale);
 }
 @end
