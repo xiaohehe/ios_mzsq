@@ -1,4 +1,4 @@
-//
+ //
 //  ViewController.m
 //  MuZhiSheQu
 //
@@ -24,6 +24,8 @@
 #import "IMViewController.h"
 #import "DataBase.h"
 #import "AppUtil.h"
+#import "GoodsViewController.h"
+#import "LifeServiceViewController.h"
 
 #define SCREEN_WIDTH ([UIScreen mainScreen].bounds.size.width)
 
@@ -1052,7 +1054,6 @@
 //        previousPage=currentPage;
 //        [httpDelegate requestHotWithPage:currentPage flag:0];
 //    }];
-
     
     //_mainScrollView.footer.automaticallyRefresh=NO;
     [self.view insertSubview:_mainScrollView belowSubview:self.NavImg];
@@ -1698,16 +1699,16 @@
         return;
     }
     self.hidesBottomBarWhenPushed = YES;
-    BreakInfoViewController *info = [[BreakInfoViewController alloc]init];
-    info.ID = shopID;
+    //BreakInfoViewController *info = [[BreakInfoViewController alloc]init];
+    GoodsViewController *info = [[GoodsViewController alloc]init];
+    //info.ID = shopID;
     info.shop_id=shopID;
     [self.navigationController pushViewController:info animated:YES];
     self.hidesBottomBarWhenPushed = NO;
 }
 
 //语音下单
-- (void)voiceOrder
-{
+- (void)voiceOrder{
 //    self.hidesBottomBarWhenPushed = YES;
 //    BreakInfoViewController *info = [[BreakInfoViewController alloc]init];
 //    
@@ -1744,10 +1745,8 @@
     [self.view endEditing:YES];
 }
 
-
 #pragma mark -- 分类按钮点击事件
 -(void)changeFenLei:(UIButton *)sender{
-
     [self srollScrollViewWith:sender.tag - 1000000000];
     for (UIButton *btn in _fenBtnArr)
     {
@@ -1833,7 +1832,7 @@
         la.text=[NSString stringWithFormat:@"%@",array[i][@"prod_name"]];
         la.numberOfLines=2;
         la.textColor=[UIColor blackColor];
-        //la.textAlignment = UITextAlignmentCenter;
+        //la.textAlignment = NSTextAlignmentCenter;
         la.alpha=.9;
         la.font=SmallFont(self.scale*0.75);
         [bgVi addSubview:la];
@@ -1941,7 +1940,6 @@
             cancel.font=SmallFont(self.scale*0.7);
             cancel.text=@"点击取消";
             [img addSubview:cancel];
-
         }
         float yuan = [[NSString stringWithFormat:@"%@",array[i][@"origin_price"]] floatValue];
         float xian = [[NSString stringWithFormat:@"%@",array[i][@"price"]] floatValue];
@@ -2016,7 +2014,7 @@
     NSDictionary *shopInfo = dataArray[[tap view].tag-100000];
     NSString* prodID=shopInfo[@"prod_id"];
     NSString* shopID=shopInfo[@"shop_id"];
-    NSInteger isOffLine=[[NSString stringWithFormat:@"%@",shopInfo[@"is_off_online"]] integerValue];
+    NSInteger isOffLine=[[NSString stringWithFormat:@"%@",self.appdelegate.shopInfoDic[@"is_off_online"]] integerValue];
     if(isOffLine==1){
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"临时歇业中"
                                                             message:@"暂停营业。很快回来^_^!"
@@ -2025,9 +2023,9 @@
                                                   otherButtonTitles:nil];
         [alertView show];
         return;
-    }else if(![AppUtil isDoBusiness:_gongGaoDic]){
+    }else if(![AppUtil isDoBusiness:self.appdelegate.shopInfoDic]){
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"歇业中"
-                                                            message:[NSString stringWithFormat:@"%@",onlinemark]
+                                                            message:[NSString stringWithFormat:@"%@",self.appdelegate.shopInfoDic[@"onlinemark"]]
                                                            delegate:nil
                                                   cancelButtonTitle:@"确定"
                                                   otherButtonTitles:nil];
@@ -2509,6 +2507,7 @@
     }
     _mainScrollView.contentSize=CGSizeMake(self.view.width, setY+10*self.scale);
 }
+
 #pragma mark - 按钮事件//地址按钮点击事件
 - (void)dizhiBtnClick
 {
@@ -2540,7 +2539,8 @@
 - (void)shengHuoFuWuBtnClick
 {
     self.hidesBottomBarWhenPushed = YES;
-    ShangJiaViewController * shangjiaVC = [[ShangJiaViewController alloc]init];
+    //ShangJiaViewController * shangjiaVC = [[ShangJiaViewController alloc]init];
+    LifeServiceViewController * shangjiaVC = [[LifeServiceViewController alloc]init];
     [self.navigationController pushViewController:shangjiaVC animated:YES];
     self.hidesBottomBarWhenPushed = NO;
 }
@@ -3053,7 +3053,7 @@
 {
     UITextField *souTf=[self.view viewWithTag:888];
     if ([souTf.text isEmptyString]) {
-        [self ShowAlertWithMessage:@"搜索便利店商品"];
+        [self ShowAlertWithMessage:@"请输入便利店商品"];
         [self.view endEditing:YES];
         return [textField resignFirstResponder];
     }
@@ -3061,7 +3061,6 @@
     SouViewController *vi=[SouViewController new];
     //vi.shop_id= shopInfo[@"shop_id"];
     //NSLog(@"shop_id:--%@",shopInfo[@"shop_id"]);
-
     vi.keyword=souTf.text.trimString;
     [self.navigationController pushViewController:vi animated:YES];
     self.hidesBottomBarWhenPushed=NO;
