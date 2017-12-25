@@ -25,7 +25,9 @@
 @property(nonatomic,strong)NSString *num;
 @property(nonatomic,assign)float zongProce,botPrice;
 
-@property(nonatomic,strong)NSMutableDictionary *bigbigArr;
+@property(nonatomic,strong)NSMutableArray *dataArray;
+@property(nonatomic,strong)NSMutableDictionary *dataDic;
+
 @property(nonatomic,assign)int sum;
 @property(nonatomic,strong)NSString *yunfei,*manduoshao;
 

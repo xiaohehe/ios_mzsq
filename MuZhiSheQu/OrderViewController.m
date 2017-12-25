@@ -11,9 +11,6 @@
 #import "AppUtil.h"
 
 @interface OrderViewController ()<UIPickerViewDataSource,UIPickerViewDelegate,UITextViewDelegate>
-{
-    NSMutableArray *dataSouse;
-}
 @property(nonatomic,assign)float bot,botLeft,botTop, setY;
 @property(nonatomic,strong)UILabel *shouldPayPrice;
 @property(nonatomic,assign)NSInteger index;
@@ -27,8 +24,6 @@
 @property(nonatomic,strong)NSMutableArray *shopArr;
 @property(nonatomic,strong)NSMutableDictionary *ar;
 @property(nonatomic,strong)UITextView *beizhuTF;
-@property(nonatomic,strong)NSMutableDictionary *data;
-@property(nonatomic,strong)NSString *shopID;
 
 @end
 
@@ -58,18 +53,14 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
     _shopArr = [NSMutableArray new];
     _prodInfo= [NSMutableDictionary new];
     _bigDic=[NSMutableDictionary new];
-    //NSLog(@"%@",_bigbigArr);
      _ar = [[NSUserDefaults standardUserDefaults]objectForKey:@"address"];
     _botPrice=0;
-    _data = _bigbigArr;
+    [self returnVi];
     [self bigScrollView];
     [self orderInfo];
-    [self returnVi];
-    [self MoreList];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(topvi:) name:@"shopAddress" object:nil];
 }
 
@@ -78,90 +69,57 @@
     [self topVi];
 }
 
-#pragma mark - 数据块
--(void)MoreList{
-    _index++;
-    [self ReshData];
-}
--(void)ReshData
-{
-    
-    
-    [self.activityVC stopAnimate];
-    
-    [self ReshView];
-    
-}
--(void)ReshView{
-    
-}
-
 -(void)bigScrollView{
       if (_bigScrollVi) {
         [_bigScrollVi removeFromSuperview];
     }
-    _bigScrollVi = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 64, self.view.bounds.size.width, self.view.bounds.size.height-64-49*self.scale)];
+    _bigScrollVi = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 64, self.view.bounds.size.width, self.view.bounds.size.height-64-40*self.scale)];
     _bigScrollVi.backgroundColor = superBackgroundColor;
     [self.view addSubview:_bigScrollVi];
-    
     [self topVi];
-    
 }
 
 #pragma mark ---顶部收货人信息
 -(void)topVi{
-    _topCon = [[UIControl alloc]initWithFrame:CGRectMake(0, 7.5*self.scale, self.view.bounds.size.width, 145/2.25*self.scale)];
+    _topCon = [[UIControl alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 75*self.scale)];
+    UIImageView* locationIv=[[UIImageView alloc] initWithFrame:CGRectMake(15, _topCon.height/2, 16, 20)];
+    [locationIv setImage:[UIImage imageNamed:@"address1"]];
+    [_topCon addSubview:locationIv];
     _topCon.backgroundColor = [UIColor whiteColor];
     [_bigScrollVi addSubview:_topCon];
-    _stripVi = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 5*self.scale)];
-    _stripVi.image = [UIImage imageNamed:@"dian_xq_line"];
-    [_topCon addSubview:_stripVi];
-    _shouHuoer = [[UILabel alloc]initWithFrame:CGRectMake(10*self.scale, 15*self.scale, 60*self.scale, 15*self.scale)];
-    _shouHuoer.text = @"收货人 :";
-    _shouHuoer.font = DefaultFont(self.scale);
-    [_topCon addSubview:_shouHuoer];
-    float r = _shouHuoer.right;
-    float t = _shouHuoer.top;
+    float r = 50;
+    float t = 15*self.scale;
     _shouName = [[UILabel alloc]initWithFrame:CGRectMake(r, t,100*self.scale, 15)];
     _shouName.text = [_ar objectForKey:@"real_name"];
-    _shouName.font = DefaultFont(self.scale);
+    _shouName.font = DefaultFont(self.scale*0.9);
     [_topCon addSubview:_shouName];
     r = _shouName.right;
     _shouTal = [[UILabel alloc]initWithFrame:CGRectMake(r+10, t, 130*self.scale, 15)];
     _shouTal.text = [_ar objectForKey:@"mobile"];
-    _shouTal.font = DefaultFont(self.scale);
+    _shouTal.font = DefaultFont(self.scale*0.9);
     [_topCon addSubview:_shouTal];
     float b = _shouTal.bottom;
-    _shouAddressLa = [[UILabel alloc]initWithFrame:CGRectMake(10*self.scale, b+15, 70*self.scale, 35*self.scale)];
-    _shouAddressLa.text = @"收货地址 :";
-    _shouAddressLa.font =DefaultFont(self.scale);
     [_topCon addSubview:_shouAddressLa];
-    r = _shouAddressLa.right;
-    _addressLa = [[UILabel alloc]initWithFrame:CGRectMake(r, _shouAddressLa.top, self.view.width-_shouAddressLa.right-50*self.scale, 35*self.scale)];
+    r = 50;
+    _addressLa = [[UILabel alloc]initWithFrame:CGRectMake(r, b+5, self.view.width-50-50*self.scale, 35*self.scale)];
     _addressLa.numberOfLines=0;
-    _addressLa.font = DefaultFont(self.scale);
+    _addressLa.font = DefaultFont(self.scale*0.8);
     _addressLa.text = [_ar objectForKey:@"address"];
+    _addressLa.textColor=[UIColor colorWithRed:0.639 green:0.639 blue:0.639 alpha:1.00];
     [_topCon addSubview:_addressLa];
-    _topArrow = [[UIImageView alloc]initWithFrame:CGRectMake(self.view.width-30*self.scale, _shouHuoer.top+5*self.scale, 22.5*self.scale, 22.5*self.scale)];
+    _topArrow = [[UIImageView alloc]initWithFrame:CGRectMake(self.view.width-30*self.scale, (_topCon.height-22.5*self.scale)/2, 22.5*self.scale, 22.5*self.scale)];
     _topArrow.image = [UIImage imageNamed:@"dd_right"];
     [_topCon addSubview:_topArrow];
-    _topCon.height=_addressLa.bottom+10*self.scale;
+    //_topCon.height=_addressLa.bottom+10*self.scale;
     
-    //小细线；
-    
-    UIView *line = [[UIView alloc]initWithFrame:CGRectMake(0, _topCon.height, self.view.bounds.size.width, .5)];
-    line.backgroundColor = [UIColor colorWithRed:221/255.0 green:226/255.0 blue:227/255.0 alpha:1];
-    [_topCon addSubview:line];
-    
-    
+    _stripVi = [[UIImageView alloc]initWithFrame:CGRectMake(0, _topCon.height-2.5*self.scale, self.view.bounds.size.width, 2.5*self.scale)];
+    _stripVi.image = [UIImage imageNamed:@"dian_xq_line"];
+    [_topCon addSubview:_stripVi];
     UIButton *event = [UIButton buttonWithType:UIButtonTypeSystem];
     event.frame = CGRectMake(0, 10*self.scale, self.view.width, _topCon.bottom-10*self.scale);
     [event addTarget:self action:@selector(topEvent:) forControlEvents:UIControlEventTouchUpInside];
     [_bigScrollVi addSubview:event];
-    
-    _setY = _topCon.bottom+10*self.scale;
-    
-    
+    _setY = _topCon.bottom+7.5*self.scale;
 }
 
 -(void)topEvent:(UIButton *)sender{
@@ -174,319 +132,284 @@
 
 #pragma mark ----订单信息
 -(void)orderInfo{
-    NSMutableArray *keys = [NSMutableArray new];
-    for (NSString *key in [_data allKeys]) {
-        NSString *shopid = [_data objectForKey:key][@"shop_id"];
-        _shopID=shopid;
-        [keys addObject:shopid];
-    }
-   
-    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+    //送货时间
+    CellView *timeCell=[[CellView alloc]initWithFrame:CGRectMake(0, _setY, self.view.width, 50)];
+    timeCell.tag=90;
+    timeCell.titleLabel.text=@"   送达时间";
+    timeCell.titleLabel.font=DefaultFont(self.scale*0.9);
+    [timeCell ShowRight:YES];
+    timeCell.bottomline.hidden=YES;
+    [_bigScrollVi addSubview:timeCell];
+    UIButton *peisong = [UIButton buttonWithType:UIButtonTypeCustom];
+    [peisong setTitle:@"尽快送达 " forState:UIControlStateNormal];
+    [peisong setTitleColor:grayTextColor forState:UIControlStateNormal];
+    peisong.tag=800;
+    peisong.titleLabel.font=DefaultFont(self.scale*0.9);
+    [peisong setTitleColor:blueTextColor forState:UIControlStateNormal];
+    peisong.frame=CGRectMake(self.view.width-160*self.scale, timeCell.height/2-10*self.scale, 130*self.scale, 20*self.scale);
+    [peisong addTarget:self action:@selector(timeselectBtn:) forControlEvents:UIControlEventTouchUpInside];
+    peisong.contentHorizontalAlignment=NSTextAlignmentRight;
+    [timeCell addSubview:peisong];
+    UIView* leftView=[[UIView alloc] initWithFrame:CGRectMake(0, 0, 5, timeCell.height)];
+    leftView.backgroundColor=[UIColor colorWithRed:1.000 green:0.863 blue:0.357 alpha:1.00];
+    [timeCell addSubview:leftView];
     
-    for (NSString *key in keys) {
+    NSMutableArray *prodArr = [NSMutableArray new];
+    NSMutableDictionary *shopInfo = [NSMutableDictionary new];
+    _bigCenterCon = [[UIControl alloc]initWithFrame:CGRectMake(0, _setY+timeCell.height+10*self.scale, self.view.bounds.size.width,0)];
+    _bigCenterCon.backgroundColor = [UIColor colorWithRed:254/255.0 green:255/255.0 blue:255/255.0 alpha:1];
+    [_bigScrollVi addSubview:_bigCenterCon];
+    float r = 10*self.scale;
+    float t = 7.5*self.scale;
+    UILabel *ShopName = [[UILabel alloc]initWithFrame:CGRectMake(r, t, 20, 23*self.scale)];
+    ShopName.text = _dataDic[@"shop_name"];
+    ShopName.font = DefaultFont(self.scale*0.9);
+    ShopName.textColor=[UIColor colorWithRed:0.678 green:0.678 blue:0.678 alpha:1.00];
+    [_bigCenterCon addSubview:ShopName];
+    //计算uilable的动态size
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+    paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+    NSDictionary *attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:14.0f*self.scale], NSParagraphStyleAttributeName:paragraphStyle.copy};
+    CGSize size = [ShopName.text boundingRectWithSize:CGSizeMake(200, 20) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil].size;
+    CGFloat width =MAX(size.width, 44.0f);
+    ShopName.width=width;
+    r = ShopName.right;
+    t = ShopName.top;
+    UIView *line = [[UIView alloc]initWithFrame:CGRectMake(0, ShopName.bottom+10*self.scale, self.view.bounds.size.width, .5)];
+    line.backgroundColor = [UIColor colorWithRed:221/255.0 green:226/255.0 blue:227/255.0 alpha:1];
+    [_bigCenterCon addSubview:line];
+    float line1BotFloat = line.bottom;
+    //商品个数不固定 ；；；；
+    _sum=0;
+    _zongProce=0;
+    for (int j=0; j<_dataArray.count; j++) {
+        UIView *ViewCell=[[UIView alloc]initWithFrame:CGRectMake(0, line1BotFloat, self.view.width, 64*self.scale)];
+        [_bigCenterCon addSubview:ViewCell];
+        UIImageView *cellHeadImg = [[UIImageView alloc]initWithFrame:CGRectMake(ShopName.left,7*self.scale, 50*self.scale, 50*self.scale)];
+        cellHeadImg.clipsToBounds=YES;
+        cellHeadImg.contentMode=UIViewContentModeScaleAspectFill;
+        cellHeadImg.layer.cornerRadius=5;
+        [cellHeadImg setImageWithURL:[NSURL URLWithString:_dataArray[j][@"pro_cover"]] placeholderImage:[UIImage imageNamed:@"center_img"]];
+        [ViewCell addSubview:cellHeadImg];
+        UILabel *cellShopName = [[UILabel alloc]initWithFrame:CGRectMake(cellHeadImg.right+10*self.scale, cellHeadImg.top, (self.view.width-cellHeadImg.right)/2, 20*self.scale)];
+        cellShopName.numberOfLines=0;
+        cellShopName.text =_dataArray[j][@"pro_name"];
+        cellShopName.font = DefaultFont(self.scale*0.9);
+        cellShopName.textColor=[UIColor colorWithRed:0.337 green:0.337 blue:0.337 alpha:1.00];
+        [ViewCell addSubview:cellShopName];
         
-        [dict setObject:key forKey:key];
-        
-    }
-    dataSouse=[NSMutableArray new];
-    for (NSString *key in [dict allValues]) {
-        NSMutableArray *ar = [NSMutableArray new];
-        for (NSString *k in [_data allKeys]) {
-            NSString *shopid = [_data objectForKey:k][@"shop_id"];
-//NSLog(@"shopid==%@   key==%@",shopid,key);
-            if ([shopid intValue]==[key intValue]) {
-               // if ([shopid isEqualToString:key]) {
-                [ar addObject:[_data objectForKey:k]];
-            }
-            
-        }
-        [dataSouse addObject:ar];
-        
-    }
-
-    for (int i=0; i<dataSouse.count; i++) {
-        NSMutableArray *prodArr = [NSMutableArray new];
-        NSMutableDictionary *shopInfo = [NSMutableDictionary new];
-
-        _bigCenterCon = [[UIControl alloc]initWithFrame:CGRectMake(0, _setY, self.view.bounds.size.width,0)];
-        _bigCenterCon.backgroundColor = [UIColor colorWithRed:254/255.0 green:255/255.0 blue:255/255.0 alpha:1];
-        [_bigScrollVi addSubview:_bigCenterCon];
-        
-        if(i==0){
-            UIView *firstLine = [[UIView alloc]initWithFrame:CGRectMake(0, -1, self.view.bounds.size.width, .5)];
-            firstLine.backgroundColor = [UIColor colorWithRed:221/255.0 green:226/255.0 blue:227/255.0 alpha:1];
-            [_bigCenterCon addSubview:firstLine];
-        }
-        
-        UIImageView *headImg = [[UIImageView alloc]initWithFrame:CGRectMake(15*self.scale, 7.5*self.scale, 40*self.scale, 30*self.scale)];
-       // NSLog(@"%@",[dic[i][aa[i]]objectForKey:@"logo"] );
-        
-        
-        
-        
-         [headImg setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",dataSouse[i][0][@"logo"]] ]placeholderImage:[UIImage imageNamed:@"center_img"]];
-        [_bigCenterCon addSubview:headImg];
-        float r = headImg.right;
-        float t = headImg.top;
-        
-        
-        
-        
-        UILabel *ShopName = [[UILabel alloc]initWithFrame:CGRectMake(r+5*self.scale, t+5*self.scale, 20, 20*self.scale)];
-        
-        ShopName.text = dataSouse[i][0][@"shop_name"];
-        ShopName.font = DefaultFont(self.scale);
-        [_bigCenterCon addSubview:ShopName];
-        
-        
-        //计算uilable的动态size
-        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
-        paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
-        NSDictionary *attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:14.0f*self.scale], NSParagraphStyleAttributeName:paragraphStyle.copy};
-        CGSize size = [ShopName.text boundingRectWithSize:CGSizeMake(200, 20) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil].size;
-        CGFloat width =MAX(size.width, 44.0f);
-        ShopName.width=width;
-        r = ShopName.right;
-        t = ShopName.top;
-        
-        
-        UIImageView *jianTouImg = [[UIImageView alloc]initWithFrame:CGRectMake(r+10*self.scale, t+5*self.scale, 10*self.scale, 10*self.scale)];
-        jianTouImg.image = [UIImage imageNamed:@"dian_xq_right"];
-        [_bigCenterCon addSubview:jianTouImg];
-#pragma mark---对话按钮；
-        
-//        UIButton *talkImg = [[UIButton alloc]initWithFrame:CGRectMake(self.view.bounds.size.width-80/2.25*self.scale, 12*self.scale, 20*self.scale,20*self.scale)];
-//        [talkImg setBackgroundImage:[UIImage imageNamed:@"dian_ico_01"] forState:UIControlStateNormal];
-//        talkImg.tag=i+10000;
-//        [talkImg addTarget:self action:@selector(talk:) forControlEvents:UIControlEventTouchUpInside];
-//        [_bigCenterCon addSubview:talkImg];
-        
-        
-        UIView *line = [[UIView alloc]initWithFrame:CGRectMake(0, headImg.bottom+10*self.scale, self.view.bounds.size.width, .5)];
-        line.backgroundColor = [UIColor colorWithRed:221/255.0 green:226/255.0 blue:227/255.0 alpha:1];
-        [_bigCenterCon addSubview:line];
-        
-        ////------//商品个数不固定 ；；；；
-        float line1BotFloat = line.bottom;
-        _sum=0;
-        _zongProce=0;
-        for (int j=0; j<[dataSouse[i] count]; j++) {
-            
-            UIView *ViewCell=[[UIView alloc]initWithFrame:CGRectMake(0, line1BotFloat, self.view.width, 80*self.scale)];
-            [_bigCenterCon addSubview:ViewCell];
-            
-            UIImageView *cellHeadImg = [[UIImageView alloc]initWithFrame:CGRectMake(headImg.left,10*self.scale, 80*self.scale, 60*self.scale)];
-            cellHeadImg.clipsToBounds=YES;
-            cellHeadImg.contentMode=UIViewContentModeScaleAspectFill;
-            
-            
-            
-            [cellHeadImg setImageWithURL:[NSURL URLWithString:dataSouse[i][j][@"prod_img1"]] placeholderImage:[UIImage imageNamed:@"center_img"]];
-            [ViewCell addSubview:cellHeadImg];
-            
-            UILabel *cellShopName = [[UILabel alloc]initWithFrame:CGRectMake(cellHeadImg.right+10*self.scale, cellHeadImg.top, 180*self.scale, 20)];
-            cellShopName.numberOfLines=0;
-
-            cellShopName.text =dataSouse[i][j][@"prod_name"];
-            cellShopName.font = DefaultFont(self.scale);
-            [ViewCell addSubview:cellShopName];
-
-            UILabel *sales = [[UILabel alloc]initWithFrame:CGRectMake(cellShopName.left, cellShopName.bottom+5*self.scale, 100, 10)];
-            sales.text = [NSString stringWithFormat:@"销量%@",dataSouse[i][j][@"sales"]];
-            sales.font = SmallFont(self.scale);
-            sales.textColor = grayTextColor;
-            //[ViewCell addSubview:sales];
-            
-            UILabel *price = [[UILabel alloc]initWithFrame:CGRectMake(self.view.width-90*self.scale, cellShopName.top, 80*self.scale,20*self.scale)];
-            price.textColor = [UIColor redColor];
-            price.text = [NSString stringWithFormat:@"￥%@",dataSouse[i][j][@"price"]];
-            price.textAlignment=NSTextAlignmentRight;
-            price.font = DefaultFont(self.scale);
-            [ViewCell addSubview:price];
+        UILabel *price = [[UILabel alloc]initWithFrame:CGRectMake(cellHeadImg.right+10*self.scale, cellShopName.bottom+5*self.scale, 90*self.scale,20*self.scale)];
+        price.textColor = [UIColor colorWithRed:0.608 green:0.608 blue:0.608 alpha:1.00];
+        price.text = [NSString stringWithFormat:@"￥%@/%@",_dataArray[j][@"pro_price"],_dataArray[j][@"unit"]];
+        price.textAlignment=NSTextAlignmentLeft;
+        price.font = DefaultFont(self.scale*0.8);
+        [ViewCell addSubview:price];
+        cellShopName.width = self.view.width-price.width-100*self.scale;
+        [cellShopName sizeToFit];
+        //sales.top=cellShopName.bottom+5*self.scale;
+        NSInteger activityid=[[NSString stringWithFormat:@"%@",_dataArray[j][@"activity_id"]] integerValue];
+        if(activityid>0){
+            UIImageView *activityImg = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 20*self.scale, 20*self.scale)];
+            activityImg.contentMode=UIViewContentModeScaleAspectFill;
+            activityImg.clipsToBounds=YES;
+            NSString *activityImgUrl=[NSString stringWithFormat:@"%@",_dataArray[j][@"acticon"]];
+            UIBezierPath *maskPath=[UIBezierPath bezierPathWithRoundedRect:activityImg.bounds byRoundingCorners:UIRectCornerTopLeft cornerRadii:CGSizeMake(5,0)];
+            CAShapeLayer *maskLayer=[[CAShapeLayer alloc]init];
+            maskLayer.frame=activityImg.bounds;
+            maskLayer.path=maskPath.CGPath;
+            activityImg.layer.mask=maskLayer;
+            [activityImg setImageWithURL:[NSURL URLWithString:activityImgUrl] placeholderImage:[UIImage imageNamed:@""]];
+            [cellHeadImg addSubview:activityImg];
+            price.text = [NSString stringWithFormat:@"￥%@",_dataArray[j][@"pro_actprice"]];
+            NSString * priceString = [NSString stringWithFormat:@
+                                      "[折扣]%@",_dataArray[j][@"pro_name"]];
+            NSMutableAttributedString * priceAttributeString = [[NSMutableAttributedString alloc]initWithString:priceString];
+            NSString * firstString = @"[折扣]";
+            //NSString * lastString = [NSString stringWithFormat:@"%@",_dataArray[j][@"pro_name"]];
+            [priceAttributeString addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:NSMakeRange(0, firstString.length)];
+            cellShopName.attributedText =priceAttributeString;
             cellShopName.width = self.view.width-price.width-100*self.scale;
-            [cellShopName sizeToFit];
-            sales.top=cellShopName.bottom+5*self.scale;
-
-            
-            UILabel *number = [[UILabel alloc]initWithFrame:CGRectMake(price.left, price.bottom+10*self.scale, price.width,10*self.scale)];
-            number.font = SmallFont(self.scale);
-            number.text = [NSString stringWithFormat:@"x%@",dataSouse[i][j][@"prod_count"]];
-            number.textAlignment=NSTextAlignmentRight;
-            [ViewCell addSubview:number];
-            
-            UIView *line1 = [[UIView alloc]initWithFrame:CGRectMake(0, ViewCell.height-.5, self.view.width, .5)];
-            line1.backgroundColor = blackLineColore;
-            [ViewCell addSubview:line1];
-            
-            line1BotFloat = ViewCell.bottom;
-            
-
-            NSMutableDictionary *prod = [NSMutableDictionary new];
-            
-            [prod setObject:dataSouse[i][j][@"prod_id"] forKey:@"prod_id"];
-                                [prod setObject:dataSouse[i][j][@"prod_count"]  forKey:@"prod_count"];
-           
-                [prodArr addObject:prod];
-
-       //商品数量;
-         int znum = [dataSouse[i][j][@"prod_count"] intValue];
-            
-            _sum=_sum+znum;
-            
-            self.num = [NSString stringWithFormat:@"%d",_sum];
-            
-            
-          float pri = [dataSouse[i][j][@"price"] floatValue];
-            
-            //float pric =  [_data[i][@"prod_info"][j][@"price"] floatValue];
-            self.zongProce = self.zongProce+pri*znum;
-            
-  
         }
-        [shopInfo setObject:prodArr forKey:@"prods"];
-        
-        [shopInfo setObject:dataSouse[i][0][@"shop_id"] forKey:@"shop_id"];
-        
-        
-        [shopInfo setObject:@"1" forKey:@"delivery_time"];//配送时间
-        
-        //备注
-        [shopInfo setObject:[NSString stringWithFormat:@"%@",[NSString stringWithFormat:@"%@",_beizhuTF.text]] forKey:@"memo"];
-        
-        [shopInfo setObject:[NSString stringWithFormat:@"%.2f",self.zongProce] forKey:@"amount"];
-        
-        [_shopArr addObject:shopInfo];
-     //-------
-        
-        CellView *timeCell=[[CellView alloc]initWithFrame:CGRectMake(0, line1BotFloat, self.view.width, 44)];
-        timeCell.tag=90;
-        timeCell.titleLabel.text=@"配送时间";
-        timeCell.titleLabel.font=DefaultFont(self.scale);
-        [timeCell ShowRight:YES];
-        [_bigCenterCon addSubview:timeCell];
-        
-        
-        UIButton *peisong = [UIButton buttonWithType:UIButtonTypeCustom];
-        [peisong setTitle:@"立即配送" forState:UIControlStateNormal];
-        [peisong setTitleColor:grayTextColor forState:UIControlStateNormal];
-        peisong.tag=800+i;
-        peisong.titleLabel.font=DefaultFont(self.scale);
-        peisong.frame=CGRectMake(self.view.width-150*self.scale, timeCell.height/2-10*self.scale, 130*self.scale, 20*self.scale);
-        [peisong addTarget:self action:@selector(timeselectBtn:) forControlEvents:UIControlEventTouchUpInside];
-        peisong.contentHorizontalAlignment=NSTextAlignmentRight;
-        [timeCell addSubview:peisong];
-        CellView *beizhuCell=[[CellView alloc]initWithFrame:CGRectMake(0, timeCell.bottom, self.view.width, 44)];
-        beizhuCell.titleLabel.text=@"备注";
-        beizhuCell.titleLabel.font=DefaultFont(self.scale);
-        [_bigCenterCon addSubview:beizhuCell];
-        
-        [beizhuCell.titleLabel sizeToFit];
-        _beizhuTF = [[UITextView alloc]initWithFrame:CGRectMake(beizhuCell.titleLabel.right+10*self.scale, beizhuCell.titleLabel.top, self.view.width-beizhuCell.titleLabel.right-10*self.scale, 35*self.scale)];
-        _beizhuTF.delegate=self;
-        _beizhuTF.tag=i+100000000000;
-        //        _beizhuTF.placeholder = @"可以输入特殊要求";
-        _beizhuTF.textAlignment=NSTextAlignmentLeft;
-        _beizhuTF.returnKeyType=UIReturnKeyDone;
-        _beizhuTF.font=DefaultFont(self.scale);
-        [beizhuCell addSubview:_beizhuTF];
-        beizhuCell.height=_beizhuTF.bottom+10*self.scale;
-        UILabel *b = [[UILabel alloc]initWithFrame:CGRectMake(_beizhuTF.left+10*self.scale, 0*self.scale, self.view.width, beizhuCell.height)];
-        b.text=@"请输入特殊要求";
-        b.tag=i+1000000000000;
-        b.font=DefaultFont(self.scale);
-        b.textColor=blackLineColore;
-        [beizhuCell addSubview:b];
-
-        beizhuCell.titleLabel.top = b.height/2-10*self.scale;
-
-        
-        UIToolbar * topView = [[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 30)];
-        [topView setBarStyle:UIBarStyleDefault];
-        UIBarButtonItem * btnSpace = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
-        UIBarButtonItem * doneButton = [[UIBarButtonItem alloc]initWithTitle:@"收起" style:UIBarButtonItemStyleDone target:self action:@selector(dismissKeyBoard)];
-        NSArray * buttonsArray = [NSArray arrayWithObjects:btnSpace,doneButton,nil];
-        [topView setItems:buttonsArray];
-        [_beizhuTF setInputAccessoryView:topView];
-
-        
-        //@"今天",
-        _DayArr=[NSArray arrayWithObjects:@"今天", @"明天", nil];
-        _TimeArr=[[NSMutableArray alloc]init];
-        _TodayArr=[[NSMutableArray alloc]init];
-        _DataArr=[[NSMutableArray alloc]init];
-        [_TodayArr addObject:@"1小时送达"];
-        for(int l=0;l<24;l++)
-        {
-            NSString *Time=[NSString stringWithFormat:@"%d:00-%d:00",l,l+1];
-            [_TimeArr addObject:Time];
-            
+        UILabel *number = [[UILabel alloc]initWithFrame:CGRectMake((self.view.width-cellHeadImg.right)/2+cellHeadImg.right+20*self.scale, ViewCell.height/2-5*self.scale, price.width/2,10*self.scale)];
+        number.font = SmallFont(self.scale);
+        number.textColor=[UIColor colorWithRed:0.608 green:0.608 blue:0.608 alpha:1.00];
+        number.text = [NSString stringWithFormat:@"x%@",_dataArray[j][@"pro_allnum"]];
+        number.textAlignment=NSTextAlignmentLeft;
+        [ViewCell addSubview:number];
+        UILabel *sales = [[UILabel alloc]initWithFrame:CGRectMake(number.right+10*self.scale, ViewCell.height/2-5*self.scale, 100, 10)];
+        CGFloat totalPrice=[_dataArray[j][@"pro_allnum"] intValue]*[_dataArray[j][@"pro_price"] floatValue];
+        if(activityid>0){
+            totalPrice=[_dataArray[j][@"pro_allnum"] intValue]*[_dataArray[j][@"pro_actprice"] floatValue];
         }
-        _DataArr=_TimeArr;
-//        ----------
-        
-        UILabel *finishNumber = [[UILabel alloc]initWithFrame:CGRectMake(headImg.left, beizhuCell.bottom+15*self.scale, 100, 15)];
-        finishNumber.text = [NSString stringWithFormat:@"共%@件商品",self.num];
-        finishNumber.textColor = grayTextColor;
-        finishNumber.font = [UIFont systemFontOfSize:12.0f*self.scale];
-        [_bigCenterCon addSubview:finishNumber];
-        [finishNumber sizeToFit];
-        
-        UILabel *finishPrice = [[UILabel alloc]initWithFrame:CGRectMake(finishNumber.right+10*self.scale, finishNumber.top, 100, 15)];
-        finishPrice.textColor = grayTextColor;
-        finishPrice.text = [NSString stringWithFormat:@"配送费%@元",@""];
-        finishPrice.font = [UIFont systemFontOfSize:12.0f*self.scale];
-        [_bigCenterCon addSubview:finishPrice];
-        
-        
-        
-        UILabel *combined = [[UILabel alloc]initWithFrame:CGRectMake(finishPrice.right, finishNumber.top, self.view.width-finishPrice.right-10*self.scale, 15*self.scale)];
-        combined.textAlignment=NSTextAlignmentRight;
-        combined.font=DefaultFont(self.scale);
-        
-        [_bigCenterCon addSubview:combined];
-        
-        _bigCenterCon.size=CGSizeMake(self.view.width, combined.bottom+10*self.scale);
-        _setY=_bigCenterCon.bottom+10*self.scale;
-        _bot = _bigCenterCon.bottom;
-        _botLeft = headImg.left;
- 
-        //float z = self.zongProce ;
-// 运费
-        float man = [dataSouse[i][0][@"free_delivery_amount"] floatValue]; // 80
-        float y = [dataSouse[i][0][@"delivery_fee"] floatValue];                                 //28
-        
-        if (self.zongProce>=man) {
-            combined.attributedText = [self zstringColorAllString:[NSString stringWithFormat:@"合计￥%.2f元",self.zongProce] redString:self.zongProce];
-            [shopInfo setObject:@"0" forKey:@"delivery_fee"];
-            y=0;
-        }else{
-            self.zongProce=[[NSString stringWithFormat:@"%.2f",self.zongProce+y] floatValue];
-            //self.zongProce=z+y;
-            combined.attributedText = [self zstringColorAllString:[NSString stringWithFormat:@"合计￥%.2f元",self.zongProce] redString:self.zongProce];
-            [shopInfo setObject:[NSString stringWithFormat:@"%.2f",y] forKey:@"delivery_fee"];
-
+        sales.text = [NSString stringWithFormat:@"￥%.1f",totalPrice];
+        sales.font = SmallFont(self.scale);
+        sales.textColor = [UIColor colorWithRed:0.298 green:0.298 blue:0.298 alpha:1.00];
+        sales.textAlignment=NSTextAlignmentLeft;
+        [ViewCell addSubview:sales];
+        UIView *line1 = [[UIView alloc]initWithFrame:CGRectMake(0, ViewCell.height-.5, self.view.width, .5)];
+        line1.backgroundColor = blackLineColore;
+        [ViewCell addSubview:line1];
+        line1BotFloat = ViewCell.bottom;
+        NSMutableDictionary *prod = [NSMutableDictionary new];
+        [prod setObject:_dataArray[j][@"pro_id"] forKey:@"prod_id"];
+        [prod setObject:_dataArray[j][@"pro_allnum"]  forKey:@"prod_count"];
+        if(activityid>0){
+            [prod setObject:[NSString stringWithFormat:@"%d",activityid]  forKey:@"activityid"];
         }
-        _botPrice=_botPrice+self.zongProce;
-        
-        finishPrice.text = [NSString stringWithFormat:@"配送费%.0f元",y];
-      [finishPrice sizeToFit];
-
+        [prodArr addObject:prod];
+        //商品数量;
+        int znum = [_dataArray[j][@"pro_allnum"] intValue];
+        _sum=_sum+znum;
+        self.num = [NSString stringWithFormat:@"%d",_sum];
+        float pri = [_dataArray[j][@"price"] floatValue];
+        //float pric =  [_data[i][@"prod_info"][j][@"price"] floatValue];
+        self.zongProce = self.zongProce+pri*znum;
     }
+    CGFloat amount=[_dataDic[@"amount"] floatValue];
+    CGFloat delivery_free=[_dataDic[@"delivery_free"] floatValue];
+    CGFloat delivery_fee=[_dataDic[@"delivery_fee"] floatValue];
+    if(amount<delivery_free){
+        UIView *deliveryFreeCell=[[UIView alloc]initWithFrame:CGRectMake(0, line1BotFloat, self.view.width, 40*self.scale)];
+        [_bigCenterCon addSubview:deliveryFreeCell];
+        UILabel *nameLb = [[UILabel alloc]initWithFrame:CGRectMake(10*self.scale, 10*self.scale, 100*self.scale, 20*self.scale)];
+        nameLb.text =@"配送费";
+        nameLb.font = DefaultFont(self.scale*0.9);
+        nameLb.textColor=[UIColor colorWithRed:0.337 green:0.337 blue:0.337 alpha:1.00];
+        [deliveryFreeCell addSubview:nameLb];
+        
+        UILabel *priceLb = [[UILabel alloc]initWithFrame:CGRectMake((self.view.width-60*self.scale)/2+140*self.scale, deliveryFreeCell.height/2-5*self.scale, 100, 10)];
+        priceLb.text = [NSString stringWithFormat:@"￥%.1f",delivery_fee];
+        priceLb.font = SmallFont(self.scale);
+        priceLb.textColor = [UIColor colorWithRed:0.298 green:0.298 blue:0.298 alpha:1.00];
+        priceLb.textAlignment=NSTextAlignmentLeft;
+        [deliveryFreeCell addSubview:priceLb];
+        
+        UIView *line1 = [[UIView alloc]initWithFrame:CGRectMake(0, deliveryFreeCell.height-.5, self.view.width, .5)];
+        line1.backgroundColor = blackLineColore;
+        [deliveryFreeCell addSubview:line1];
+        line1BotFloat = deliveryFreeCell.bottom;
+    }
+    
+//    CGFloat delivery_free=[_dataDic[@"delivery_free"] floatValue];
+//    CGFloat delivery_fee=[_dataDic[@"delivery_fee"] floatValue];
+//    if(amount<delivery_free){
+//        amount+=delivery_fee;
+//    }
+    
+    [shopInfo setObject:prodArr forKey:@"prods"];
+    [shopInfo setObject:_dataDic[@"shop_id"] forKey:@"shop_id"];
+    [shopInfo setObject:@"1" forKey:@"delivery_time"];//配送时间
+    //备注
+    [shopInfo setObject:[NSString stringWithFormat:@"%@",[NSString stringWithFormat:@"%@",_beizhuTF.text]] forKey:@"memo"];
+    [shopInfo setObject:[NSString stringWithFormat:@"%.2f",self.zongProce] forKey:@"amount"];
+    [_shopArr addObject:shopInfo];
+    //-------
+    CellView *beizhuCell=[[CellView alloc]initWithFrame:CGRectMake(0, line1BotFloat, self.view.width, 40)];
+    beizhuCell.titleLabel.text=@"备注";
+    beizhuCell.titleLabel.textColor=[UIColor colorWithRed:0.267 green:0.267 blue:0.267 alpha:1.00];
+    beizhuCell.titleLabel.font=DefaultFont(self.scale*0.9);
+    [_bigCenterCon addSubview:beizhuCell];
+    [beizhuCell.titleLabel sizeToFit];
+    _beizhuTF = [[UITextView alloc]initWithFrame:CGRectMake(beizhuCell.titleLabel.right+10*self.scale, beizhuCell.titleLabel.top, self.view.width-beizhuCell.titleLabel.right-10*self.scale, 35*self.scale)];
+    _beizhuTF.delegate=self;
+    _beizhuTF.tag=100000000000;
+    //        _beizhuTF.placeholder = @"可以输入特殊要求";
+    _beizhuTF.textAlignment=NSTextAlignmentLeft;
+    _beizhuTF.returnKeyType=UIReturnKeyDone;
+    _beizhuTF.font=DefaultFont(self.scale*0.9);
+    [beizhuCell addSubview:_beizhuTF];
+    beizhuCell.height=_beizhuTF.bottom+10*self.scale;
+    UILabel *b = [[UILabel alloc]initWithFrame:CGRectMake(_beizhuTF.left+10*self.scale, 0*self.scale, self.view.width, beizhuCell.height)];
+    b.text=@"请输入特殊要求";
+    b.tag=1000000000000;
+    b.font=DefaultFont(self.scale);
+    b.textColor=blackLineColore;
+    [beizhuCell addSubview:b];
+
+    beizhuCell.titleLabel.top = b.height/2-10*self.scale;
+    
+    UIToolbar * topView = [[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 30)];
+    [topView setBarStyle:UIBarStyleDefault];
+    UIBarButtonItem * btnSpace = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
+    UIBarButtonItem * doneButton = [[UIBarButtonItem alloc]initWithTitle:@"收起" style:UIBarButtonItemStyleDone target:self action:@selector(dismissKeyBoard)];
+    NSArray * buttonsArray = [NSArray arrayWithObjects:btnSpace,doneButton,nil];
+    [topView setItems:buttonsArray];
+    [_beizhuTF setInputAccessoryView:topView];
+    
+    
+    //@"今天",
+    _DayArr=[NSArray arrayWithObjects:@"今天", @"明天", nil];
+    _TimeArr=[[NSMutableArray alloc]init];
+    _TodayArr=[[NSMutableArray alloc]init];
+    _DataArr=[[NSMutableArray alloc]init];
+    [_TodayArr addObject:@"1小时送达"];
+    for(int l=0;l<24;l++)
+    {
+        NSString *Time=[NSString stringWithFormat:@"%d:00-%d:00",l,l+1];
+        [_TimeArr addObject:Time];
+        
+    }
+    _DataArr=_TimeArr;
+    //        ----------
+    
+    UILabel *finishNumber = [[UILabel alloc]initWithFrame:CGRectMake(ShopName.left, beizhuCell.bottom+15*self.scale, 100, 15)];
+    finishNumber.text = [NSString stringWithFormat:@"订单 ￥%@",_dataDic[@"total"]];
+    finishNumber.textColor = [UIColor colorWithRed:0.639 green:0.639 blue:0.639 alpha:1.00];
+    finishNumber.font = [UIFont systemFontOfSize:12.0f*self.scale];
+    [_bigCenterCon addSubview:finishNumber];
+    [finishNumber sizeToFit];
+    
+//    UILabel *finishPrice = [[UILabel alloc]initWithFrame:CGRectMake(finishNumber.right+10*self.scale, finishNumber.top, 100, 15)];
+//    finishPrice.textColor = grayTextColor;
+//    finishPrice.text = [NSString stringWithFormat:@"配送费%@元",@""];
+//    finishPrice.font = [UIFont systemFontOfSize:12.0f*self.scale];
+//    [_bigCenterCon addSubview:finishPrice];
+
+    UILabel *combined = [[UILabel alloc]initWithFrame:CGRectMake(finishNumber.right, finishNumber.top, self.view.width-finishNumber.right-10*self.scale, 15*self.scale)];
+    combined.textAlignment=NSTextAlignmentRight;
+    combined.font=DefaultFont(self.scale*0.9);
+    
+    [_bigCenterCon addSubview:combined];
+    
+    _bigCenterCon.size=CGSizeMake(self.view.width, combined.bottom+10*self.scale);
+    _setY=_bigCenterCon.bottom+10*self.scale;
+    _bot = _bigCenterCon.bottom;
+    _botLeft = ShopName.left;
+    
+    //float z = self.zongProce ;
+    // 运费
+    float man = [_dataDic[@"delivery_free"] floatValue]; // 80
+    float y = [_dataDic[@"delivery_fee"] floatValue];                                 //28
+    
+    //        if (self.zongProce>=man) {
+    //            combined.attributedText = [self zstringColorAllString:[NSString stringWithFormat:@"待支付￥%.2f元",self.zongProce] redString:self.zongProce];
+    //            [shopInfo setObject:@"0" forKey:@"delivery_fee"];
+    //            y=0;
+    //        }else{
+    //            self.zongProce=[[NSString stringWithFormat:@"%.2f",self.zongProce+y] floatValue];
+    //            //self.zongProce=z+y;
+    //            combined.attributedText = [self zstringColorAllString:[NSString stringWithFormat:@"待支付￥%.2f元",self.zongProce] redString:self.zongProce];
+    //            [shopInfo setObject:[NSString stringWithFormat:@"%.2f",y] forKey:@"delivery_fee"];
+    //
+    //        }
+    combined.text=[NSString stringWithFormat:@"待支付￥%@",_dataDic[@"total"]];
+    _botPrice=_botPrice+self.zongProce;
+    
+//    finishPrice.text = [NSString stringWithFormat:@"配送费%.0f元",y];
+//    [finishPrice sizeToFit];
+
     [_bigDic setObject:_shopArr forKey:@"prod_info"];
     
     UILabel *allPrice = [[UILabel alloc]initWithFrame:CGRectMake(_botLeft, _bigCenterCon.height, 100*self.scale, 40*self.scale)];
-    allPrice.text = @"应付金额:";
-    allPrice.font=DefaultFont(self.scale);
+    allPrice.text = @"选择支付方式";
+    allPrice.font=DefaultFont(self.scale*0.9);
+    allPrice.textColor=[UIColor colorWithRed:0.616 green:0.616 blue:0.616 alpha:1.00];
     [_bigCenterCon addSubview:allPrice];
-    
-    
-    UILabel *allPriceNum = [[UILabel alloc]initWithFrame:CGRectMake(allPrice.right, allPrice.top, self.view.width-allPrice.right-10*self.scale, 40*self.scale)];
+    UILabel *allPriceNum = [[UILabel alloc]initWithFrame:CGRectMake(allPrice.right, allPrice.top-5*self.scale, self.view.width-allPrice.right-10*self.scale, 40*self.scale)];
     allPriceNum.font=DefaultFont(self.scale);
-    [_bigCenterCon addSubview:allPriceNum];
+   // [_bigCenterCon addSubview:allPriceNum];
     allPriceNum.textAlignment=NSTextAlignmentRight;
     NSMutableAttributedString *allprice = [self zstringColorAllString:[NSString stringWithFormat:@"￥%.2f元",_botPrice] redString:_botPrice];
-
-    
     allPriceNum.attributedText = allprice;//[self zstringColorAllString:[NSString stringWithFormat:@"￥%.2f元",_botPrice] redString:[NSString stringWithFormat:@"￥%.2f",_botPrice]];
     [self payWay];
 }
@@ -502,7 +425,6 @@
     NSDictionary *info = [aNotification userInfo];
     CGSize kbSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
     NSLog(@"keyboard changed, keyboard width = %f, height = %f",  kbSize.width, kbSize.height);
-    
     // 在这里调整UI位置
     CGPoint pt = [_beizhuTF convertPoint:CGPointMake(0, 0) toView:[UIApplication sharedApplication].keyWindow];
     float txDistanceToBottom = self.view.frame.size.height - pt.y - _beizhuTF.frame.size.height;  // 距离底部多远
@@ -528,23 +450,16 @@
 
 
 #pragma mark - UITextViewDelegate
--(void)textViewDidChange:(UITextView *)textView
-{
-    
-    
-//    1000000000000
+-(void)textViewDidChange:(UITextView *)textView{
+    //    1000000000000
     NSInteger Tag = textView.tag-100000000000;
-    
-        if (textView.text.length>0)
-            {
-                UILabel *label=(UILabel *)[self.view viewWithTag:1000000000000+Tag];
-                label.hidden=YES;
-            }else
-            {
-                UILabel *label=(UILabel *)[self.view viewWithTag:1000000000000+Tag];
-                label.hidden=NO;
-            }
-    
+    if (textView.text.length>0){
+        UILabel *label=(UILabel *)[self.view viewWithTag:1000000000000+Tag];
+        label.hidden=YES;
+    }else{
+        UILabel *label=(UILabel *)[self.view viewWithTag:1000000000000+Tag];
+        label.hidden=NO;
+    }
 }
 
 -(void)talk:(UIButton *)btn{
@@ -560,7 +475,7 @@
     [self.activityVC startAnimate];
     AnalyzeObject *anle = [AnalyzeObject new];
     NSMutableDictionary *dic = [NSMutableDictionary dictionary];
-    [dic setObject:dataSouse[btn.tag-10000][0][@"shop_user_id"] forKey:@"shop_id"];
+    [dic setObject:_dataArray[btn.tag-10000][@"shop_user_id"] forKey:@"shop_id"];
     //    [dic setObject:[NSString stringWithFormat:@"%@",[_data objectForKey:@"hotline"]] forKey:@"tel"];
     if ([Stockpile sharedStockpile].isLogin) {
         [dic setObject:[Stockpile sharedStockpile].ID forKey:@"user_id"];
@@ -591,16 +506,8 @@ NSInteger ta1;
     
     [UIView animateWithDuration:.3 animations:^{
         _big.backgroundColor=[UIColor colorWithRed:0 green:0 blue:0 alpha:.6];        _SelectImg.frame=CGRectMake(0, self.view.height-180*self.scale, self.view.width, 180*self.scale);
-        
-        
-        
     }];
-    
-    
     ta1=sender.tag;
-    
-    
-    
     _TimePickerView = [[UIPickerView alloc] initWithFrame:CGRectMake(0,_SelectImg.height/2-40*self.scale, self.view.width, 120*self.scale)];
     _TimePickerView.delegate = self;
     _TimePickerView.backgroundColor = [UIColor groupTableViewBackgroundColor];
@@ -633,31 +540,21 @@ NSInteger ta1;
 }
 
 -(void)actionDone:(UIButton *)button{
-    
     if (button.tag == 1) {
         [UIView animateWithDuration:.5 animations:^{
             _SelectImg.frame=CGRectMake(0, self.view.height, self.view.width, self.view.height+180*self.scale);
             _big.backgroundColor=[UIColor colorWithRed:0 green:0 blue:0 alpha:0];
         }completion:^(BOOL finished) {
             [_big removeFromSuperview];
-            
-            
         }];
         return;
     }
-    
-    
     NSString *str =@"";
     str =[NSString stringWithFormat:@"%@ %@",[_DayArr objectAtIndex:[_TimePickerView selectedRowInComponent:0]],[_DataArr objectAtIndex:[_TimePickerView selectedRowInComponent:1]]];
     
     UIButton *btn = (UIButton *)[self.view viewWithTag:ta1];
     
     [btn setTitle:str forState:UIControlStateNormal];
-    
-    
-    
-    
-    
     NSArray *dateArr = [str componentsSeparatedByString:@" "];
     
     NSString *fen = dateArr[1];
@@ -710,7 +607,6 @@ NSInteger ta1;
 
 #pragma mark------底部支付方式选择
 -(void)payWay{
-    
     _botCon = [[UIControl alloc]initWithFrame:CGRectMake(0, _bot+40*self.scale, self.view.bounds.size.width, 360/2.25*self.scale)];
     
     _botCon.backgroundColor = [UIColor whiteColor];
@@ -720,9 +616,9 @@ NSInteger ta1;
     toLine.backgroundColor = [UIColor colorWithRed:221/255.0 green:226/255.0 blue:227/255.0 alpha:1];
     [_botCon addSubview:toLine];
     
-    NSArray *payArr = @[@"支付方式",@"微信支付",@"支付宝支付",@"货到付款"];
+    NSArray *payArr = @[@"微信支付",@"支付宝支付",@"货到付款"];
     
-    for (int i=0; i<4; i++) {
+    for (int i=0; i<3; i++) {
         //        if (i>=2) {
         //            break;
         //        }
@@ -734,18 +630,18 @@ NSInteger ta1;
         payway.font = [UIFont systemFontOfSize:12.0f*self.scale];
         [_botCon addSubview:payway];
         _botCon.height=payway.bottom+15*self.scale;
-        if (i!=0) {
-            UIButton *selectImg = [UIButton buttonWithType:UIButtonTypeCustom];
-            selectImg.frame = CGRectMake(self.view.bounds.size.width-35*self.scale, line.top+10*self.scale, 20*self.scale, 20*self.scale);
-            [selectImg setBackgroundImage:[UIImage imageNamed:@"fu_yuan_01"] forState:UIControlStateNormal];
-            [selectImg setBackgroundImage:[UIImage imageNamed:@"fu_yuan_02"] forState:UIControlStateSelected];
-            selectImg.tag = 20+i;
-            [selectImg addTarget:self action:@selector(choosePayWay:) forControlEvents:UIControlEventTouchUpInside];
-            [_botCon addSubview:selectImg];
-            if (i==1) {
-                selectImg.selected=YES;
-            }
+        //if (i!=0) {
+        UIButton *selectImg = [UIButton buttonWithType:UIButtonTypeCustom];
+        selectImg.frame = CGRectMake(self.view.bounds.size.width-35*self.scale, line.top+10*self.scale, 20*self.scale, 20*self.scale);
+        [selectImg setBackgroundImage:[UIImage imageNamed:@"fu_yuan_01"] forState:UIControlStateNormal];
+        [selectImg setBackgroundImage:[UIImage imageNamed:@"choose_03"] forState:UIControlStateSelected];
+        selectImg.tag = 21+i;
+        [selectImg addTarget:self action:@selector(choosePayWay:) forControlEvents:UIControlEventTouchUpInside];
+        [_botCon addSubview:selectImg];
+        if (i==0) {
+            selectImg.selected=YES;
         }
+        // }
     }
     UIView *boLine = [[UILabel alloc]initWithFrame:CGRectMake(0, _botCon.height, self.view.bounds.size.width, .5)];
     boLine.backgroundColor = [UIColor colorWithRed:221/255.0 green:226/255.0 blue:227/255.0 alpha:1];
@@ -784,24 +680,36 @@ NSInteger ta1;
 }
 
 -(void)botPayButtonVi{
-    UIView *botPayBigVi = [[UIView alloc]initWithFrame:CGRectMake(0, self.view.bounds.size.height-49*self.scale, self.view.bounds.size.width, 49*self.scale)];
-    botPayBigVi.backgroundColor = [UIColor whiteColor];
+    UIView *botPayBigVi = [[UIView alloc]initWithFrame:CGRectMake(0, self.view.bounds.size.height-40*self.scale, self.view.bounds.size.width, 40*self.scale)];
+    botPayBigVi.backgroundColor = [UIColor colorWithRed:0.000 green:0.000 blue:0.000 alpha:0.6];
     [self.view addSubview:botPayBigVi];
-    _shouldPayPrice = [[UILabel alloc]initWithFrame:CGRectMake(20*self.scale, 10*self.scale, 200*self.scale, 30*self.scale)];
-    _shouldPayPrice.textColor = blueTextColor;
+    _shouldPayPrice = [[UILabel alloc]initWithFrame:CGRectMake(10*self.scale, 10*self.scale, 200*self.scale, 20*self.scale)];
+    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"待支付:￥%@",_dataDic[@"total"]]];
+    [str addAttribute:NSForegroundColorAttributeName
+                value:[UIColor colorWithRed:0.996 green:0.996 blue:0.996 alpha:1.00]
+                range:NSMakeRange(0,5)];
+    [str addAttribute:NSForegroundColorAttributeName
+                value:[UIColor colorWithRed:1.000 green:0.502 blue:0.102 alpha:1.00]
+                range:NSMakeRange(5,[NSString stringWithFormat:@"待支付:￥%@",_dataDic[@"total"]].length-5)];
     _shouldPayPrice.font = [UIFont systemFontOfSize:16.0f*self.scale];
-    _shouldPayPrice.text = [NSString stringWithFormat:@"应付总额：￥%.2f元",_botPrice];
+    _shouldPayPrice.attributedText=str;
     _shouldPayPrice.font=DefaultFont(self.scale);
     [botPayBigVi addSubview:_shouldPayPrice];
-    
     UIButton *shouldPay = [UIButton buttonWithType:UIButtonTypeCustom];
-//    shouldPay.frame = CGRectMake(self.view.bounds.size.width-230/2.25*self.scale, 10*self.scale, 200/2.25*self.scale, 70/2.25*self.scale);
     shouldPay.frame = CGRectMake(self.view.bounds.size.width-200/2.25*self.scale, 0, 200/2.25*self.scale, botPayBigVi.height);
-    shouldPay.backgroundColor = blueTextColor;
-//    shouldPay.layer.cornerRadius = 4.0f;
-    [shouldPay setTitle:@"确认下单" forState:UIControlStateNormal];
-    shouldPay.titleLabel.font=DefaultFont(self.scale);
+    [shouldPay setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    shouldPay.backgroundColor = [UIColor colorWithRed:1.000 green:0.863 blue:0.357 alpha:1.00];
+    [shouldPay setTitle:@"确认" forState:UIControlStateNormal];
+    shouldPay.titleLabel.font=[UIFont boldSystemFontOfSize:13*self.scale];
     [shouldPay addTarget:self action:@selector(pay) forControlEvents:UIControlEventTouchUpInside];
+    
+    CAGradientLayer *gradientLayer=[CAGradientLayer layer];
+    gradientLayer.colors = @[(__bridge id)[UIColor colorWithRed:1.000 green:0.925 blue:0.000 alpha:1.00].CGColor, (__bridge id)[UIColor colorWithRed:0.996 green:0.800 blue:0.000 alpha:1.00].CGColor];
+    gradientLayer.startPoint = CGPointMake(0, 0);
+    gradientLayer.endPoint = CGPointMake(1.0, 0);
+    gradientLayer.frame = CGRectMake(0, 0, 200/2.25*self.scale, botPayBigVi.height);
+    [shouldPay.layer insertSublayer:gradientLayer atIndex:0];
+    
     [botPayBigVi addSubview:shouldPay];
     UIView *payBotLine = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, .5)];
     payBotLine.backgroundColor = [UIColor colorWithRed:221/255.0 green:226/255.0 blue:227/255.0 alpha:1];
@@ -841,7 +749,6 @@ NSInteger ta1;
         return;
     }
     NSString *type = @"";
-    
     if (btn1.selected==YES) {
         type=@"1";
     }else if (btn2.selected==YES){
@@ -854,7 +761,7 @@ NSInteger ta1;
         btn3.selected=YES;
         btn2.selected=NO;
         btn1.selected=NO;
-        [AppUtil showToast:self.view withContent:@"该订单仅支付货到付款"];
+        [AppUtil showToast:self.view withContent:@"该订单仅支持货到付款"];
     }
     NSMutableArray *ar = _bigDic[@"prod_info"];
     for (int i=0; i<ar.count; i++) {
@@ -868,9 +775,9 @@ NSInteger ta1;
     NSString *st = [[NSString alloc]initWithData:dataStr encoding:NSUTF8StringEncoding];
     NSString *userid = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
     NSString *commid=[[NSUserDefaults standardUserDefaults]objectForKey:@"commid"];
-    NSDictionary *dic = @{@"user_id":userid,@"address_id":_ar[@"id"],@"pay_type":type,@"total_amount":[NSString stringWithFormat:@"%.2f",_botPrice],@"prod_info":st,@"community_id":commid};
+    NSDictionary *dic = @{@"user_id":userid,@"address_id":_ar[@"id"],@"pay_type":type,@"total_amount":_dataDic[@"total"],@"prod_info":st,@"community_id":commid};
     //NSLog(@"%.2f",_botPrice);
-    //NSLog(@"prod_info_param==%@",dic);
+    NSLog(@"prod_info_param==%@",dic);
     [self.view addSubview:self.activityVC];
     [self.activityVC startAnimate];
     AnalyzeObject *anle = [AnalyzeObject new];
@@ -878,16 +785,14 @@ NSInteger ta1;
         [self.activityVC stopAnimate];
         NSLog(@"prod_info_models==%@==%@==%@",models,code,msg);
         if ([code isEqualToString:@"0"]) {
-            //[self.appdelegate.shopDictionary removeAllObjects];
-           // [self.appdelegate.shopDictionary setObject:number forKey:@([prodID intValue])];
-            for(NSString* key in [_data allKeys]){
+            for(NSDictionary* dic in _dataArray){//2017-11-06
                 NSNumber* number=[NSNumber numberWithInt:0];
-                [self.appdelegate.shopDictionary setObject:number forKey:@([key intValue])];
+                [self.appdelegate.shopDictionary setObject:number forKey:@([dic[@"pro_id"] intValue])];
             }
             self.appdelegate.isRefresh=true;
             [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"GouWuCheShuLiang"];
-            //[[DataBase sharedDataBase] clearCart];
-            [[DataBase sharedDataBase] deleteCartWithShopID:_shopID];
+            //[[DataBase sharedDataBase] deleteCartWithShopID:_shopID];清空当前商品2017-11-06
+            [[DataBase sharedDataBase] deleteCartWithProID:_dataDic[@"ids"]];
             if (btn1.selected==YES) {
                 [self.appdelegate AliPayNewPrice:[NSString stringWithFormat:@"%.2f",_botPrice] OrderID:[NSString stringWithFormat:@"%@",models[@"order_no"]] OrderName:@"拇指社区" Sign:models[@"sign"]  OrderDescription:[NSString stringWithFormat:@"%@",models[@"order_no"]] complete:^(NSDictionary *resp) {
                     [self.activityVC stopAnimate];
@@ -917,7 +822,7 @@ NSInteger ta1;
             }else if (btn3.selected==YES){
                 self.hidesBottomBarWhenPushed=YES;
                 HuodaoSuessViewController *huodao = [HuodaoSuessViewController new];
-                huodao.price=[NSString stringWithFormat:@"%.2f",_botPrice];
+                huodao.price=[NSString stringWithFormat:@"%@",_dataDic[@"total"]];
                 [self.navigationController pushViewController:huodao animated:YES];
             }
         }else if ([code isEqualToString:@"-1"]) {
@@ -947,6 +852,9 @@ NSInteger ta1;
     [popBtn setImage:[UIImage imageNamed:@"left_b"] forState:UIControlStateHighlighted];
     [popBtn addTarget:self action:@selector(PopVC:) forControlEvents:UIControlEventTouchUpInside];
     [self.NavImg addSubview:popBtn];
+    UIView *topline = [[UIView alloc]initWithFrame:CGRectMake(0, 63.5,self.view.width, .5)];
+    topline.backgroundColor=[UIColor colorWithRed:0.925 green:0.925 blue:0.925 alpha:1.00];
+    [self.NavImg addSubview:topline];
 }
 
 #pragma mark ------返回按钮方法
