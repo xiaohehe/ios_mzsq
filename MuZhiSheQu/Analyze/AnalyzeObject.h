@@ -9,6 +9,17 @@
 #import <Foundation/Foundation.h>
 
 @interface AnalyzeObject : NSObject
+//举报
+-(void)noticeReport :(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
+//我的帖子
+-(void)getMyNoticeList:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
+//我的回复
+-(void)getMyReplyList:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
+//邻里圈
+-(void)getNoticeWall:(NSDictionary *)dic WithBlock:(void(^)(id models, NSString *code ,NSString * msg))block;
+//社区公告
+-(void)getCommunityNoticeList:(NSDictionary *)dic WithBlock:(void(^)(id models, NSString *code ,NSString * msg))block;
+
 //获取登陆验证码
 -(void)getyanzhengma:(NSDictionary *)dic WithBlock:(void(^)(id models, NSString *code ,NSString * msg))block;
 
@@ -152,24 +163,19 @@
  *我的收藏
  */
 -(void)getCollectListWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
+
 /**
  *我的公告
  */
-
-
 -(void)getNoticeListWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
 
-
 //我的订单列表
-
 -(void)myOrderListWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
 
 //服务类订单
-
 -(void)myServeOrderListWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
 
 //删除订单
-
 -(void)delAddressWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
 
 
@@ -181,7 +187,6 @@
 /**
  *公告墙详情
  */
-
 -(void)noticeDetailWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
 
 /**
@@ -214,11 +219,63 @@
 
 -(void)modifyNicknameWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
 /**
+ *修改性别
+ */
+
+-(void)modifySexWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
+/**
+ *修改生日
+ */
+
+-(void)modifyBirthdayWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
+/**
  *修改密码
  */
 
 -(void)modifyPayPassWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
+/**
+ *个人中心
+ */
 
+-(void)myCentreWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
+/**
+ *创建家庭
+ */
+
+-(void)createFamilyWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
+/**
+ * 获取我的家庭信息
+ */
+
+-(void)getMyFamilyWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
+/**
+ * 获取我的家庭成员
+ */
+
+-(void)getFamilyMemberWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
+/**
+ * 签约/邀请
+ */
+
+-(void)addFamilyWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
+/**
+ * 获取家庭模块商品内容
+ */
+
+-(void)getFamilyProductWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
+/**
+ * 积分兑换
+ */
+
+-(void)familyOrderWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
+/**
+ * 历史记录
+ */
+-(void)getFamilyExchangeLogWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
+/**
+ * 去积分兑换
+ */
+-(void)familyExchangeWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
 /**
  *发表评价
  */
@@ -441,4 +498,20 @@
  *获取该店铺营业情况
  */
 -(void)getShopOnlineTime:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
+/**
+ *获取该店铺信息
+ */
+-(void)getCommunityShop:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
+/**
+ *逛街
+ */
+-(void)windowShopping:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
+/**
+ *热词
+ */
+-(void)getHotSearchKey:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
+/**
+ *登录用户获取购物车
+ */
+-(void)checkCart:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
 @end
