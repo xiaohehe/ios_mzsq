@@ -1,10 +1,8 @@
 //
 //  PlotCell.m
 //  MuZhiSheQu
-//
 //  Created by lt on 2017/5/17.
 //  Copyright © 2017年 apple. All rights reserved.
-//
 
 #import "PlotCell.h"
 

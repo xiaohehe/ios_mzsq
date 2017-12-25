@@ -17,6 +17,7 @@
 
 @property(nonatomic,copy) NSString* district;
 @property(nonatomic,copy) NSString* district_name;
+@property(nonatomic,copy) NSString* shopid;
 
 @property(nonatomic,copy) NSString* pid;
 @property(nonatomic,copy) NSString* latitude;
