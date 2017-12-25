@@ -34,15 +34,11 @@
 //#import <ShareSDKConnector/ShareSDKConnector.h>
 
 #import <RongIMKit/RongIMKit.h>
-
-
-
+#import "GoodsViewController.h"
+#import "HomeViewController.h"
 //#import "APService.h"
-
 #import "WXApi.h"
 //#import "WeiboSDK.h"
-
-
 #import "JPUSHService.h"
 #ifdef NSFoundationVersionNumber_iOS_9_x_Max
 #import <UserNotifications/UserNotifications.h>
@@ -50,26 +46,20 @@
 #import "RCDChatViewController.h"
 //#import <TencentOpenAPI/QQApiInterface.h>
 //#import <TencentOpenAPI/TencentOAuth.h>
-
 #import <TencentOpenAPI/TencentOAuth.h>
 #import <TencentOpenAPI/QQApiInterface.h>
-
 //#import <QZoneConnection/ISSQZoneApp.h>
 #import "WebViewController.h"
 #import "FuWuXiangQingViewController.h"
 #import "OderStatesViewController.h"
-
 #import <BaiduMapAPI_Search/BMKGeocodeSearch.h>
-
 #import <BaiduMapAPI_Location/BMKLocationService.h>
-
 #import <BaiduMapAPI_Location/BMKLocationComponent.h>//引入定位功能所有的头文件
-
 #import <BaiduMapAPI_Search/BMKGeocodeSearch.h>
-
 #import <BaiduMapAPI_Search/BMKPoiSearchType.h>
-
 #import <BaiduMapAPI_Search/BMKSearchComponent.h>
+#import "BNCoreServices.h"
+
 @interface AppDelegate ()<UITabBarControllerDelegate,CLLocationManagerDelegate,RCIMReceiveMessageDelegate,RCIMConnectionStatusDelegate,WXApiDelegate,RCIMUserInfoDataSource,BMKGeneralDelegate,BMKLocationServiceDelegate,BMKGeoCodeSearchDelegate,JPUSHRegisterDelegate>
 
 @property(nonatomic,strong)WXPayBlock wxpay;
@@ -82,34 +72,25 @@
 
 @end
 
-@implementation AppDelegate
-{
+@implementation AppDelegate{
     BMKMapManager* _mapManager;
     BOOL or;
-    
 }
-//首页加了定位
 
+//首页加了定位
 //- (BOOL)application:(UIApplication *)application
-//      handleOpenURL:(NSURL *)url
-//{
-//    
+//      handleOpenURL:(NSURL *)url{
 //    if ([url.host isEqualToString:@"safepay"]) {
-//        
 //        [[AlipaySDK defaultService] processOrderWithPaymentResult:url standbyCallback:^(NSDictionary *resultDic) {
 //            NSLog(@"result = %@",resultDic);
 //            if (_ApiBlock) {
 //                _ApiBlock(resultDic);
 //            }
-//            
 //        }];
 //        return YES;
 //    }
-//    
-//    
 //    return  [WXApi handleOpenURL:url delegate:self];
 //}
-
 
 - (BOOL)application:(UIApplication *)app handleOpenURL:(nonnull NSURL *)url{
     if ([url.host isEqualToString:@"safepay"]) {
@@ -143,9 +124,7 @@
 }
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary*)options{
-    
     if ([url.host isEqualToString:@"safepay"]) {
-        
         [[AlipaySDK defaultService] processOrderWithPaymentResult:url standbyCallback:^(NSDictionary *resultDic) {
             NSLog(@"result = %@",resultDic);
 
@@ -169,14 +148,14 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
     [[NSUserDefaults standardUserDefaults]setBool:YES forKey:@"G"];
     [[NSUserDefaults standardUserDefaults]synchronize];
     self.shopDictionary=[NSMutableDictionary dictionary];
     self.isRefresh=false;
     _mapManager = [[BMKMapManager alloc]init];
     [WXApi registerApp:APPI_ID withDescription:@"demo 2.0"];
-    BOOL ret = [_mapManager start:@"KT8PaG8f62YITBtye0c7Drjr" generalDelegate:self];
+    BOOL ret = [_mapManager start:@"QO6VKCRlxvnW7dbESvuRN749hHAx2QSB" generalDelegate:self];//KT8PaG8f62YITBtye0c7Drjr
     if (!ret) {
         NSLog(@"manager start failed!");
     }else{
@@ -189,19 +168,21 @@
     [self RongRunInit];
     [RCIM sharedRCIM].userInfoDataSource=self;
     [RCIM sharedRCIM].receiveMessageDelegate=self;
-//    [self ziding];
+//  [self ziding];
     [self initddd];
     [self appNum];
     [UmengCollection setup];//友盟
     [self clearHistoryData];
-//    self.window.backgroundColor=[UIColor blackColor];
-      return YES;
+    [BNCoreServices_Instance initServices:@"QO6VKCRlxvnW7dbESvuRN749hHAx2QSB"];
+    [BNCoreServices_Instance setTTSAppId:@"10480876"];
+    //设置是否自动退出导航
+    [BNCoreServices_Instance setAutoExitNavi:NO];
+    [BNCoreServices_Instance startServicesAsyn:nil fail:nil];
+    return YES;
 }
 
-//
 //-(void)resh{
 //    NSString *commid = [[NSUserDefaults standardUserDefaults]objectForKey:@"commid"];
-//    
 //    AnalyzeObject *nale = [AnalyzeObject new];
 //    [nale getGJidWithDic:@{@"community_id":commid} Block:^(id models, NSString *code, NSString *msg) {
 //        if ([models isKindOfClass:[NSDictionary class]]) {
@@ -209,7 +190,6 @@
 //            self.targetId = models[@"id"];
 //            self.conversationType = @"1";
 //        }
-//        
 //    }];
 //}
 
@@ -492,10 +472,10 @@
 
 #pragma mark - TabBarViewController
 -(void)newTabBarViewController:(BOOL)orgen{
-    UITabBarItem *homeItem=[[UITabBarItem alloc]initWithTitle:@"社区精选" image:[[UIImage setImgNameBianShen:@"ico1"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:[[UIImage imageNamed:@"ico_1"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
+    UITabBarItem *homeItem=[[UITabBarItem alloc]initWithTitle:@"首页" image:[[UIImage setImgNameBianShen:@"ico1"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:[[UIImage imageNamed:@"ico_1"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
     [self unSelectedTapTabBarItems:homeItem];
     [self selectedTapTabBarItems:homeItem];
-    UINavigationController *homeNav=[[UINavigationController alloc]initWithRootViewController:[[ViewController alloc]init]];
+    UINavigationController *homeNav=[[UINavigationController alloc]initWithRootViewController:[[HomeViewController alloc]init]];
     homeNav.tabBarItem = homeItem;
 //    UITabBarItem *shopItem=[[UITabBarItem alloc]initWithTitle:@"生活服务" image:[[UIImage imageNamed:@"fuwu"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:[[UIImage imageNamed:@"fuwu_11"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
 //    [self unSelectedTapTabBarItems:shopItem];
@@ -511,25 +491,35 @@
 //    //centerItem.titlePositionAdjustment
 //    UINavigationController *centerNav=[[UINavigationController alloc]initWithRootViewController:[[WuYeZhongXinViewController alloc]init]];
 //    centerNav.tabBarItem = centerItem;
-    UITabBarItem *gonggaoItem=[[UITabBarItem alloc]initWithTitle:@"邻里圈" image:[[UIImage imageNamed:@"ico2"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:[[UIImage imageNamed:@"ico_2"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
+    
+//    UITabBarItem *gonggaoItem=[[UITabBarItem alloc]initWithTitle:@"邻里圈" image:[[UIImage imageNamed:@"ico2"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:[[UIImage imageNamed:@"ico_2"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
+//    [self unSelectedTapTabBarItems:gonggaoItem];
+//    [self selectedTapTabBarItems:gonggaoItem];
+//    UINavigationController *gonggaoNav=[[UINavigationController alloc]initWithRootViewController:[[GongGaoQiangViewController alloc]init]];
+//    gonggaoNav.tabBarItem = gonggaoItem;
+    UITabBarItem *gonggaoItem=[[UITabBarItem alloc]initWithTitle:@"分类" image:[[UIImage imageNamed:@"ico2"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:[[UIImage imageNamed:@"ico_2"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
     [self unSelectedTapTabBarItems:gonggaoItem];
     [self selectedTapTabBarItems:gonggaoItem];
-    UINavigationController *gonggaoNav=[[UINavigationController alloc]initWithRootViewController:[[GongGaoQiangViewController alloc]init]];
+    UINavigationController *gonggaoNav=[[UINavigationController alloc]initWithRootViewController:[[GoodsViewController alloc]init]];
     gonggaoNav.tabBarItem = gonggaoItem;
-    UITabBarItem * gouWuChe = [[UITabBarItem alloc]initWithTitle:@"结算中心" image:[[UIImage imageNamed:@"ico3"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]selectedImage:[[UIImage imageNamed:@"ioc_3"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
+    UITabBarItem * gouWuChe = [[UITabBarItem alloc]initWithTitle:@"购物车" image:[[UIImage imageNamed:@"ico3"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]selectedImage:[[UIImage imageNamed:@"ioc_3"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
     [self unSelectedTapTabBarItems:gouWuChe];
     [self selectedTapTabBarItems:gouWuChe];
     UINavigationController * gouWuCheNav = [[UINavigationController alloc]initWithRootViewController:[[GouWuCheViewController alloc]init]];
     gouWuCheNav.tabBarItem = gouWuChe;
-    UITabBarItem *presonItem=[[UITabBarItem alloc]initWithTitle:@"个人中心" image:[[UIImage imageNamed:@"ico4"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:[[UIImage imageNamed:@"ico_4"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
+//    UITabBarItem * order = [[UITabBarItem alloc]initWithTitle:@"订单" image:[[UIImage imageNamed:@"ico5"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]selectedImage:[[UIImage imageNamed:@"ioc_5"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
+//    [self unSelectedTapTabBarItems:order];
+//    [self selectedTapTabBarItems:order];
+//    UINavigationController * orderNav = [[UINavigationController alloc]initWithRootViewController:[[ShopLingShouViewController alloc]init]];
+//    orderNav.tabBarItem = order;
+    UITabBarItem *presonItem=[[UITabBarItem alloc]initWithTitle:@"我的" image:[[UIImage imageNamed:@"ico4"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:[[UIImage imageNamed:@"ico_4"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
     [self unSelectedTapTabBarItems:presonItem];
     [self selectedTapTabBarItems:presonItem];
      _presonNav=[[UINavigationController alloc]initWithRootViewController:[[GeRenZhongXinViewController alloc]init]];
     _presonNav.tabBarItem = presonItem;
-
     _tabBarController=[[UITabBarController alloc]init];
 //    _tabBarController.viewControllers=@[homeNav,shopNav,centerNav,gonggaoNav,_presonNav];
-     _tabBarController.viewControllers=@[homeNav,gonggaoNav,gouWuCheNav,_presonNav];
+     _tabBarController.viewControllers=@[homeNav,gonggaoNav,gouWuCheNav,_presonNav];//,orderNav
     _tabBarController.selectedIndex = 0;
     _tabBarController.tabBar.backgroundColor=tabBarBackgroundColor;
     _tabBarController.delegate=self;
@@ -578,13 +568,12 @@
 //        }
             self.window.rootViewController = _tabBarController;
             [RCIM sharedRCIM].userInfoDataSource=self;
-
     }
     }
 }
 
 -(void)outLogin{
-    [[DataBase sharedDataBase] clearCart];
+    //[[DataBase sharedDataBase] clearCart];
     if(self.shopDictionary.count>0){
         [self.shopDictionary removeAllObjects];
         [[NSNotificationCenter defaultCenter] postNotificationName:@"refreshPage" object:nil];
@@ -830,7 +819,7 @@
     [tabBarItem setTitlePositionAdjustment:UIOffsetMake(0, -3)];
     [tabBarItem setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
                                         [UIFont fontWithName:@"Helvetica-Bold" size:10],
-                                        NSFontAttributeName,grayTextColor,NSForegroundColorAttributeName,
+                                        NSFontAttributeName,[UIColor colorWithRed:0.592 green:0.592 blue:0.592 alpha:1.00],NSForegroundColorAttributeName,
                                         nil] forState:UIControlStateNormal];
 }
 
@@ -838,7 +827,7 @@
 {
     [tabBarItem setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
                                         [UIFont fontWithName:@"Helvetica-Bold" size:10],
-                                        NSFontAttributeName,blueTextColor,NSForegroundColorAttributeName,
+                                        NSFontAttributeName,[UIColor colorWithRed:0.004 green:0.004 blue:0.004 alpha:1.00],NSForegroundColorAttributeName,
                                         nil] forState:UIControlStateSelected];
 }
 
@@ -848,22 +837,18 @@
     JPUSHRegisterEntity * entity = [[JPUSHRegisterEntity alloc] init];
     entity.types = JPAuthorizationOptionAlert|JPAuthorizationOptionBadge|JPAuthorizationOptionSound;
  
-    [JPUSHService registerForRemoteNotificationConfig:entity delegate:self];
+    [JPUSHService    registerForRemoteNotificationConfig:entity delegate:self];
 
 }
 
 -(void)newJPushWithOptions:(NSDictionary *)launchOptions{
-    
     if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications) {
         [self ZhuCeJPush];
         [Stockpile sharedStockpile].tuiS=YES;
-
     }else if (![[NSUserDefaults standardUserDefaults]boolForKey:@"GuideKey"]) {
         [self ZhuCeJPush];
     }
-    
     [JPUSHService setupWithOption:launchOptions appKey:@"77eb1f35fa18e1b0db64b981" channel:@"Publish channel"apsForProduction:YES advertisingIdentifier:nil];
-
 //    [APService setupWithOption:launchOptions];
 //    [APService setLogOFF];
 //    [JPUSHService resetBadge];

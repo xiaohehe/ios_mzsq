@@ -11,20 +11,21 @@
 @property(nonatomic,strong)UIWebView *webView;
 @end
 @implementation WebViewController
+
 -(void)viewDidLoad{
     [super viewDidLoad];
     [self newNav];
     [self newView];
     [self.view addSubview:self.activityVC];
-    
-    
 }
+
 -(void)newView{
     _webView=[[UIWebView alloc]initWithFrame:CGRectMake(0, self.NavImg.bottom, self.view.width, self.view.height-self.NavImg.bottom)];
     _webView.backgroundColor=[UIColor clearColor];
     [self.view addSubview:_webView];
     [self ChooseWebType];
 }
+
 -(void)ChooseWebType{
     if (self.webType == WebTypeContent) {
         [self WebViewLoadHTMLString:_Content];

@@ -17,6 +17,7 @@ typedef void(^ApiPayBlock)(NSDictionary *resp);
 @property(nonatomic,strong)UITabBarController *tabBarController;
 @property(nonatomic,strong)UINavigationController *presonNav;
 @property(nonatomic,strong) NSMutableDictionary* shopDictionary;//购物车商品及数量字典
+@property(nonatomic,strong) NSMutableDictionary* shopInfoDic;//商铺信息
 @property(nonatomic) BOOL isRefresh;//是否需要刷新
 
 @property(nonatomic,strong)void (^callbackLocation)(NSString *str);

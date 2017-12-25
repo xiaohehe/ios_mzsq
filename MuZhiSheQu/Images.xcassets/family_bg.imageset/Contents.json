@@ -1,0 +1,35 @@
+{
+  "images" : [
+    {
+      "resizing" : {
+        "mode" : "9-part",
+        "center" : {
+          "mode" : "tile",
+          "width" : 294,
+          "height" : 132
+        },
+        "cap-insets" : {
+          "bottom" : 59,
+          "top" : 43,
+          "right" : 52,
+          "left" : 47
+        }
+      },
+      "idiom" : "universal",
+      "filename" : "family_bg.png",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "version" : 1,
+    "author" : "xcode"
+  }
+}
