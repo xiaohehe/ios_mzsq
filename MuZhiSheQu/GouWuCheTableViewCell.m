@@ -17,7 +17,6 @@
 @property(nonatomic,strong)UIView *detailView;
 //@property(nonatomic,strong)UILabel *SumLabel;
 @property(nonatomic,strong)UIImageView *SumBG;
-@property(nonatomic,strong)UIImageView *lingView;
 
 
 @end
@@ -26,7 +25,7 @@
     self=[super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         _ZSY = 1;
-        if ([[UIScreen mainScreen] bounds].size.height!= 480) {
+        if ([[UIScreen mainScreen] bounds].size.height>480) {
             _ZSY = [[UIScreen mainScreen] bounds].size.height / 568;
         }
         [self newView];
@@ -36,12 +35,13 @@
 
 -(void)newView{
     _SelectedBtn=[[UIButton alloc]init];
-    [_SelectedBtn setBackgroundImage:[UIImage imageNamed:@"na3"] forState:UIControlStateNormal];
-    [_SelectedBtn setBackgroundImage:[UIImage imageNamed:@"green"] forState:UIControlStateSelected];
+    [_SelectedBtn setBackgroundImage:[UIImage imageNamed:@"na9"] forState:UIControlStateNormal];
+    [_SelectedBtn setBackgroundImage:[UIImage imageNamed:@"na10"] forState:UIControlStateSelected];
     [_SelectedBtn addTarget:self action:@selector(SelectedEvent:) forControlEvents:UIControlEventTouchUpInside];
-    //[self.contentView addSubview:_SelectedBtn];
+    [self.contentView addSubview:_SelectedBtn];
     _GoodsImg=[[UIImageView alloc]init];
     _GoodsImg.clipsToBounds=YES;
+    _GoodsImg.layer.cornerRadius=5;
     _GoodsImg.contentMode=UIViewContentModeScaleAspectFill;
     [self.contentView addSubview:_GoodsImg];
     _detailView=[[UIView alloc]init];
@@ -58,34 +58,28 @@
     _GoodsName.font=DefaultFont(self.ZSY);
     _GoodsName.numberOfLines=2;
     [_detailView addSubview:_GoodsName];
-    
-    
     _xiaoliangLa = [UILabel new];
-    _xiaoliangLa.font=DefaultFont(self.ZSY);
+    _xiaoliangLa.textColor=[UIColor colorWithRed:0.643 green:0.643 blue:0.643 alpha:1.00];
+    _xiaoliangLa.font=DefaultFont(self.ZSY*0.7);
     [_detailView addSubview:_xiaoliangLa];
-    
-    
     _GoodsPrice=[[UILabel alloc]init];
-    _GoodsPrice.font=DefaultFont(self.ZSY);
+    _GoodsPrice.font=SmallFont(self.ZSY*0.7);
     //_GoodsPrice.textAlignment=NSTextAlignmentRight;
-    _GoodsPrice.textColor=[UIColor redColor];
+    _GoodsPrice.textColor= [UIColor colorWithRed:1.000 green:0.373 blue:0.000 alpha:1.00];
     [_detailView addSubview:_GoodsPrice];
-    
     _yuanJiaLab = [[UILabel alloc]init];
     _yuanJiaLab.font = SmallFont(self.ZSY);
     _yuanJiaLab.textColor = [UIColor grayColor];
     [_detailView addSubview:_yuanJiaLab];
-    
     _lin = [[UILabel alloc]init];
     _lin.backgroundColor = [UIColor grayColor];
     [_yuanJiaLab addSubview:_lin];
-    
 }
+
 -(void)addViewDetail{
-    
     UIButton *subBtn=[[UIButton alloc]init];
     subBtn.tag = 5;
-    [subBtn setBackgroundImage:[UIImage imageNamed:@"na1"] forState:UIControlStateNormal];
+    [subBtn setImage:[UIImage imageNamed:@"na5"] forState:UIControlStateNormal];
     [subBtn addTarget:self action:@selector(ShuLiangEvent:) forControlEvents:UIControlEventTouchUpInside];
     [self.contentView addSubview:subBtn];
     _SumBG=[[UIImageView alloc]init];
@@ -100,30 +94,25 @@
     [self.contentView addSubview:_SumLabel];
     UIButton *addBtn=[[UIButton alloc]init];
     addBtn.tag = 6;
-    [addBtn setBackgroundImage:[UIImage imageNamed:@"na2"] forState:UIControlStateNormal];
+    [addBtn setImage:[UIImage imageNamed:@"na6"] forState:UIControlStateNormal];
     [addBtn addTarget:self action:@selector(ShuLiangEvent:) forControlEvents:UIControlEventTouchUpInside];
     [self.contentView addSubview:addBtn];
 }
+
 -(void)ShuLiangEvent:(UIButton *)button{
     UIButton *jian = (UIButton *)[self.contentView viewWithTag:5];
   //  UIButton *jia = (UIButton *)[self.contentView viewWithTag:6];
     NSInteger ma=[_gnumber integerValue];
     if (button.tag == 5) {
-        
         if (ma==0) {
             return;
         }else {
             ma--;
         }
-       
     }else{
-      
         ma++;
     }
-    
     _gnumber = [NSString stringWithFormat:@"%ld",(long)ma];
-    
-    
     if (ma==0 ) {
         jian.hidden=YES;
         _SumLabel.hidden=YES;
@@ -132,54 +121,56 @@
         jian.hidden=NO;
         _SumLabel.hidden=NO;
         _SumBG.hidden=NO;
-
     }
-
     _gnumber=[NSString stringWithFormat:@"%ld",(long)ma];
-    if (_delegate && [_delegate respondsToSelector:@selector(GouWuCheTableViewCellNumber:indexPath:)]) {
+    if (_delegate && [_delegate respondsToSelector:@selector(GouWuCheTableViewCellNumber:indexPath:)]){
         [_delegate GouWuCheTableViewCellNumber:_gnumber indexPath:_indexPath];
     }
-//    _SumLabel.text=_gnumber;
 }
+
 -(void)SelectedEvent:(UIButton *)sender{
     sender.selected = !sender.selected;
     if (_delegate && [_delegate respondsToSelector:@selector(GouWuCheTableViewCellSelected:indexPath:)]) {
         [_delegate GouWuCheTableViewCellSelected:sender.selected indexPath:_indexPath];
     }
 }
+
 -(void)Selected:(UIButton *)sedner{
     sedner.selected = !sedner.selected;
     if (_delegate && [_delegate respondsToSelector:@selector(GouWuCheTableViewCellIndexpath:)]) {
         [_delegate GouWuCheTableViewCellIndexpath:_indexPath];
     }
-
 }
 
 -(void)setHiddenBtn:(BOOL)hiddenBtn{
     _SelectedBtn.hidden=hiddenBtn;
     _hiddenBtn=hiddenBtn;
 }
+
 -(void)setGnumber:(NSString *)gnumber{
     _gnumber=gnumber;
     _SumLabel.text=_gnumber;
 }
+
 -(void)layoutSubviews{
      _SelectedBtn.frame=CGRectMake(10*self.ZSY, self.height/2-10*self.ZSY,20*self.ZSY, 20*self.ZSY);
-     _GoodsImg.frame=CGRectMake(10*self.ZSY, 10*self.ZSY, 60*self.ZSY, 60*self.ZSY);
-    _detailView.frame=CGRectMake(_GoodsImg.right+10*self.ZSY, _GoodsImg.top, self.width-_GoodsImg.right-100*self.ZSY,_GoodsImg.height);
-    _GoodsName.frame=CGRectMake(0, 0, _detailView.width, 40*self.ZSY);
-//    _xiaoliangLa.frame=CGRectMake(0, _GoodsName.bottom, _detailView.width, 20*self.ZSY);
-//     _GoodsPrice.frame=CGRectMake(0, _GoodsName.bottom, _GoodsName.width,20*self.ZSY);
+     _GoodsImg.frame=CGRectMake(_SelectedBtn.right+10*self.ZSY, 10*self.ZSY, 50*self.ZSY, 50*self.ZSY);
+    _detailView.frame=CGRectMake(_GoodsImg.right+10*self.ZSY, _GoodsImg.top, self.width-_GoodsImg.right-10*self.ZSY,_GoodsImg.height);
+    _GoodsName.frame=CGRectMake(0, 0, _detailView.width, 20*self.ZSY);
+    _xiaoliangLa.frame=CGRectMake(0, _GoodsName.bottom, _detailView.width-80*self.ZSY, 15*self.ZSY);
+//     _GoodsPrice.frame=CGRectMake(0, _xiaoliangLa.bottom, 100*self.ZSY,15*self.ZSY);
 //    _yuanJiaLab.frame = CGRectMake(_GoodsPrice.right, _GoodsPrice.top, _GoodsPrice.width, _GoodsPrice.height);
-//    
 //    _lin.frame = CGRectMake(0, _yuanJiaLab.height/2, _yuanJiaLab.width, 0.5);
     UIButton *subBtn=(UIButton *)[self.contentView viewWithTag:5];
-    subBtn.frame=CGRectMake(self.width-100*self.ZSY, self.height/2-0*self.ZSY, 22*self.ZSY, 22*self.ZSY);
-    _SumLabel.frame=CGRectMake(subBtn.right+5*self.ZSY, subBtn.top,subBtn.width+13*self.ZSY, subBtn.height);
-    _SumBG.frame=_SumLabel.frame;
+    subBtn.frame=CGRectMake(self.width-85*self.ZSY-6*self.ZSY, _xiaoliangLa.bottom+5*self.ZSY-9*self.ZSY, 28*self.ZSY, 40*self.ZSY);
+    subBtn.contentEdgeInsets = UIEdgeInsetsMake(9*self.ZSY,3*self.ZSY, 9*self.ZSY, 3*self.ZSY);
+
+    _SumLabel.frame=CGRectMake(subBtn.right+4*self.ZSY-3*_ZSY, subBtn.top,subBtn.width-12*self.ZSY, subBtn.height);
+    //_SumBG.frame=_SumLabel.frame;
     UIButton *addBtn=(UIButton *)[self.contentView viewWithTag:6];
-    addBtn.frame=CGRectMake(_SumLabel.right+5*self.ZSY, subBtn.top, subBtn.width, subBtn.height);
-   
+    addBtn.frame=CGRectMake(_SumLabel.right+5*self.ZSY-6*_ZSY, subBtn.top, subBtn.width, subBtn.height);
+    addBtn.contentEdgeInsets = UIEdgeInsetsMake(9*self.ZSY,3*self.ZSY, 9*self.ZSY, 3*self.ZSY);
+
     _lingView.frame=CGRectMake(0, self.height-.5, self.width, .5);
 }
 @end

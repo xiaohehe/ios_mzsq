@@ -27,6 +27,7 @@
 @property(nonatomic,strong)UILabel * yuanJiaLab;
 
 @property(nonatomic,strong)UILabel * lin;
+@property(nonatomic,strong)UIImageView *lingView;
 
 @property(nonatomic,assign)BOOL isDetail;
 @property(nonatomic,assign)BOOL hiddenBtn;
