@@ -209,33 +209,23 @@
     //
     //        }
     //    }
-    
     float setY = 10*self.scale;
     float nameCellY=0;
     biggg = [NSMutableArray new];
     for (NSDictionary *dic in _data) {
         if ([dic[@"order_detail"][0][@"status"] isEqualToString:@"1"]) {
             [biggg addObject:dic[@"order_detail"]];
-            
-            
         }else{
             for (NSDictionary *orderDic in dic[@"order_detail"]) {
                 [biggg addObject:orderDic];
-                
             }
         }
     }
-    
     for (int i=0; i<biggg.count; i++) {
-        
-        
         UIView *bigvi = [[UIView alloc]initWithFrame:CGRectMake(0,setY , self.view.width, 0)];
         [_bigScrollView addSubview:bigvi];
-        
         //未付款
         if ([biggg[i] isKindOfClass:[NSArray class]]) {
-            
-            
             //            UIView *tline = [[UIView alloc]initWithFrame:CGRectMake(0, 10*self.scale, self.view.width, .5)];
             //            tline.backgroundColor=superBackgroundColor;
             //            [_bigScrollView addSubview:tline];
@@ -248,7 +238,6 @@
             nameLa.font = DefaultFont(self.scale);
             [nameCell addSubview:nameLa];
             UILabel *states = [[UILabel alloc]initWithFrame:CGRectMake(self.view.width-80*self.scale, nameCell.height/2-10*self.scale, 70*self.scale, 20*self.scale)];
-            
             if ([biggg[i][0][@"status"] isEqualToString:@"1"]) {
                 states.text = @"待付款";
             }else if ([biggg[i][0][@"status"] isEqualToString:@"2"] || [biggg[i][0][@"status"] isEqualToString:@"3"]){
@@ -277,39 +266,31 @@
             nameCell.topline.hidden=NO;
             nameCell.topline.backgroundColor=blackLineColore;
             [bigvi addSubview:nameCell];
-            
             UIImageView *headImg = [[UIImageView alloc]initWithFrame:CGRectMake(10*self.scale, 10*self.scale, 30*self.scale, 23*self.scale)];
             [headImg setImageWithURL:[NSURL URLWithString:biggg[i][@"logo"]] placeholderImage:[UIImage imageNamed:@"center_img"]];
             [nameCell addSubview:headImg];
             nameCell.height=headImg.bottom+10*self.scale;
-            
             UILabel *nameLa = [[UILabel alloc]initWithFrame:CGRectMake(headImg.right+5*self.scale, nameCell.height/2-10*self.scale, 30, nameCell.height-20*self.scale)];
             nameLa.text =biggg[i][@"shop_name"];
             nameLa.font = SmallFont(self.scale);
             [nameCell addSubview:nameLa];
-            
             CGSize size = [self sizetoFitWithString:nameLa.text];
             nameLa.width = size.width;
-            
             //            UIButton *talkImg = [[UIButton alloc]initWithFrame:CGRectMake(nameLa.right, nameCell.height/2-10*self.scale, 20*self.scale, 20*self.scale)];
             //            [talkImg setBackgroundImage:[UIImage imageNamed:@"ganxi_ico_01"] forState:UIControlStateNormal];
             //            [talkImg addTarget:self action:@selector(talkBtnEvent:) forControlEvents:UIControlEventTouchUpInside];
-            //            [talkImg setTitle:@"talk" forState:UIControlStateNormal];
+            //     0       [talkImg setTitle:@"talk" forState:UIControlStateNormal];
             //            [talkImg setTitleColor:[UIColor clearColor] forState:UIControlStateNormal];
             //            talkImg.tag=i+5000000;
             //            [nameCell addSubview:talkImg];
-            
             UIButton *teleImg = [[UIButton alloc]initWithFrame:CGRectMake(nameLa.right, nameCell.height/2-10*self.scale, 20*self.scale, 20*self.scale)];
             [teleImg setBackgroundImage:[UIImage imageNamed:@"ganxi_ico_02"] forState:UIControlStateNormal];
             [teleImg addTarget:self action:@selector(talkBtnEvent:) forControlEvents:UIControlEventTouchUpInside];
             teleImg.tag=i+6000000;
             [nameCell addSubview:teleImg];
-            
             UIImageView *jiantouImg = [[UIImageView alloc]initWithFrame:CGRectMake(teleImg.right+10*self.scale, nameCell.height/2-12.5*self.scale, teleImg.width+5*self.scale, teleImg.height+5*self.scale)];
             jiantouImg.image = [UIImage imageNamed:@"xq_right"];
             [nameCell addSubview:jiantouImg];
-            
-            
             UILabel *states = [[UILabel alloc]initWithFrame:CGRectMake(self.view.width-80*self.scale, nameCell.height/2-10*self.scale, 70*self.scale, 20*self.scale)];
             if ([biggg[i][@"status"] isEqualToString:@"1"]) {
                 states.text = @"待付款";
@@ -319,52 +300,34 @@
                 states.text = @"待收货";
             }else if([biggg[i][@"status"] isEqualToString:@"5"]){
                 if ([biggg[i][@"is_comment"] isEqualToString:@""] || [biggg[i][@"is_comment"] isEqualToString:@"1"]){
-                    
                     states.text = @"待评价";
                 }else{
-                    
                     states.text = @"已完成";
                 }
             }else{
                 states.text = @"已取消";
             }
-            
-            
-            
             states.textAlignment = NSTextAlignmentRight;
             states.textColor = [UIColor redColor];
             states.font = SmallFont(self.scale);
             [nameCell addSubview:states];
-            
             nameCellY=nameCell.bottom;
-            
-            
         }
-        
         ////---
-        
         NSMutableArray * dataArr = [NSMutableArray new];
         if ([biggg[i] isKindOfClass:[NSArray class]]) {
             for (NSDictionary *smDic in biggg[i]) {
                 [dataArr addObjectsFromArray:smDic[@"prods"]];
             }
         }else{
-            
             [dataArr addObjectsFromArray:biggg[i][@"prods"]];
         }
-        
-        
-        
-        
-        
-        
         float line1BotFloat = nameCellY;
         _sum=0;
         _ji=0.0;
         for (int j=0; j<dataArr.count; j++) {
             CellView *contextCell = [[CellView alloc]initWithFrame:CGRectMake(0, line1BotFloat, self.view.width, 175/2.25*self.scale)];
             [bigvi addSubview:contextCell];
-            
             UIImageView *cellHeadImg = [[UIImageView alloc]initWithFrame:CGRectMake(10*self.scale, 10*self.scale, 65*self.scale, 49*self.scale)];
             cellHeadImg.contentMode=UIViewContentModeScaleAspectFill;
             cellHeadImg.clipsToBounds=YES;
@@ -373,16 +336,12 @@
             NSString *imagename = [cut lastPathComponent];
             NSString *path = [cut stringByDeletingLastPathComponent];
             NSString *smallImgUrl=[NSString stringWithFormat:@"%@/%@",path,[imagename stringByReplacingOccurrencesOfString:@"." withString:@"_thumb320."]];
-            
             //            if (cut.length>0) {
             //                url = [cut substringToIndex:[cut length] - 4];
-            //
             //            }
             //            [cellHeadImg setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_thumb640.jpg",url]] placeholderImage:[UIImage imageNamed:@"za"]];
             [cellHeadImg setImageWithURL:[NSURL URLWithString:smallImgUrl] placeholderImage:[UIImage imageNamed:@"za"]];
             [contextCell addSubview:cellHeadImg];
-            
-            
             UILabel *nameLa = [[UILabel alloc]initWithFrame:CGRectMake(cellHeadImg.right+10*self.scale, cellHeadImg.top, 200*self.scale, 20*self.scale)];
             nameLa.text = dataArr[j][@"prod_name"];
             nameLa.textAlignment = NSTextAlignmentLeft;
@@ -411,9 +370,7 @@
             numberLa.textColor = grayTextColor;
             numberLa.font = SmallFont(self.scale);
             [contextCell addSubview:numberLa];
-            
             line1BotFloat = contextCell.bottom;
-            
             UIButton *oderStatesBtn = [UIButton buttonWithType:UIButtonTypeCustom];
             oderStatesBtn.frame = CGRectMake(0, 0, contextCell.width, contextCell.height);
             [oderStatesBtn addTarget:self action:@selector(oderStBtnEvent:) forControlEvents:UIControlEventTouchUpInside];
@@ -423,8 +380,6 @@
             id start = biggg[i];
             int num = [dataArr[j][@"prod_count"] intValue];
             _sum=_sum+num;
-            //
-            //
             //                float pri = [dataArr[j][@"price"] floatValue];
             //
             //                _ji = _ji+num*pri;
@@ -453,10 +408,8 @@
             starts = start[@"status"];
         }
         if ([starts isEqualToString:@"1"]) {
-            
             CellView * zongJiCell = [[CellView alloc]initWithFrame:CGRectMake(0,line1BotFloat, self.view.width, 44)];
             [bigvi addSubview:zongJiCell];
-            
             UILabel *shopNumberLa = [[UILabel alloc]initWithFrame:CGRectMake(10*self.scale, zongJiCell.height/2-10*self.scale, 0, 20*self.scale)];
             shopNumberLa.attributedText = [self stringColorAllString:[NSString stringWithFormat:@"共%d件商品 合计:￥%.2f元",_sum,_ji] redString:[NSString stringWithFormat:@"￥%.2f",_ji]];
             shopNumberLa.font = DefaultFont(self.scale);
@@ -465,11 +418,8 @@
             NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
             paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
             NSDictionary *attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:14.0f*self.scale], NSParagraphStyleAttributeName:paragraphStyle.copy};
-            
             CGSize size1 = [shopNumberLa.text boundingRectWithSize:CGSizeMake(shopNumberLa.width, 20*self.scale) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil].size;
             shopNumberLa.width = size1.width;
-            
-            
             UIButton *fuKuanBtn = [UIButton buttonWithType:UIButtonTypeCustom];
             fuKuanBtn.frame = CGRectMake(self.view.width-120*self.scale, zongJiCell.height/2-12.5*self.scale, 50*self.scale, 25*self.scale);
             fuKuanBtn.layer.borderWidth = .5;
@@ -481,7 +431,6 @@
             fuKuanBtn.layer.cornerRadius = 4.0f;
             fuKuanBtn.tag=20000+i;
             [zongJiCell addSubview:fuKuanBtn];
-            
             UIButton *quiXaioBtn = [UIButton buttonWithType:UIButtonTypeCustom];
             quiXaioBtn.frame = CGRectMake(self.view.width-60*self.scale, zongJiCell.height/2-12.5*self.scale, 50*self.scale, 25*self.scale);
             quiXaioBtn.layer.borderWidth = .5;
@@ -494,30 +443,19 @@
             quiXaioBtn.layer.cornerRadius = 4.0f;
             quiXaioBtn.tag=10000+i;
             [zongJiCell addSubview:quiXaioBtn];
-            
             zongJiCell.height=quiXaioBtn.bottom+10*self.scale;
-            
             bigvi.size = CGSizeMake(self.view.width, zongJiCell.bottom);
             setY = bigvi.bottom +10*self.scale;
             _bigScrollView.contentSize = CGSizeMake(self.view.width,setY);
-            
         }else if ([starts isEqualToString:@"2"] || [starts isEqualToString:@"3"]){
-            
             CellView * zongJiCell = [[CellView alloc]initWithFrame:CGRectMake(0,line1BotFloat, self.view.width, 44)];
             [bigvi addSubview:zongJiCell];
-            
             UILabel *shopNumberLa = [[UILabel alloc]initWithFrame:CGRectMake(10*self.scale, zongJiCell.height/2-10*self.scale, self.view.width-70*self.scale, 20*self.scale)];
             shopNumberLa.attributedText = [self stringColorAllString:[NSString stringWithFormat:@"共%d件商品 合计:￥%.2f元",_sum,_ji] redString:[NSString stringWithFormat:@"￥%.2f",_ji]];
             shopNumberLa.font = DefaultFont(self.scale);
             shopNumberLa.textAlignment = NSTextAlignmentLeft;
             [zongJiCell addSubview:shopNumberLa];
-            
-            
             if ([biggg[i][@"pay_type"]isEqualToString:@"3"]) {
-                
-                
-                
-                
                 UIButton *quiXaioBtn = [UIButton buttonWithType:UIButtonTypeCustom];
                 quiXaioBtn.frame = CGRectMake(self.view.width-70*self.scale, zongJiCell.height/2-12.5*self.scale, 60*self.scale, 25*self.scale);
                 quiXaioBtn.layer.borderWidth = .5;
@@ -545,10 +483,8 @@
             NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
             paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
             NSDictionary *attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:17.0f], NSParagraphStyleAttributeName:paragraphStyle.copy};
-            
             CGSize size1 = [shopNumberLa.text boundingRectWithSize:CGSizeMake(300, 20*self.scale) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil].size;
             shopNumberLa.width = size1.width;
-
             UIButton *quiXaioBtn = [UIButton buttonWithType:UIButtonTypeCustom];
             quiXaioBtn.frame = CGRectMake(self.view.width-70*self.scale, zongJiCell.height/2-12.5*self.scale, 60*self.scale, 25*self.scale);
             quiXaioBtn.layer.borderWidth = .5;
@@ -561,13 +497,10 @@
             quiXaioBtn.layer.cornerRadius = 4.0f;
             quiXaioBtn.tag=100000+i;
             [zongJiCell addSubview:quiXaioBtn];
-
             bigvi.size = CGSizeMake(self.view.width, zongJiCell.bottom);
             setY = bigvi.bottom +10*self.scale;
             _bigScrollView.contentSize = CGSizeMake(self.view.width,setY);
-
         }else if([starts isEqualToString:@"5"]){
-
             CellView * zongJiCell = [[CellView alloc]initWithFrame:CGRectMake(0,line1BotFloat, self.view.width, 44)];
             [bigvi addSubview:zongJiCell];
             

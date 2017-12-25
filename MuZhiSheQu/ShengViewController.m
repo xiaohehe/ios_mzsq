@@ -19,17 +19,17 @@
     [super viewWillAppear:animated];
     [UmengCollection intoPage:NSStringFromClass([self class])];
 }
--(void)viewWillDisappear:(BOOL)animated
-{
+
+-(void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     [UmengCollection outPage:NSStringFromClass([self class])];
 }
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     _data = [NSMutableArray new];
     [self newNav];
     [self reshData];
-    
     _table = [[UITableView alloc]initWithFrame:CGRectMake(0, self.NavImg.bottom, self.view.width, self.view.height-self.NavImg.bottom)];
     _table.delegate=self;
     _table.dataSource=self;
@@ -37,9 +37,8 @@
     [self.view addSubview:_table];
     [self.view addSubview:self.activityVC];
     [self.activityVC startAnimate];
-    
-
 }
+
 -(void)reshData{
     AnalyzeObject *anle = [AnalyzeObject new];
     [anle getProvinceListWithDic:nil Block:^(id models, NSString *code, NSString *msg) {
@@ -51,17 +50,11 @@
         }
         [self.activityVC stopAnimate];
     }];
-    
-    
 }
 
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-
-
-
     return _data.count;
-
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{

@@ -38,7 +38,8 @@
     
     UIButton *btn = [[UIButton alloc]initWithFrame:CGRectMake(10*self.scale, tf.bottom+20*self.scale, self.view.width-20*self.scale, 35*self.scale)];
     [btn setTitle:@"提交" forState:UIControlStateNormal];
-    [btn setBackgroundImage:[UIImage ImageForColor:blueTextColor] forState:UIControlStateNormal];
+    [btn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [btn setBackgroundImage:[UIImage ImageForColor:[UIColor colorWithRed:1.000 green:0.867 blue:0.306 alpha:1.00]] forState:UIControlStateNormal];
     [btn addTarget:self action:@selector(tijaio) forControlEvents:UIControlEventTouchUpInside];
     btn.layer.cornerRadius=4;
     btn.layer.masksToBounds=YES;

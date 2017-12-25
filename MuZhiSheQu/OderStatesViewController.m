@@ -5,12 +5,33 @@
 //  Created by apple on 15/9/14.
 //  Copyright (c) 2015年 apple. All rights reserved.
 //
-
+/*
+ 订单请求状态：
+ 请求时：
+ -1：退货中
+ 1：待付款
+ 2：待发货
+ 3：待收货
+ 4：待评价
+ 5:全部订单
+ 6：已取消
+ 
+ 返回时：
+ 退货中 = -1,
+ 未付款 = 1,
+ 已付款 = 2,
+ 已接单 = 3,
+ 已发货 = 4,
+ 已完成 = 5,
+ 已取消 = 6
+ */
 #import "OderStatesViewController.h"
 #import "CellView.h"
 #import "IntroModel.h"
 #import "IntroControll.h"
 #import "UmengCollection.h"
+#import "AppUtil.h"
+
 @interface OderStatesViewController ()
 @property(nonatomic,strong)UIView *bigBtnVi,*bigVi,*UIView ;
 @property(nonatomic,strong)UIButton *selectedBtn;
@@ -26,36 +47,31 @@
 
 @implementation OderStatesViewController
 
-
--(void)viewWillAppear:(BOOL)animated
-{
+-(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     self.navigationController.navigationBarHidden = NO;
     self.navigationController.navigationBar.hidden = YES;
     [UmengCollection intoPage:NSStringFromClass([self class])];
 }
--(void)viewWillDisappear:(BOOL)animated
-{
+
+-(void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     [UmengCollection outPage:NSStringFromClass([self class])];
 }
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     _lines = [NSMutableArray new];
     _data =[NSMutableArray new];
-    
     //[self statesVi];
    // [self oderXiangQingVi];
     //[self xiangQingCellVi];
     //[self myPingJiaCellVi];
    // [self bottomVi];
-       [self topVi];
-
+    [self topVi];
     [self reshData];
-    
     [self returnVi];
 }
-
 
 -(void)reshData{
     [self.view addSubview:self.activityVC];
@@ -63,34 +79,26 @@
     AnalyzeObject *anle = [AnalyzeObject new];
     NSString *userid = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
     NSDictionary *dic = @{@"user_id":userid,@"order_id":self.orderid,@"sub_order_id":self.smallOder};
-    
-    
-    
     [anle myOrderDetailWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
         NSLog(@"myOrderDetailWithDic==%@",models);
         if ([code isEqualToString:@"0"]) {
             [_data addObjectsFromArray:models];
             [self BigVi];
-
             [self statesVi];
             [self oderXiangQingVi];
             [self xiangQingCellVi];
         }
         [self.activityVC stopAnimate];
     }];
-
 }
 
 #pragma mark-------顶部，  订单状态，，订单详情
 -(void)topVi{
     NSArray *daiArr = @[@"订单状态",@"订单详情"];
-    
     if (_bigBtnVi) {
         [_bigBtnVi removeFromSuperview];
     }
-    
     _bigBtnVi = [[UIView alloc]initWithFrame:CGRectMake(0, self.NavImg.bottom, self.view.width, 90/2.25*self.scale)];
-
     _bigBtnVi.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:_bigBtnVi];
     for (int i=0; i<2; i++) {
@@ -116,12 +124,10 @@
     UIView *endLine = [[UIView alloc]initWithFrame:CGRectMake(0, _bigBtnVi.height-.5, self.view.width, .5)];
     endLine.backgroundColor = blackLineColore;
     [_bigBtnVi addSubview:endLine];
-    
     UIView *line=[[UIView alloc]initWithFrame:CGRectMake(0, endLine.top, self.view.width/2, endLine.height)];
     line.backgroundColor=blueTextColor;
     line.tag=666;
     [_bigBtnVi addSubview:line];
-
 }
 
 -(void)DaiButtonEvent1:(UIButton *)sender{
@@ -130,35 +136,28 @@
     }
     _selectedBtn=sender;
     sender.selected=YES;
-    
     [UIView animateWithDuration:.3 animations:^{
         UIView *line=[self.view viewWithTag:666];
         float W=self.view.width/2;
         line.frame=CGRectMake((sender.tag-1)*W, _bigBtnVi.height-.5, W, .5);
-        
     }];
-    
     switch (sender.tag) {
         case 1:{
             for (UIView *vi in [_bigVi subviews]) {
                 [vi removeFromSuperview];
             }
-            
             if ([_data[0][@"is_comment"] isEqualToString:@"2"]) {
                 _vig.hidden=YES;
             }else{
-            
             _vig.hidden=NO;
             }
             [_bigVi addSubview:_bigStateVi];
         }
             break;
-            
         case 2:{
             for (UIView *vi in [_bigVi subviews]) {
                 [vi removeFromSuperview];
             }
-            
 //            if ([_data[0][@"is_comment"] isEqualToString:@"2"]) {
 //                _vig.hidden=YES;
 //            }
@@ -177,148 +176,100 @@
     if (_bigVi) {
         [_bigVi removeFromSuperview];
     }
-    
     _bigVi = [[UIView alloc]initWithFrame:CGRectMake(0, _bigBtnVi.bottom, self.view.width, self.view.height-_bigBtnVi.bottom)];
     _bigVi.backgroundColor = superBackgroundColor;
     [self.view addSubview:_bigVi];
-
-    
-
 }
 
 #pragma mark--------状态；
 -(void)statesVi{
-    
     NSMutableArray *muta = [NSMutableArray new];
     NSArray *arr = @[@"订单提交成功",@"商家已经确认订单",@"订单已配送",@"订单已完成"];
     if (_bigStateVi) {
         [_bigStateVi removeFromSuperview];
     }
-
     _bigStateVi = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, _bigVi.width, _bigVi.height)];
     [_bigVi addSubview:_bigStateVi];
-    
     int q=0;
     if (_data.count>0) {
-
-    if ([_data[0][@"status"] isEqualToString:@"2"]) {
-        q=1;
-    }
-      else  if ([_data[0][@"status"] isEqualToString:@"3"]){
-        q=2;
-    }
-      else  if ([_data[0][@"status"] isEqualToString:@"4"]){
-        q=3;
-    }
-      else  if ([_data[0][@"status"] isEqualToString:@"5"]){
+        if ([_data[0][@"status"] isEqualToString:@"2"]) {
+            q=1;
+        }else  if ([_data[0][@"status"] isEqualToString:@"3"]){
+            q=2;
+        }else  if ([_data[0][@"status"] isEqualToString:@"4"]){
+            q=3;
+        }else  if ([_data[0][@"status"] isEqualToString:@"5"]){
             q=4;
-      }else{
-      
-      
-      
-      }
-    
+        }else{
+        }
         [muta addObject:_data[0][@"sub_create_time"]];
         [muta addObject:_data[0][@"receive_time"]];
         [muta addObject:_data[0][@"delivery_time"]];
         [muta addObject:_data[0][@"finish_time"]];
-        
     }
-    
     NSMutableArray *imgarr = [[NSMutableArray alloc]initWithObjects:@"center_dd_ico_01",@"center_dd_ico_03",@"center_dd_ico_02",@"center_dd_ico_03", nil];
-
-    
-    
     for (int i=0; i<q; i++) {
-        
-        UIImageView *statesImg = [[UIImageView alloc]initWithFrame:CGRectMake(self.view.width-270*self.scale, 20*self.scale+i*200/2.25*self.scale, 570/2.25*self.scale, 170/2.25*self.scale)];
+        UIImageView *statesImg = [[UIImageView alloc]initWithFrame:CGRectMake(45*self.scale, 20*self.scale+i*200/2.25*self.scale, self.view.width-60*self.scale, 170/2.25*self.scale)];//570/2.25*self.scale
         statesImg.image = [UIImage imageNamed:@"box"];
         [_bigStateVi addSubview:statesImg];
-        
         UILabel *timer = [[UILabel alloc]initWithFrame:CGRectMake(statesImg.width-130*self.scale, 10*self.scale, 120*self.scale, 30*self.scale)];
-        timer.text=muta[i];
+        NSLog(@"muta==%d==%@",i,muta[i]);
+        timer.text=[AppUtil isBlank:muta[i]]?@"":muta[i];
         timer.textAlignment=NSTextAlignmentRight;
-        timer.font=SmallFont(self.scale);
+        timer.font=SmallFont(self.scale*0.8);
         [statesImg addSubview:timer];
-
-        
-        
         if (i==0) {
             UILabel *statesLa = [[UILabel alloc]initWithFrame:CGRectMake(20*self.scale, 10*self.scale, statesImg.width-60*self.scale, 30*self.scale)];
             statesLa.text = arr[i];
-            statesLa.font=DefaultFont(self.scale);
+            statesLa.font=DefaultFont(self.scale*0.9);
             [statesImg addSubview:statesLa];
-            
             UILabel *infoLa = [[UILabel alloc]initWithFrame:CGRectMake(statesLa.left, statesLa.bottom, statesImg.width-20*self.scale, statesLa.height)];
             infoLa.text = [NSString stringWithFormat:@"订单号：%@,请耐心等待",self.smallOder];
-            infoLa.font = SmallFont(self.scale);
+            infoLa.font = SmallFont(self.scale*0.9);
             infoLa.numberOfLines=0;
             [statesImg addSubview:infoLa];
-            
-
-            
         }else{
             UILabel *statesLa = [[UILabel alloc]initWithFrame:CGRectMake(20*self.scale, 10*self.scale, statesImg.width-60*self.scale, 30*self.scale)];
             statesLa.text = arr[i];
-            statesLa.font=DefaultFont(self.scale);
+            statesLa.font=DefaultFont(self.scale*0.9);
             [statesImg addSubview:statesLa];
-            
             if (i==2) {
                 float sty = statesLa.bottom;
                 NSString *ren = [NSString stringWithFormat:@"%@ 电话：%@,已经在前去服务的路上",_data[0][@"delivery_staff_info"][@"name"],_data[0][@"delivery_staff_info"][@"mobile"]];
                 NSMutableArray *arj = [NSMutableArray arrayWithObjects:ren, nil];
-                
-                
                 for (int j=0; j<1; j++) {
                     UILabel *peisongren = [[UILabel alloc]initWithFrame:CGRectMake(statesLa.left, sty, statesImg.width-25*self.scale, 35*self.scale)];
                     peisongren.text=arj[j];
                     peisongren.numberOfLines=0;
-                    peisongren.font=SmallFont(self.scale);
+                    peisongren.font=SmallFont(self.scale*0.9);
                     [statesImg addSubview:peisongren];
-                    
                     sty = peisongren.bottom;
                 }
             }
         }
-
         //UIImageView *sele = nil;
-        
-        
-        
         UIImageView *headImg = [[UIImageView alloc]initWithFrame:CGRectMake(10*self.scale, statesImg.bottom-statesImg.height/2-15*self.scale, 30*self.scale, 30*self.scale)];
         headImg.image = [UIImage imageNamed:imgarr[i]];
         headImg.tag = 10+i;
         [_bigStateVi addSubview:headImg];
-
         [_lines addObject:[NSString stringWithFormat:@"%ld",(long)headImg.tag]];
-  
-        
-
-           }
-    
+    }
     if (_lines.count==1) {
         UIImageView *head = (UIImageView *)[self.view viewWithTag:[_lines[0] intValue]];
-        
         UIView *lin = [[UIView alloc]initWithFrame:CGRectMake(head.centerX, head.bottom, 1, self.view.height-head.centerY)];
         lin.backgroundColor=blackLineColore;
         [_bigStateVi addSubview:lin];
-        
     }
-    
     if (_lines.count==2) {
         UIImageView *head = (UIImageView *)[self.view viewWithTag:[_lines[0] intValue]];
         UIImageView *head2 = (UIImageView *)[self.view viewWithTag:[_lines[1] intValue]];
-
-        
         UIView *line = [[UIView alloc]initWithFrame:CGRectMake(head.centerX, head.centerY+5*self.scale, 1, head2.bottom-head.bottom-20*self.scale)];
         line.backgroundColor=[UIColor redColor];
         [_bigStateVi addSubview:line];
-        
         UIView *lin = [[UIView alloc]initWithFrame:CGRectMake(head2.centerX, head2.bottom, 1, self.view.height-head2.centerY)];
         lin.backgroundColor=blackLineColore;
         [_bigStateVi addSubview:lin];
     }
-    
     if (_lines.count==3) {
         UIImageView *head = (UIImageView *)[self.view viewWithTag:[_lines[0] intValue]];
         UIImageView *head2 = (UIImageView *)[self.view viewWithTag:[_lines[1] intValue]];
@@ -384,20 +335,18 @@
         lin2.backgroundColor=blackLineColore;
         [_bigStateVi addSubview:lin2];
 
-        
-        
-        _vig = [[CellView alloc]initWithFrame:CGRectMake(0, self.view.height-44*self.scale, self.view.width, 44*self.scale)];
+        CGFloat dangerAreaHeight=self.isIphoneX?34:0;
+
+        _vig = [[CellView alloc]initWithFrame:CGRectMake(0, self.view.height-44*self.scale-dangerAreaHeight, self.view.width, 44*self.scale+dangerAreaHeight)];
         _vig.backgroundColor=[UIColor whiteColor];
         [self.view addSubview:_vig];
         
         UIImageView *dui = [[UIImageView alloc]initWithFrame:CGRectMake(10*self.scale, 10*self.scale, 25*self.scale, 25*self.scale)];
         dui.image=[UIImage imageNamed:@"center_dd_ok"];
         [_vig addSubview:dui];
-        
         UIButton *quping = [[UIButton alloc]initWithFrame:CGRectMake(dui.right+10*self.scale, 7*self.scale, self.view.width-dui.right-20*self.scale, 30*self.scale)];
         quping.layer.cornerRadius=4;
         quping.layer.masksToBounds=YES;
-        
 
         quping.tag=6666;
         [quping setBackgroundImage:[UIImage ImageForColor:[UIColor redColor]] forState:UIControlStateNormal];
@@ -406,17 +355,11 @@
         quping.titleLabel.font=DefaultFont(self.scale);
         [quping addTarget:self action:@selector(qupingjia) forControlEvents:UIControlEventTouchUpInside];
         [_vig addSubview:quping];
-        
         if ([_data[0][@"is_comment"] isEqualToString:@"2"]) {
             _vig.hidden=YES;
         }
-        
         _bigStateVi.contentSize=CGSizeMake(self.view.width, _vig.top+0*self.scale);
-
-        
     }
-    
-
 }
 
 -(void)qupingjia{
@@ -499,13 +442,10 @@
         dianImg.layer.cornerRadius=2.5f;
         [goodsCell addSubview:dianImg];
         
-        
         UILabel *nameLa = [[UILabel alloc]initWithFrame:CGRectMake(dianImg.right+5*self.scale, goodsCell.height/2-10*self.scale, 170*self.scale, 20*self.scale)];
         nameLa.text =_data[0][@"prods"][i][@"prod_name"];
-        
         nameLa.font = DefaultFont(self.scale);
         [goodsCell addSubview:nameLa];
-        
         
         UILabel *numberLa = [[UILabel alloc]initWithFrame:CGRectMake(self.view.width/2+50*self.scale, goodsCell.height/2-10*self.scale, 30*self.scale, 20*self.scale)];
         numberLa.text = [NSString stringWithFormat:@"x%@",_data[0][@"prods"][i][@"prod_count"]];
@@ -518,58 +458,36 @@
         [goodsCell addSubview:priceLa];
         
         _pricel = [[NSString stringWithFormat:@"%@",_data[0][@"prods"][i][@"amount"]]floatValue ]+_pricel;
-        
         NSLog(@"%@",_data[0]);
-        
         setY = goodsCell.bottom;
     }
-
     CellView *heJiCell = [[CellView alloc]initWithFrame:CGRectMake(0, setY, self.view.width, 44)];
-    
-    
-    
-    
-    
     heJiCell.contentLabel.attributedText = [self stringColorAllString:[NSString stringWithFormat:@"合计：￥%.2f",_pricel] redString:[NSString stringWithFormat:@"￥%.2f",_pricel]];
-
 //    heJiCell.contentLabel.attributedText = [self stringColorAllString:[NSString stringWithFormat:@"合计：￥%@",_data[0][@"sub_amount"]] redString:[NSString stringWithFormat:@"￥%@",_data[0][@"sub_amount"]]];
-
 //    heJiCell.contentLabel.text = [NSString stringWithFormat:@"合计：￥%@",_price];
 //    heJiCell.contentLabel.textColor = [UIColor redColor];
     heJiCell.contentLabel.textAlignment = NSTextAlignmentRight;
     [_shopCellVi addSubview:heJiCell];
-    
-    
     CellView *sendTimeCell = [[CellView alloc]initWithFrame:CGRectMake(0, heJiCell.bottom, self.view.width, 44)];
     sendTimeCell.title = @"配送时间";
     sendTimeCell.contentLabel.text = _data[0][@"send_time"];
     sendTimeCell.contentLabel.textColor=grayTextColor;
     [_shopCellVi addSubview:sendTimeCell];
-    
     CellView *beiZhuCell = [[CellView alloc]initWithFrame:CGRectMake(0, sendTimeCell.bottom, self.view.width, 44)];
     beiZhuCell.titleLabel.text =@"备注";
     beiZhuCell.titleLabel.textColor = [UIColor redColor];
     beiZhuCell.contentLabel.text = _data[0][@"memo"];
-    
     if ([beiZhuCell.contentLabel.text isEmptyString]) {
         beiZhuCell.contentLabel.text=@"";
     }
-    
     beiZhuCell.contentLabel.textColor=grayTextColor;
     [_shopCellVi addSubview:beiZhuCell];
-    
     [beiZhuCell.contentLabel sizeToFit];
-    
-  
-    
     beiZhuCell.height=beiZhuCell.contentLabel.bottom+10*self.scale;
-    
     if (beiZhuCell.height<44*self.scale) {
         beiZhuCell.height=44*self.scale;
     }
-    
     _shopCellVi.height = beiZhuCell.bottom;
-    
     _bigXaingQingVi.contentSize=CGSizeMake(self.view.width, _shopCellVi.bottom+10*self.scale);
     
     [self xiangQingCellVi];
@@ -732,7 +650,12 @@
     CellView *contextCell = [[CellView alloc]initWithFrame:CGRectMake(0, pingjiaCell.bottom, self.view.width, 200)];
     [_PingJiaCellVi addSubview:contextCell];
     UIImageView *headImg = [[UIImageView alloc]initWithFrame:CGRectMake(10*self.scale, 10*self.scale, 50*self.scale, 50*self.scale)];
-    [headImg setImageWithURL:[NSURL URLWithString:_data[0][@"comment"][@"avatar"]] placeholderImage:[UIImage imageNamed:@"center_img"]];
+    NSLog(@"muta==avatar==%@",_data[0][@"comment"][@"avatar"]);
+    if([AppUtil isBlank:_data[0][@"comment"][@"avatar"]]){
+        [headImg setImage:[UIImage imageNamed:@"center_img"]];
+    }else{
+        [headImg setImageWithURL:[NSURL URLWithString:_data[0][@"comment"][@"avatar"]] placeholderImage:[UIImage imageNamed:@"center_img"]];
+    }
     headImg.layer.cornerRadius=25.0f*self.scale;
     headImg.layer.masksToBounds=YES;
     [contextCell addSubview:headImg];
@@ -742,18 +665,13 @@
     }
     nameLa.font = DefaultFont(self.scale);
     [contextCell addSubview:nameLa];
-    
-    
     float setB=0;
-
-    
     UILabel *contextLa = [[UILabel alloc]initWithFrame:CGRectMake(nameLa.left, nameLa.bottom+5*self.scale, nameLa.width, 20*self.scale)];
-    contextLa.text = _data[0][@"comment"][@"content"];
+    contextLa.text =[AppUtil isBlank:_data[0][@"comment"][@"content"]]?@"": _data[0][@"comment"][@"content"];
     contextLa.textColor=grayTextColor;
     contextLa.font=SmallFont(self.scale);
     contextLa.numberOfLines=0;
     [contextCell addSubview:contextLa];
-    
     [contextLa sizeToFit];
     setB=contextLa.bottom+20*self.scale;
 //    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
@@ -766,39 +684,22 @@
 //    contextLa.height = height;
     NSMutableArray *ar = [NSMutableArray new];
     float W = (contextCell.width-40-headImg.right)/3;
-    
     for (int i=1; i<10; i++) {
         NSString *str = [NSString stringWithFormat:@"img%d",i];
-        
-        NSString *img = _data[0][@"comment"][str];
-        
-        
-        
+        NSString *img = [AppUtil isBlank:_data[0][@"comment"][str]]?@"":_data[0][@"comment"][str];
         NSString *url=@"";
         NSString *cut = img;
         NSLog(@"%@",cut);
         NSString *imagename = [cut lastPathComponent];
         NSString *path = [cut stringByDeletingLastPathComponent];
         NSString *smallImgUrl=[NSString stringWithFormat:@"%@/%@",path,[imagename stringByReplacingOccurrencesOfString:@"." withString:@"_thumb320."]];
-//        if (cut.length>0) {
-//            url = [cut substringToIndex:[cut length] - 4];
-//            url = [NSString stringWithFormat:@"%@_thumb320.jpg",url];
-//            
-//        }
-//        
-        
-        
         if (img!=nil && ![img isEqualToString:@""]) {
             [ar addObject:smallImgUrl];
         }
     }
-    
-    
     for (int i=0; i<ar.count; i++) {
-        
         float x = (W+10*self.scale)*(i%3);
         float y = (W-10*self.scale)*(i/3);
-        
         UIImageView *image1 = [[UIImageView alloc]initWithFrame:CGRectMake(contextLa.left+x, contextLa.bottom+10*self.scale+y, W, W*0.75)];
         [image1 setImageWithURL:[NSURL URLWithString:ar[i]] placeholderImage:[UIImage imageNamed:@"center_img"]];
         [contextCell addSubview:image1];
@@ -807,81 +708,36 @@
         image1.tag=100000+i;
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(imgBig:)];
         [image1 addGestureRecognizer:tap];
-        
-//        UIImageView *image2 = [[UIImageView alloc]initWithFrame:CGRectMake(image1.right+5*self.scale, image1.top, 50*self.scale, 50*self.scale)];
-//        image2.backgroundColor = [UIColor redColor];
-//        [contextCell addSubview:image2];
-//        
-//        UIImageView *image3 = [[UIImageView alloc]initWithFrame:CGRectMake(image2.right+5*self.scale, image1.top, 50*self.scale, 50*self.scale)];
-//        image3.backgroundColor = [UIColor redColor];
-//        [contextCell addSubview:image3];
-//        
-//        
-//        UILabel *tameLa = [[UILabel alloc]initWithFrame:CGRectMake(image1.left, image1.bottom+5*self.scale, nameLa.width, 15*self.scale)];
-//        tameLa.text = @"2015-07-09  20:45";
-//        tameLa.textColor=grayTextColor;
-//        tameLa.font=Small10Font(self.scale);
-//        [contextCell addSubview:tameLa];
-//        
-//        setB = tameLa.bottom;
-
     }
-
     contextCell.height = setB+10*self.scale;
-    
     _PingJiaCellVi.height=contextCell.bottom;
-    
-    
     _bigXaingQingVi.contentSize=CGSizeMake(self.view.width, _PingJiaCellVi.bottom+20*self.scale);
-
     _again = _PingJiaCellVi.bottom+10*self.scale;
-    
-    
-   // [self bottomVi:setB];
-    
 }
 
-
 -(void)imgBig:(UITapGestureRecognizer *)tap{
-
-    
     NSMutableArray *ar = [NSMutableArray new];
-    
     for (int i=1; i<10; i++) {
         NSString *str = [NSString stringWithFormat:@"img%d",i];
-        
         NSString *img = _data[0][@"comment"][str];
-        
-        
-        
         if (img!=nil && ![img isEqualToString:@""]) {
             [ar addObject:img];
         }
     }
-    
-    
-    
     NSMutableArray *pagesArr = [[NSMutableArray alloc] init];
     for (int i = 0; i < ar.count; i ++) {
-        
         IntroModel *model1 = [[IntroModel alloc] initWithTitle:@"" description:@"" image:[NSString stringWithFormat:@"%@",ar[i]]];
         [pagesArr addObject:model1];
     }
-    
     _IntroCon = [[IntroControll alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) pages:pagesArr];
     //  _intro.delegate=self;
     [_IntroCon index:tap.view.tag-100000];
     self.tabBarController.tabBar.hidden=YES;
-    
-    
-    
     [[[UIApplication sharedApplication].delegate window] addSubview:_IntroCon];
-
 }
+
 #pragma mark----底部  再来一单；；
 -(void)bottomVi:(float)fl{
-    
-    
     UIButton *againBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     againBtn.backgroundColor = [UIColor redColor];
     [againBtn setTitle:@"再来一单" forState:UIControlStateNormal];

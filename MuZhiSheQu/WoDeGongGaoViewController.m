@@ -314,7 +314,7 @@
     }
     cell.zanCount = [_data[indexPath.row][@"praisers"] count];
     cell.zanData = _data[indexPath.row][@"praisers"];
-    [cell.CaoZuoButton removeFromSuperview];
+    //[cell.CaoZuoButton removeFromSuperview];
     cell.imgCount=a.count;
     cell.imgData=a;
     
@@ -464,7 +464,7 @@
 -(void)CanZuoTableViewCellWith:(NSIndexPath *)indexPath Selected:(BOOL)selected{
     if (_selectedIndex && _selectedIndex!=indexPath) {
         ShareTableViewCell *cell=(ShareTableViewCell *)[_tableView cellForRowAtIndexPath:_selectedIndex];
-        cell.CaoZuoButton.selected=NO;
+       // cell.CaoZuoButton.selected=NO;
         _selectedIndex=nil;
     }
     _selectedIndex=indexPath;
@@ -507,7 +507,7 @@
 -(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
     if (_selectedIndex) {
         ShareTableViewCell *cell=(ShareTableViewCell *)[_tableView cellForRowAtIndexPath:_selectedIndex];
-        cell.CaoZuoButton.selected=NO;
+       // cell.CaoZuoButton.selected=NO;
         _selectedIndex=nil;
     }
 }

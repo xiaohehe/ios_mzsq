@@ -20,16 +20,18 @@
 @end
 
 @implementation weifukuanViewController
+
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     [UmengCollection intoPage:NSStringFromClass([self class])];
 }
--(void)viewWillDisappear:(BOOL)animated
-{
+
+-(void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     [UmengCollection outPage:NSStringFromClass([self class])];
 }
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     _lines = [NSMutableArray new];
@@ -37,7 +39,6 @@
     [self oderXiangQingVi];
     [self xiangQingCellVi];
     [self reshData];
-    
     [self returnVi];
 }
 

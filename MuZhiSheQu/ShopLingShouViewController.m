@@ -24,7 +24,6 @@
  已发货 = 4,
  已完成 = 5,
  已取消 = 6
- 
  */
 #import "ShopLingShouViewController.h"
 #import "CellView.h"
@@ -211,7 +210,8 @@
     NSDictionary *dic = @{@"user_id":self.user_id,@"status":@"5",@"pindex":index};
     [anle myOrderListWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
         [self.activityVC stopAnimate];
-        NSLog(@"所有订单==%@",models);
+        NSLog(@"所有订单==%@",models[0]);
+        NSLog(@"所有订单==%@",models[0][@"order_detail"][0][@"prods"]);
        // CGPoint point = _bigScrollView.contentOffset;
        // point.y=point.y-5*self.scale;
         if (_index4==1) {
@@ -1387,12 +1387,18 @@
 
 #pragma mark -----返回按钮,导航栏
 -(void)returnVi{
-    self.TitleLabel.text=@"我的订单";
     UIButton *popBtn=[[UIButton alloc]initWithFrame:CGRectMake(0, self.TitleLabel.top, self.TitleLabel.height, self.TitleLabel.height)];
     [popBtn setImage:[UIImage imageNamed:@"left"] forState:UIControlStateNormal];
-//    [popBtn setImage:[UIImage imageNamed:@"left_b"] forState:UIControlStateHighlighted];
+    [popBtn setImage:[UIImage imageNamed:@"left_b"] forState:UIControlStateHighlighted];
     [popBtn addTarget:self action:@selector(PopVC:) forControlEvents:UIControlEventTouchUpInside];
     [self.NavImg addSubview:popBtn];
+    self.TitleLabel.text=@"订单";
+    self.TitleLabel.font =[UIFont systemFontOfSize:15*self.scale];
+//    UIButton *popBtn=[[UIButton alloc]initWithFrame:CGRectMake(0, self.TitleLabel.top, self.TitleLabel.height, self.TitleLabel.height)];
+//    [popBtn setImage:[UIImage imageNamed:@"left"] forState:UIControlStateNormal];
+////    [popBtn setImage:[UIImage imageNamed:@"left_b"] forState:UIControlStateHighlighted];
+//    [popBtn addTarget:self action:@selector(PopVC:) forControlEvents:UIControlEventTouchUpInside];
+//    [self.NavImg addSubview:popBtn];
     UIButton *rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     [rightBtn setTitle:@"已取消" forState:UIControlStateNormal];//
     [rightBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -1402,10 +1408,16 @@
     rightBtn.frame = CGRectMake(self.view.right-80*self.scale,self.TitleLabel.top,80*self.scale,self.TitleLabel.height);
     [rightBtn addTarget:self action:@selector(cannelOder:) forControlEvents:UIControlEventTouchUpInside];
     [self.NavImg addSubview:rightBtn];
+    self.gradientLayer.frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 64);
+    [self.NavImg.layer insertSublayer:self.gradientLayer atIndex:0];
 }
 
--(void)cannelOder:(UIButton *)sender
-{
+#pragma mark ------返回按钮方法
+-(void)PopVC:(UIButton *)sender{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+-(void)cannelOder:(UIButton *)sender{
     self.hidesBottomBarWhenPushed=YES;
     CannelViewController *all = [CannelViewController new];
     [self.navigationController pushViewController:all animated:YES];
@@ -1420,13 +1432,13 @@
 
 
 #pragma mark ------返回按钮方法
--(void)PopVC:(UIButton *)sender{
-    if (_ispop) {
-        [self.navigationController popViewControllerAnimated:YES];
-    }else{
-        [self.navigationController popToRootViewControllerAnimated:YES];
-    }
-}
+//-(void)PopVC:(UIButton *)sender{
+//    if (_ispop) {
+//        [self.navigationController popViewControllerAnimated:YES];
+//    }else{
+//        [self.navigationController popToRootViewControllerAnimated:YES];
+//    }
+//}
 
 #pragma mark-----待收货的 订单view
 -(void)centerDaiShouHuoOderVi{
@@ -2437,11 +2449,8 @@
 }
 
 -(void)daipingjiaEvent4:(UIButton *)btn{
-    
     [self.view addSubview:self.activityVC];
-    
     if ([btn.titleLabel.text isEqualToString:@"去评价"]) {
-        
         self.hidesBottomBarWhenPushed=YES;
         XiePingJiaViewController *pingjia= [XiePingJiaViewController new];
         pingjia.is_order_on=YES;

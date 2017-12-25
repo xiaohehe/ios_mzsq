@@ -19,9 +19,7 @@
 #import "ZLCameraViewController.h"
 #import "IntroControll.h"
 #import "IntroModel.h"
-
-
-
+#import "AppUtil.h"
 
 @interface FaBuGongGaoViewController ()<UITextViewDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate>
 {
@@ -76,51 +74,59 @@
     if (_scroll) {
         [_scroll removeFromSuperview];
     }
-    
     _scroll = [[UIScrollView alloc]initWithFrame:CGRectMake(0, self.NavImg.bottom, self.view.width, self.view.height-self.NavImg.bottom)];
     _scroll.backgroundColor=superBackgroundColor;
     [self.view addSubview:_scroll];
     
+    CellView *titleCell=[[CellView alloc]initWithFrame:CGRectMake(0, 10*self.scale, self.view.width, 44*self.scale)];
+    titleCell.topline.hidden=NO;
+    _titleText=[[UITextField alloc]initWithFrame:CGRectMake(15*self.scale, 6*self.scale, titleCell.width-30*self.scale, titleCell.height-12*self.scale)];
+    _titleText.tag=5;
+    _titleText.placeholder=@"请输入标题";
+    _titleText.text=self.titlee;
+    _titleText.font=DefaultFont(self.scale);
     
-//    CellView *titleCell=[[CellView alloc]initWithFrame:CGRectMake(0, 10*self.scale, self.view.width, 44*self.scale)];
-//    titleCell.topline.hidden=NO;
-//    _titleText=[[UITextField alloc]initWithFrame:CGRectMake(10*self.scale, 6*self.scale, titleCell.width-20*self.scale, titleCell.height-12*self.scale)];
-//    _titleText.tag=5;
-//    _titleText.placeholder=@"请输入标题";
-//    _titleText.text=self.titlee;
-//    _titleText.font=DefaultFont(self.scale);
-//    [titleCell addSubview:_titleText];
-//    [_scroll addSubview:titleCell];
+    UIToolbar * topView = [[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 30)];
+    [topView setBarStyle:UIBarStyleDefault];
+    UIBarButtonItem * btnSpace = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
+    UIBarButtonItem * doneButton = [[UIBarButtonItem alloc]initWithTitle:@"收起" style:UIBarButtonItemStyleDone target:self action:@selector(dismissKeyBoard)];
+    NSArray * buttonsArray = [NSArray arrayWithObjects:btnSpace,doneButton,nil];
+    [topView setItems:buttonsArray];
+    [_titleText setInputAccessoryView:topView];
     
-    _contentCell=[[CellView alloc]initWithFrame:CGRectMake(0, 10*self.scale, self.view.width, 134*self.scale)];
+    [titleCell addSubview:_titleText];
+    [_scroll addSubview:titleCell];
+    
+    _contentCell=[[CellView alloc]initWithFrame:CGRectMake(0, titleCell.bottom+10*self.scale, self.view.width, 134*self.scale)];
     _contentCell.topline.hidden=NO;
-    
     _placeLabel=[[UILabel alloc]initWithFrame:CGRectMake(15*self.scale, 11*self.scale, _contentCell.width-30*self.scale, 20*self.scale)];
     _placeLabel.textColor=[UIColor colorWithRed:188.0/255 green:188.0/255 blue:188.0/255 alpha:1];
     if (self.conteent==nil || [self.conteent isEqualToString:@""]) {
         _placeLabel.text=@"说点儿什么呢？";//最多输入140个字符
     }
     _placeLabel.tag=12;
-   
-    
     _placeLabel.numberOfLines=0;
     [_placeLabel sizeToFit];
     _placeLabel.font=DefaultFont(self.scale);
     [_contentCell addSubview:_placeLabel];
-    
     _contentText=[[UITextView alloc]initWithFrame:CGRectMake(10*self.scale, 5*self.scale, _contentCell.width-20*self.scale, _contentCell.height-10*self.scale)];
     _contentText.backgroundColor=[UIColor clearColor];
     _contentText.tag=1;
     _contentText.text=self.conteent;
     _contentText.delegate=self;
+    [_contentText setInputAccessoryView:topView];
+
     _contentText.font=DefaultFont(self.scale);
     [_contentCell addSubview:_contentText];
-    
-
     [self imgView];
-    
+}
 
-    }
+-(void)dismissKeyBoard
+{
+    [_titleText resignFirstResponder];
+    [_contentText resignFirstResponder];
+}
+
 -(void)imgView{
     
     if (_bigvi) {
@@ -323,10 +329,7 @@
     vi.hidden=YES;
     _imgTui=NO;
     self.TitleLabel.text=@"发布公告";
-
-
     [_page removeFromSuperview];
-
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
@@ -448,6 +451,11 @@
 }
 
 -(void)PostButtonEvent:(id)sender{
+    NSString *titleStr = [_titleText.text trimString];
+    if ([AppUtil isBlank:titleStr]) {
+        [self ShowAlertWithMessage:@"标题不能为空"];
+        return;
+    }
     NSString *str = [_contentText.text trimString];
     if ([str isEmptyString] && self.assetss.count<=0) {
         [self ShowAlertWithMessage:@"内容不能为空"];
@@ -457,7 +465,6 @@
         [self ShowAlertWithMessage:@"信息应小于140个字符"];
         return;
     }
-    
     [self.view addSubview:self.activityVC];
     [self.activityVC startAnimate];
     AnalyzeObject *anle = [AnalyzeObject new];
@@ -466,36 +473,29 @@
     if (_isershou) {
         type=@"4";
     }
-    NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithObjectsAndKeys:self.user_id,@"user_id",@"",@"title",_contentText.text
-,@"content",type,@"notice_type", nil];
+    NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithObjectsAndKeys:_titleText.text,@"title",_contentText.text
+,@"content", nil];
     float scale = 1.0;
     int i=1;
     for (ALAsset *asset in self.assetss) {
         ZLPickerBrowserPhoto *bor = [ZLPickerBrowserPhoto photoAnyImageObjWith:asset];
         UIImage *image = bor.photoObj;
         NSLog(@"%f",image.size.width);
-        
         if (image.size.width>800) {
             scale = 800/image.size.width;
         }else{
             scale= 1.0;
         }
-
-        
-       UIImage *im = [self scaleImage:image scaleFactor:scale];
-        
+        UIImage *im = [self scaleImage:image scaleFactor:scale];
         NSData *data = UIImageJPEGRepresentation(im, .6);
-        
         NSString *encodedImageStr = [data base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
-       // NSLog(@"base64====%@",encodedImageStr);
         [dic setObject:encodedImageStr forKey:[NSString stringWithFormat:@"img%d",i++]];
     }
+     NSLog(@"base64====%@",dic);
     NSString* usertoken= [[NSUserDefaults standardUserDefaults]objectForKey:@"usertoken"];
     [dic setObject:usertoken forKey:@"usertoken"];
-
     if (_bian) {
         [dic setObject:self.gongid forKey:@"notice_id"];
-        
         [anle editNoticeWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
             [self.activityVC stopAnimate];
             if ([code isEqualToString:@"0"]) {
@@ -504,12 +504,11 @@
             }
         }];
     }else{
-    
-    
     [anle addNoticeWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
         [self.activityVC stopAnimate];
         if ([code isEqualToString:@"0"]) {
-            [self ShowAlertWithMessage:@"发布成功"];
+            //[self ShowAlertWithMessage:@"发布成功"];
+            [AppUtil showToast:self.view withContent:@"发布成功"];
             if (_block) {
                 _block(@"ok");
             }
@@ -517,7 +516,6 @@
         }else{
             [self ShowAlertWithMessage:@"发布失败"];
         }
-
     }];
     }
 }
@@ -528,8 +526,7 @@
     {
         UILabel *label=(UILabel *)[self.view viewWithTag:12];
         label.hidden=YES;
-    }else
-    {
+    }else{
         UILabel *label=(UILabel *)[self.view viewWithTag:12];
         label.hidden=NO;
     }
@@ -547,8 +544,6 @@
     [popBtn setImage:[UIImage imageNamed:@"left_b"] forState:UIControlStateHighlighted];
     [popBtn addTarget:self action:@selector(PopVC:) forControlEvents:UIControlEventTouchUpInside];
     [self.NavImg addSubview:popBtn];
-    
-    
     UIButton *talkImg = [UIButton buttonWithType:UIButtonTypeCustom];
     [talkImg setImage:[UIImage imageNamed:@"del"] forState:UIControlStateNormal];
     talkImg.frame=CGRectMake(self.view.width-self.TitleLabel.height, self.TitleLabel.top, self.TitleLabel.height,self.TitleLabel.height);
@@ -556,8 +551,6 @@
     talkImg.tag=904;
     [talkImg addTarget:self action:@selector(talk) forControlEvents:UIControlEventTouchUpInside];
     [self.NavImg addSubview:talkImg];
-
-    
 }
 
 -(void)talk{

@@ -342,7 +342,7 @@
 
 #pragma mark - 导航
 -(void)newNav{
-    self.TitleLabel.text=@"选择服务社区";
+    self.TitleLabel.text=@"选择您的小区";
     
     if (_nojiantou) {
         UIButton *popBtn=[[UIButton alloc]initWithFrame:CGRectMake(0, self.TitleLabel.top, self.TitleLabel.height, self.TitleLabel.height)];

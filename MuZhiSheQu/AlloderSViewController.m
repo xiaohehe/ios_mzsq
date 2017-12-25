@@ -50,21 +50,17 @@
     self.user_id = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
     AnalyzeObject *anle = [AnalyzeObject new];
       NSDictionary *dic = @{@"user_id":self.user_id,@"status":@"4",@"pindex":index};
-    
     [anle myServeOrderListWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
         if (_index==1) {
             [_data removeAllObjects];
         }
-
         if ([code isEqualToString:@"0"]) {
             [_data addObjectsFromArray:models];
         }
         [_table reloadData];
-
         [self.activityVC stopAnimate];
         [_table.header endRefreshing];
         [_table.footer endRefreshing];
-        
         if (_data.count<=0) {
             _la = [[UILabel alloc]initWithFrame:CGRectMake(0, self.NavImg.bottom, self.view.width, self.view.height-self.NavImg.bottom)];
             _la.text=@"暂无订单信息！";
@@ -72,16 +68,11 @@
             
             [self.view addSubview:_la];
         }
-        
-
     }];
-
-
 }
+
 -(void)tablevi{
-
     _table  = [[UITableView alloc]initWithFrame:CGRectMake(0, self.NavImg.bottom, self.view.width, self.view.height-self.NavImg.bottom) style:UITableViewStylePlain];
-
     _table.delegate=self;
     _table.dataSource=self;
     _table.backgroundColor=superBackgroundColor;
@@ -92,11 +83,7 @@
     [_table addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(xiala)];
     _table.separatorStyle=UITableViewCellSeparatorStyleNone;
     [self.view addSubview:_table];
-
-
-
 }
-
 
 -(void)shangla{
     [self reshData];

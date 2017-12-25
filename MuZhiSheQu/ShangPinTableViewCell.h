@@ -10,6 +10,7 @@
 
 @interface ShangPinTableViewCell : SuperTableViewCell
 @property(nonatomic,strong)UIImageView *HeaderImage;
+@property(strong,nonatomic)UIImageView *activityImg;//商品活动图片
 @property(nonatomic,strong)UIView* coverView;
 @property(nonatomic,strong)UILabel* loseEfficacy;
 
@@ -17,9 +18,11 @@
 @property(nonatomic,strong)UILabel *NumberLabel;
 @property(nonatomic,strong)UILabel *PriceLabel;
 @property(nonatomic,strong)NSString *addLa;
-
+@property(nonatomic,strong)UIButton *addBt,*subBtn;//增加、减少
+@property(nonatomic,strong)UILabel *numLb;//数量
 
 @property(nonatomic,strong)UILabel *price_yuan;//原价
 @property(nonatomic,strong)UILabel *lin;
+@property(nonatomic,strong)UIImageView *lineView;
 
 @end

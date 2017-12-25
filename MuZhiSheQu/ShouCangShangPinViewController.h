@@ -9,5 +9,8 @@
 #import "SuperViewController.h"
 #import "ShopInfoViewController.h"
 @interface ShouCangShangPinViewController : SuperViewController
-
+@property(nonatomic,strong)UIImageView *bottomR,*bottomL;
+@property(nonatomic,strong)UIView *botROne,*botRTwo;
+@property(nonatomic,strong)UIButton * numberImg;
+@property(nonatomic,strong)UILabel * peiSongLab;
 @end
