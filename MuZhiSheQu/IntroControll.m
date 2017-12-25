@@ -11,23 +11,18 @@
 {
     self = [super initWithFrame:frame];
     if(self != nil) {
-        
         //Initial Background images
-        
         self.backgroundColor = [UIColor blackColor];
-        
         backgroundImage1 = [[UIImageView alloc] initWithFrame:frame];
         [backgroundImage1 setContentMode:UIViewContentModeScaleAspectFit];
         [backgroundImage1 setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
         [self addSubview:backgroundImage1];
-
         backgroundImage2 = [[UIImageView alloc] initWithFrame:frame];
         [backgroundImage2 setContentMode:UIViewContentModeScaleAspectFit];
         [backgroundImage2 setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
         [self addSubview:backgroundImage2];
-        
         //Initial shadow
-        UIImageView *shadowImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shadow.png"]];
+        UIImageView *shadowImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"center_img"]];
         shadowImageView.contentMode = UIViewContentModeScaleToFill;
         shadowImageView.frame = CGRectMake(0, frame.size.height-300, frame.size.width, 300);
         [self addSubview:shadowImageView];
