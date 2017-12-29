@@ -64,7 +64,11 @@
 }
 
 -(void)PopVC:(id)sender{
-    [self.navigationController  popViewControllerAnimated:YES];
+    if(_isToRoot){
+        [self.navigationController popToRootViewControllerAnimated:YES];
+    }else{
+        [self.navigationController popViewControllerAnimated:YES];
+    }
 }
 
 -(void) browser{

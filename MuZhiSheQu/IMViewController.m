@@ -32,4 +32,17 @@
     [RCIM sharedRCIM].globalNavigationBarTintColor=[UIColor blackColor];
 }
 
+/*!
+ 即将显示消息Cell的回调
+ 
+ @param cell        消息Cell
+ @param indexPath   该Cell对应的消息Cell数据模型在数据源中的索引值
+ 
+ @discussion 您可以在此回调中修改Cell的显示和某些属性。
+ */
+//- (void)willDisplayMessageCell:(RCMessageBaseCell *)cell
+//                   atIndexPath:(NSIndexPath *)indexPath{
+//      cell.baseContentView.backgroundColor=[UIColor redColor];
+//}
+
 @end

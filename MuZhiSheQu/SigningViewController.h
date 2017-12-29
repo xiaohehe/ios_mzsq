@@ -10,5 +10,5 @@
 
 @interface SigningViewController : SuperViewController<UIWebViewDelegate>
 @property(nonatomic,copy) NSString* url;
-
+@property(nonatomic,assign)BOOL isToRoot;
 @end

@@ -11,4 +11,5 @@
 @interface OrderDetailsViewController : ScrollViewController
 @property(nonatomic,strong)NSString *orderId;
 @property(nonatomic,strong)NSString *subOrderId;
+@property(nonatomic,assign)BOOL isToRoot;
 @end

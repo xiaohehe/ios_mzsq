@@ -380,7 +380,6 @@
     [dic setObject:plot.pid forKey:@"communityid"];
     [nale modifyCommunityAddressDicWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
         [self.activityVC stopAnimate];
-        //NSLog(@"modifyCommunityAddressDicWithDic==%@",models);
         if ([code isEqualToString:@"0"]) {
             [[NSUserDefaults standardUserDefaults]setObject:plot.pid forKey:@"commid"];
             [[NSUserDefaults standardUserDefaults]setObject:plot.name forKey:@"commname"];

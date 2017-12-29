@@ -18,7 +18,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor=[UIColor yellowColor];
+    //self.view.backgroundColor=[UIColor yellowColor];
     [self newNav];
     [self newView];
 }

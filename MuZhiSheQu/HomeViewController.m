@@ -24,6 +24,8 @@
 #import "RCDChatListViewController.h"
 #import <BaiduMapAPI_Location/BMKLocationService.h>
 #import "BusinessLocationViewController.h"
+#import "MessageCenterViewController.h"
+
 static const NSUInteger SECTION_TAG=1000;
 static const NSUInteger MESSAGE_TAG = 10000+1;
 static const NSUInteger ADD_CART_TAG = 1000000;//增加购物车商品数量
@@ -278,11 +280,13 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
         }];
         return;
     }
-    // self.hidesBottomBarWhenPushed=YES;
-    RCDChatListViewController *rong = [[RCDChatListViewController alloc]init];
+    //    RCDChatListViewController *rong = [[RCDChatListViewController alloc]init];
+    //    rong.hidesBottomBarWhenPushed=YES;
+    //    [self.navigationController pushViewController:rong animated:YES];
+    MessageCenterViewController *rong = [[MessageCenterViewController alloc]init];
     rong.hidesBottomBarWhenPushed=YES;
     [self.navigationController pushViewController:rong animated:YES];
-    // self.hidesBottomBarWhenPushed=NO;
+
 }
 
 #pragma mark -----返回按钮
@@ -715,7 +719,6 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
         [[NSUserDefaults standardUserDefaults] synchronize];
     }
     NSLog(@"param==%@",par);
-
     numLb.text=[NSString stringWithFormat:@"%d",num];
     if(num<=0){
         numLb.hidden=YES;
