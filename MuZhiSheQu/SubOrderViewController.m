@@ -11,10 +11,14 @@
 #import "OderStatesViewController.h"
 #import "weifukuanViewController.h"
 #import "AppUtil.h"
+#import "PaymentOrderViewController.h"
+#import "OrderViewController.h"
+#import "OrderDetailsViewController.h"
 
 static const NSUInteger ORDER_HEADER_TAG = 1000000;
-static const NSUInteger ORDER_PROD_TAG = 2000000;
-
+// static const NSUInteger ORDER_PROD_TAG = 2000000;
+static const NSUInteger SINGLE_AGAIN_TAG = 1000;
+static const NSUInteger DELETE_ORDER_TAG = 2000;
 @interface SubOrderViewController ()<UITableViewDataSource,UITableViewDelegate>
 @property(nonatomic,strong)UITableView *tableView;
 @property(nonatomic,assign)NSInteger index;
@@ -83,7 +87,7 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
         [self.tableView.header endRefreshing];
         [self.tableView.footer endRefreshing];
         if ([code isEqualToString:@"0"]) {
-            //NSLog(@"_orderArray==%@",models);
+            NSLog(@"myOrder==%@",models);
             if(_index==1&&_orderArray.count>0)
                 [_orderArray removeAllObjects];
             [_orderArray addObjectsFromArray:models];
@@ -116,12 +120,18 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
     NSString *starts = [[NSString alloc]init];
     starts=start[@"order_detail"][0][@"status"];
     if (![starts isEqualToString:@"1"]) {
-        OderStatesViewController *oder = [OderStatesViewController new];
-        oder.hidesBottomBarWhenPushed=YES;
-        oder.price = start[@"order_detail"][0][@"total_amount"];
-        oder.orderid =start[@"order_detail"][0][@"order_no"];
-        oder.smallOder =start[@"order_detail"][0][@"prods"][0][@"sub_order_no"];
-        [self.navigationController pushViewController:oder animated:YES];
+//        OderStatesViewController *oder = [OderStatesViewController new];
+//        oder.hidesBottomBarWhenPushed=YES;
+//        oder.price = start[@"order_detail"][0][@"total_amount"];
+//        oder.orderid =start[@"order_detail"][0][@"order_no"];
+//        oder.smallOder =start[@"order_detail"][0][@"prods"][0][@"sub_order_no"];
+//        [self.navigationController pushViewController:oder animated:YES];
+        
+        OrderDetailsViewController* details=[[OrderDetailsViewController alloc] init];
+        details.hidesBottomBarWhenPushed=YES;
+        details.orderId =start[@"order_detail"][0][@"order_no"];
+        details.subOrderId =start[@"order_detail"][0][@"prods"][0][@"sub_order_no"];
+        [self.navigationController pushViewController:details animated:YES];
     }else{
         weifukuanViewController *weifu = [weifukuanViewController new];
         weifu.hidesBottomBarWhenPushed=YES;
@@ -165,34 +175,53 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
     line.backgroundColor=blackLineColore;
     [footerView addSubview:line];
     NSString* status=groupDic[@"order_detail"][0][@"status"];
-    if ([status isEqualToString:@"1"]) {
-        UIButton *fuKuanBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        fuKuanBtn.frame = CGRectMake(self.view.width-82.5*self.scale, line.bottom+7.5*self.scale, 72.5*self.scale, 30*self.scale);
-        [fuKuanBtn setBackgroundImage:[UIImage imageNamed:@"bg_order"] forState:UIControlStateNormal];
-        [fuKuanBtn setTitle:@"付款" forState:UIControlStateNormal];
-        [fuKuanBtn addTarget:self action:@selector(fuAndQUxiAO:) forControlEvents:UIControlEventTouchUpInside];
-        fuKuanBtn.titleLabel.font = SmallFont(self.scale);
-        [fuKuanBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        fuKuanBtn.tag=600+section;
-        [footerView addSubview:fuKuanBtn];
+    if ([status isEqualToString:@"-1"]) {
+        UIButton *rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        rightBtn.frame = CGRectMake(self.view.width-82.5*self.scale, line.bottom+7.5*self.scale, 72.5*self.scale, 30*self.scale);
+        [rightBtn setBackgroundImage:[UIImage imageNamed:@"bg_order"] forState:UIControlStateNormal];
+        [rightBtn setTitle:@"再来一单" forState:UIControlStateNormal];
+        [rightBtn addTarget:self action:@selector(singleAgainClick:) forControlEvents:UIControlEventTouchUpInside];
+        rightBtn.titleLabel.font = SmallFont(self.scale);
+        [rightBtn setTitleColor:[UIColor colorWithRed:0.216 green:0.216 blue:0.196 alpha:1.00] forState:UIControlStateNormal];
+        rightBtn.tag=SINGLE_AGAIN_TAG+section;
+        [footerView addSubview:rightBtn];
+    }else if ([status isEqualToString:@"1"]) {
+        UIButton *rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        rightBtn.frame = CGRectMake(self.view.width-82.5*self.scale, line.bottom+7.5*self.scale, 72.5*self.scale, 30*self.scale);
+        [rightBtn setBackgroundImage:[UIImage imageNamed:@"bg_order"] forState:UIControlStateNormal];
+        [rightBtn setTitle:@"立即付款" forState:UIControlStateNormal];
+        [rightBtn addTarget:self action:@selector(fuAndQUxiAO:) forControlEvents:UIControlEventTouchUpInside];
+        rightBtn.titleLabel.font = SmallFont(self.scale);
+        [rightBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        rightBtn.tag=600+section;
+        [footerView addSubview:rightBtn];
         UIButton *quiXaioBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        quiXaioBtn.frame = CGRectMake(self.view.width-165*self.scale, fuKuanBtn.top, 72.5*self.scale, 30*self.scale);
+        quiXaioBtn.frame = CGRectMake(self.view.width-165*self.scale, rightBtn.top, 72.5*self.scale, 30*self.scale);
         quiXaioBtn.layer.cornerRadius = quiXaioBtn.height/2;
         quiXaioBtn.layer.borderWidth = .5;
         quiXaioBtn.layer.borderColor = blackLineColore.CGColor;
-        [quiXaioBtn setTitle:@"取消" forState:UIControlStateNormal];
+        [quiXaioBtn setTitle:@"取消订单" forState:UIControlStateNormal];
         [quiXaioBtn addTarget:self action:@selector(fuAndQUxiAO:) forControlEvents:UIControlEventTouchUpInside];
         quiXaioBtn.titleLabel.font = SmallFont(self.scale);
         [quiXaioBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         quiXaioBtn.backgroundColor = [UIColor whiteColor];
         quiXaioBtn.tag=200+section;
         [footerView addSubview:quiXaioBtn];
-    }else if ([status isEqualToString:@"2"] || [status isEqualToString:@"3"]){
+    }else if ([status isEqualToString:@"2"] ){
+        UIButton *rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        rightBtn.frame = CGRectMake(self.view.width-82.5*self.scale, line.bottom+7.5*self.scale, 72.5*self.scale, 30*self.scale);
+        [rightBtn setBackgroundImage:[UIImage imageNamed:@"bg_order"] forState:UIControlStateNormal];
+        [rightBtn setTitle:@"再来一单" forState:UIControlStateNormal];
+        [rightBtn addTarget:self action:@selector(singleAgainClick:) forControlEvents:UIControlEventTouchUpInside];
+        rightBtn.titleLabel.font = SmallFont(self.scale);
+        [rightBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        rightBtn.tag=SINGLE_AGAIN_TAG+section;
+        [footerView addSubview:rightBtn];
         UIButton *quiXaioBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        quiXaioBtn.frame = CGRectMake(self.view.width-82.5*self.scale, line.bottom+7.5*self.scale, 72.5*self.scale, 30*self.scale);
+        quiXaioBtn.frame = CGRectMake(self.view.width-165*self.scale, line.bottom+7.5*self.scale, 72.5*self.scale, 30*self.scale);
         quiXaioBtn.layer.borderWidth = .5;
         quiXaioBtn.layer.borderColor = blackLineColore.CGColor;
-        [quiXaioBtn setTitle:@"取消" forState:UIControlStateNormal];
+        [quiXaioBtn setTitle:@"取消订单" forState:UIControlStateNormal];
         [quiXaioBtn addTarget:self action:@selector(huodaoQuXiao:) forControlEvents:UIControlEventTouchUpInside];
         quiXaioBtn.titleLabel.font = SmallFont(self.scale);
         [quiXaioBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
@@ -200,22 +229,21 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
         quiXaioBtn.layer.cornerRadius = quiXaioBtn.height/2;
         quiXaioBtn.tag=6000+section;
         [footerView addSubview:quiXaioBtn];
-    }else if ([status isEqualToString:@"4"]){
+    }else if ([status isEqualToString:@"3"]|| [status isEqualToString:@"4"]){
         UIButton *quiXaioBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         quiXaioBtn.frame =CGRectMake(self.view.width-82.5*self.scale, line.bottom+7.5*self.scale, 72.5*self.scale, 30*self.scale);
         [quiXaioBtn setBackgroundImage:[UIImage imageNamed:@"bg_order"] forState:UIControlStateNormal];
-        [quiXaioBtn setTitle:@"确认收货" forState:UIControlStateNormal];
-        [quiXaioBtn addTarget:self action:@selector(querenshouhuo:) forControlEvents:UIControlEventTouchUpInside];
+        [quiXaioBtn setTitle:@"再来一单" forState:UIControlStateNormal];
+        [quiXaioBtn addTarget:self action:@selector(singleAgainClick:) forControlEvents:UIControlEventTouchUpInside];
         quiXaioBtn.titleLabel.font = SmallFont(self.scale);
         [quiXaioBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        quiXaioBtn.backgroundColor = blackLineColore;
-        quiXaioBtn.tag=200000+section;
+        quiXaioBtn.tag=SINGLE_AGAIN_TAG+section;
         [footerView addSubview:quiXaioBtn];
         UIButton *cancelBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         cancelBtn.frame = CGRectMake(self.view.width-165*self.scale, quiXaioBtn.top, 72.5*self.scale, 30*self.scale);
         cancelBtn.layer.borderWidth = .5;
         cancelBtn.layer.borderColor = blackLineColore.CGColor;
-        [cancelBtn setTitle:@"取消" forState:UIControlStateNormal];
+        [cancelBtn setTitle:@"取消订单" forState:UIControlStateNormal];
         [cancelBtn addTarget:self action:@selector(cancelByShipped:) forControlEvents:UIControlEventTouchUpInside];
         cancelBtn.tag=400000+section;
         cancelBtn.titleLabel.font = SmallFont(self.scale);
@@ -224,31 +252,33 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
         cancelBtn.layer.cornerRadius = cancelBtn.height/2;
         [footerView addSubview:cancelBtn];
     }else if([status isEqualToString:@"5"]){
+        UIButton *rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        rightBtn.frame = CGRectMake(self.view.width-82.5*self.scale, line.bottom+7.5*self.scale, 72.5*self.scale, 30*self.scale);
+        [rightBtn setBackgroundImage:[UIImage imageNamed:@"bg_order"] forState:UIControlStateNormal];
+        [rightBtn setTitle:@"再来一单" forState:UIControlStateNormal];
+        [rightBtn addTarget:self action:@selector(singleAgainClick:) forControlEvents:UIControlEventTouchUpInside];
+        rightBtn.titleLabel.font = SmallFont(self.scale);
+        [rightBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        rightBtn.tag=SINGLE_AGAIN_TAG+section;
+        [footerView addSubview:rightBtn];
+        
         UIButton *shanchu = [UIButton buttonWithType:UIButtonTypeCustom];
-        shanchu.frame = CGRectMake(self.view.width-82.5*self.scale, line.bottom+7.5*self.scale, 72.5*self.scale, 30*self.scale);
-        shanchu.layer.borderWidth = .5;
-        shanchu.layer.borderColor = blackLineColore.CGColor;
-        [shanchu setTitle:@"删除" forState:UIControlStateNormal];
+        shanchu.frame = CGRectMake(10*self.scale, line.bottom+7.5*self.scale, 72.5*self.scale, 30*self.scale);
+        [shanchu setTitle:@"删除订单" forState:UIControlStateNormal];
         [shanchu addTarget:self action:@selector(daipingjiaEvent:) forControlEvents:UIControlEventTouchUpInside];
         shanchu.titleLabel.font = SmallFont(self.scale);
         [shanchu setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        shanchu.backgroundColor = blackLineColore;
-        shanchu.layer.cornerRadius = shanchu.height/2;
-        shanchu.tag=70000+section;
+        shanchu.tag=DELETE_ORDER_TAG+section;
         [footerView addSubview:shanchu];
-        if ([groupDic[@"order_detail"][0][@"is_comment"] isEqualToString:@""] || [groupDic[@"order_detail"][0][@"is_comment"] isEqualToString:@"1"]) {
-            UIButton *quiXaioBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-            quiXaioBtn.frame =CGRectMake(self.view.width-165*self.scale, shanchu.top, 72.5*self.scale, 30*self.scale);;
-            quiXaioBtn.layer.borderWidth = .5;
-            quiXaioBtn.layer.borderColor = blackLineColore.CGColor;
-            [quiXaioBtn setTitle:@"去评价" forState:UIControlStateNormal];
-            [quiXaioBtn addTarget:self action:@selector(daipingjiaEvent:) forControlEvents:UIControlEventTouchUpInside];
-            quiXaioBtn.titleLabel.font = SmallFont(self.scale);
-            [quiXaioBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-            quiXaioBtn.layer.cornerRadius = quiXaioBtn.height/2;
-            quiXaioBtn.tag=60000+section;
-            [footerView addSubview:quiXaioBtn];
-        }
+    }else{
+        UIButton *shanchu = [UIButton buttonWithType:UIButtonTypeCustom];
+        shanchu.frame = CGRectMake(10*self.scale, line.bottom+7.5*self.scale, 72.5*self.scale, 30*self.scale);
+        [shanchu setTitle:@"删除订单" forState:UIControlStateNormal];
+        [shanchu addTarget:self action:@selector(daipingjiaEvent:) forControlEvents:UIControlEventTouchUpInside];
+        shanchu.titleLabel.font = SmallFont(self.scale);
+        [shanchu setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        shanchu.tag=DELETE_ORDER_TAG+section;
+        [footerView addSubview:shanchu];
     }
     return footerView;
 }
@@ -315,12 +345,18 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
     //    }
     starts=start[@"order_detail"][0][@"status"];
     if (![starts isEqualToString:@"1"]) {
-        OderStatesViewController *oder = [OderStatesViewController new];
-        oder.hidesBottomBarWhenPushed=YES;
-        oder.price = start[@"order_detail"][0][@"total_amount"];
-        oder.orderid =start[@"order_detail"][0][@"order_no"];
-        oder.smallOder =start[@"order_detail"][0][@"prods"][0][@"sub_order_no"];
-        [self.navigationController pushViewController:oder animated:YES];
+//        OderStatesViewController *oder = [OderStatesViewController new];
+//        oder.hidesBottomBarWhenPushed=YES;
+//        oder.price = start[@"order_detail"][0][@"total_amount"];
+//        oder.orderid =start[@"order_detail"][0][@"order_no"];
+//        oder.smallOder =start[@"order_detail"][0][@"prods"][0][@"sub_order_no"];
+//        [self.navigationController pushViewController:oder animated:YES];
+        
+        OrderDetailsViewController* details=[[OrderDetailsViewController alloc] init];
+        details.hidesBottomBarWhenPushed=YES;
+        details.orderId =start[@"order_detail"][0][@"order_no"];
+        details.subOrderId =start[@"order_detail"][0][@"prods"][0][@"sub_order_no"];
+        [self.navigationController pushViewController:details animated:YES];
     }else{
         weifukuanViewController *weifu = [weifukuanViewController new];
         weifu.hidesBottomBarWhenPushed=YES;
@@ -331,47 +367,57 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
 
 -(void)fuAndQUxiAO:(UIButton *)sender{
     self.user_id = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
-    if ([sender.titleLabel.text isEqualToString:@"付款"]) {
-        [self.view addSubview:self.activityVC];
-        [self.activityVC startAnimate];
+    if ([sender.titleLabel.text isEqualToString:@"立即付款"]) {
+        //[self.view addSubview:self.activityVC];
+        //[self.activityVC startAnimate];
+        NSMutableDictionary *orderDic=[NSMutableDictionary dictionary];
+        [orderDic setObject:_orderArray[sender.tag-600][@"isOnLinePay"] forKey:@"isOnLinePay"];
+        [orderDic setObject:_orderArray[sender.tag-600][@"order_detail"][0][@"order_no"] forKey:@"OrderID"];
+        [orderDic setObject:_orderArray[sender.tag-600][@"order_detail"][0][@"total_amount"] forKey:@"AllMoney"];
+        
+        PaymentOrderViewController* paymentOrderView=[[PaymentOrderViewController alloc] init];
+        paymentOrderView.hidesBottomBarWhenPushed=YES;
+        paymentOrderView.orderDic=orderDic;
+        [self.navigationController pushViewController:paymentOrderView animated:YES];
+        
         //付款
-        if ([_orderArray[sender.tag-600][@"order_detail"][0][@"pay_type"] isEqualToString:@"2"]) {//微信支付
-            AnalyzeObject *anle = [AnalyzeObject new];
-            NSMutableDictionary *param = [NSMutableDictionary dictionary];
-            [param setObject:_orderArray[sender.tag-600][@"order_detail"][0][@"order_no"] forKey:@"orderid"];
-            [param setObject: self.user_id forKey:@"user_id"];
-            [anle resubmitOrder:[param copy] Block:^(id models, NSString *code, NSString *msg) {
-                [self.activityVC stopAnimate];
-                //NSLog(@"resubmitOrder==%@",models);
-                [self.appdelegate WXPayNewWithNonceStr:models[@"noncestr"] OrderID:models[@"order_no"] Timestamp:models[@"timestamp"] sign:models[@"sign"] complete:^(BaseResp *resp) {
-                    [self.activityVC stopAnimate];
-                    if (resp.errCode == WXSuccess) {
-                        [self dropDownRefresh];
-                    }
-                }];
-            }];
-        }else if ([_orderArray[sender.tag-600][@"order_detail"][0][@"pay_type"] isEqualToString:@"1"]){
-            AnalyzeObject *anle = [AnalyzeObject new];
-            NSMutableDictionary *param = [NSMutableDictionary dictionary];
-            [param setObject:_orderArray[sender.tag-600][@"order_detail"][0][@"order_no"] forKey:@"orderid"];
-            [param setObject: self.user_id forKey:@"user_id"];
-            [anle resubmitOrder:[param copy] Block:^(id models, NSString *code, NSString *msg) {
-                [self.activityVC stopAnimate];
-                [self.appdelegate AliPayNewPrice:models[@"amount"] OrderID:[NSString stringWithFormat:@"%@",models[@"order_no"]] OrderName:@"拇指社区" Sign:models[@"sign"]  OrderDescription:[NSString stringWithFormat:@"%@",models[@"order_no"]] complete:^(NSDictionary *resp) {
-                    [self.activityVC stopAnimate];
-                    if ([[resp objectForKey:@"resultStatus"] isEqualToString:@"9000"]) {
-                        [self dropDownRefresh];
-                    }
-                }];
-            }];
-        }
+        //        if ([_orderArray[sender.tag-600][@"order_detail"][0][@"pay_type"] isEqualToString:@"2"]) {//微信支付
+        //            AnalyzeObject *anle = [AnalyzeObject new];
+        //            NSMutableDictionary *param = [NSMutableDictionary dictionary];
+        //            [param setObject:_orderArray[sender.tag-600][@"order_detail"][0][@"order_no"] forKey:@"orderid"];
+        //            [param setObject: self.user_id forKey:@"user_id"];
+        //            [anle resubmitOrder:[param copy] Block:^(id models, NSString *code, NSString *msg) {
+        //                [self.activityVC stopAnimate];
+        //                //NSLog(@"resubmitOrder==%@",models);
+        //                [self.appdelegate WXPayNewWithNonceStr:models[@"noncestr"] OrderID:models[@"order_no"] Timestamp:models[@"timestamp"] sign:models[@"sign"] complete:^(BaseResp *resp) {
+        //                    [self.activityVC stopAnimate];
+        //                    if (resp.errCode == WXSuccess) {
+        //                        [self dropDownRefresh];
+        //                    }
+        //                }];
+        //            }];
+        //        }else if ([_orderArray[sender.tag-600][@"order_detail"][0][@"pay_type"] isEqualToString:@"1"]){
+        //            AnalyzeObject *anle = [AnalyzeObject new];
+        //            NSMutableDictionary *param = [NSMutableDictionary dictionary];
+        //            [param setObject:_orderArray[sender.tag-600][@"order_detail"][0][@"order_no"] forKey:@"orderid"];
+        //            [param setObject: self.user_id forKey:@"user_id"];
+        //            [anle resubmitOrder:[param copy] Block:^(id models, NSString *code, NSString *msg) {
+        //                [self.activityVC stopAnimate];
+        //                [self.appdelegate AliPayNewPrice:models[@"amount"] OrderID:[NSString stringWithFormat:@"%@",models[@"order_no"]] OrderName:@"拇指社区" Sign:models[@"sign"]  OrderDescription:[NSString stringWithFormat:@"%@",models[@"order_no"]] complete:^(NSDictionary *resp) {
+        //                    [self.activityVC stopAnimate];
+        //                    if ([[resp objectForKey:@"resultStatus"] isEqualToString:@"9000"]) {
+        //                        [self dropDownRefresh];
+        //                    }
+        //                }];
+        //            }];
+        //        }
     }else{
         //取消
         [self ShowAlertTitle:nil Message:@"确认取消?" Delegate:self Block:^(NSInteger index) {
             if (index==1) {
                 [self.view addSubview:self.activityVC];
-                [self.activityVC startAnimate];
-                NSDictionary *dic = @{@"user_id":self.user_id,@"order_no":_orderArray[sender.tag-200][0][@"order_no"]};
+                [self.activityVC startAnimate];//_orderArray[sender.tag-600][@"order_detail"][0][@"order_no"]
+                NSDictionary *dic = @{@"user_id":self.user_id,@"order_no":_orderArray[sender.tag-200][@"order_detail"][0][@"order_no"]};
                 AnalyzeObject *anle = [AnalyzeObject new];
                 [anle cancelOrderWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
                     if ([code isEqualToString:@"0"]) {
@@ -466,37 +512,122 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
 
 -(void)daipingjiaEvent:(UIButton *)btn{
     [self.view addSubview:self.activityVC];
-    if ([btn.titleLabel.text isEqualToString:@"去评价"]) {
-        XiePingJiaViewController *pingjia= [XiePingJiaViewController new];
-        pingjia.hidesBottomBarWhenPushed=YES;
-        pingjia.is_order_on=YES;
-        pingjia.order_on = _orderArray[btn.tag-60000][@"sub_order_no"];
-        pingjia.shopid = _orderArray[btn.tag-60000][@"shop_id"];
-        [pingjia reshBlock:^(NSMutableArray *arr) {
+    [self ShowAlertTitle:nil Message:@"确认删除?" Delegate:self Block:^(NSInteger index) {
+        if (index==1) {
             [self.activityVC startAnimate];
-            [self dropDownRefresh];
-        }];
-        [self.navigationController pushViewController:pingjia animated:YES];
-    }else{
-        [self ShowAlertTitle:nil Message:@"确认删除?" Delegate:self Block:^(NSInteger index) {
-            if (index==1) {
-                [self.activityVC startAnimate];
-                NSString *userid = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
-                NSDictionary *dic = @{@"user_id":userid,@"sub_order_no":_orderArray[btn.tag-70000][@"order_detail"][0][@"sub_order_no"]};
-                AnalyzeObject *anle = [AnalyzeObject new];
-                [anle delOrderWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
-                    if ([code isEqualToString:@"0"]) {
-                        [self dropDownRefresh];
-                    }
-                }];
-            }
-        }];
-    }
+            NSString *userid = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
+            NSDictionary *dic = @{@"user_id":userid,@"sub_order_no":_orderArray[btn.tag-DELETE_ORDER_TAG][@"order_detail"][0][@"sub_order_no"]};
+            AnalyzeObject *anle = [AnalyzeObject new];
+            [anle delOrderWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
+                [self.activityVC stopAnimate];
+                if ([code isEqualToString:@"0"]) {
+                    [AppUtil showToast:self.view withContent:msg];
+                    [self dropDownRefresh];
+                }else{
+                    [self ShowAlertWithMessage:msg];
+                }
+            }];
+        }
+    }];
 }
 
 -(void)dropDownRefresh{
     _index=0;
     [self reshData];
 }
+
+/*
+ *再来一单
+ */
+-(void)singleAgainClick:(UIButton *)btn{
+    [self ShowAlertTitle:nil Message:@"再来一单?" Delegate:self Block:^(NSInteger index) {
+        if (index==1) {
+            [self.activityVC startAnimate];
+            NSDictionary *dic = @{@"orderid":_orderArray[btn.tag-SINGLE_AGAIN_TAG][@"order_detail"][0][@"order_no"]};
+            AnalyzeObject *anle = [AnalyzeObject new];
+            [anle reOrderWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
+                [self.activityVC stopAnimate];
+                if ([code isEqualToString:@"0"]) {
+                    NSLog(@"reOrder==%@==%@",dic,models);
+                    [self settleAccount:models];
+                }
+            }];
+        }
+    }];
+}
+
+-(void)settleAccount:(NSDictionary*) models{
+    NSArray *dataSource=models[@"prodList"];
+    if(dataSource.count==0){
+        [self ShowAlertWithMessage:@"当前商品已下架"];
+        return;
+    }
+    NSDictionary* dataDic=models[@"shopinfo"];
+    NSMutableArray *settleArray=[NSMutableArray array];
+    CGFloat amount=0.0;
+    for(int i=0;i<dataSource.count;i++){
+        NSMutableDictionary* dic=[dataSource[i] mutableCopy];
+        [dic setObject:dataSource[i][@"prod_id"] forKey:@"pro_id"];
+        [dic setObject:dataSource[i][@"prod_count"] forKey:@"pro_allnum"];
+        [dic setObject:dataSource[i][@"price"] forKey:@"pro_price"];
+        NSArray* imgs=dataSource[i][@"img"];
+        if(imgs.count>0){
+            NSString *string = [NSString stringWithFormat:@"%@",imgs[0]];
+            NSArray *imgArr = [string componentsSeparatedByString:@","];
+            [dic setObject:imgArr[0] forKey:@"pro_cover"];
+        }
+        amount+=[dataSource[i][@"price"] floatValue];
+        NSInteger activityid=[[NSString stringWithFormat:@"%@",dic[@"activity_id"]] integerValue];
+        if(activityid>0){
+            NSInteger actmaxbuy=[[NSString stringWithFormat:@"%@",[dic objectForKey:@"actmaxbuy"]] integerValue];
+            NSInteger havedbuy=[[NSString stringWithFormat:@"%@",[dic objectForKey:@"havedbuy"]] integerValue];
+            if(actmaxbuy>0){
+                NSInteger pro_allnum=[[NSString stringWithFormat:@"%@",[dic objectForKey:@"pro_allnum"]] integerValue];
+                NSInteger sub=pro_allnum-(actmaxbuy-havedbuy);
+                if(sub>0){
+                    if((actmaxbuy-havedbuy)>0){
+                        [dic setObject:[NSNumber numberWithInteger:(actmaxbuy-havedbuy)] forKey:@"pro_allnum"];
+                        [settleArray addObject:dic];
+                    }
+                    NSMutableDictionary* dic1=[dic mutableCopy];
+                    [dic1 setObject:[NSNumber numberWithInteger:sub] forKey:@"pro_allnum"];
+                    [dic1 setObject:[NSNumber numberWithInteger:0] forKey:@"activity_id"];
+                    [settleArray addObject:dic1];
+                }else{
+                    [settleArray addObject:dic];
+                }
+            }else{
+                [settleArray addObject:dic];
+            }
+        }else{
+            [settleArray addObject:dic];
+        }
+    }
+    CGFloat delivery_free=[dataDic[@"delivery_free"] floatValue];
+    CGFloat delivery_fee=[dataDic[@"delivery_fee"] floatValue];
+    CGFloat total=amount;
+    if(amount<delivery_free){
+        total+=delivery_fee;
+    }
+    NSMutableDictionary* settleDic=[NSMutableDictionary dictionary];
+    [settleDic setObject:dataDic[@"delivery_fee"] forKey:@"delivery_fee"];
+    [settleDic setObject:dataDic[@"delivery_free"] forKey:@"delivery_free"];
+    [settleDic setObject:dataDic[@"shop_icon"] forKey:@"shop_icon"];
+    [settleDic setObject:dataDic[@"shop_id"] forKey:@"shop_id"];
+    [settleDic setObject:dataDic[@"shop_name"] forKey:@"shop_name"];
+    [settleDic setObject:[NSString stringWithFormat:@"%.1f",amount] forKey:@"amount"];
+    [settleDic setObject:[NSString stringWithFormat:@"%.1f",total] forKey:@"total"];
+    
+    NSLog(@"dic==%@",settleDic);
+    OrderViewController *orde = [OrderViewController new];
+    orde.hidesBottomBarWhenPushed=YES;
+    orde.dataArray = settleArray;
+    orde.dataDic=settleDic;
+    orde.couponDic=models[@"coupon"];
+    orde.isReOrder=YES;
+    // orde.gouwucheData=_dataSource;
+    [self.navigationController pushViewController:orde animated:YES];
+}
+
 
 @end

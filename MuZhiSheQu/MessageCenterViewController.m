@@ -9,6 +9,10 @@
 #import "MessageCenterViewController.h"
 #import "MessageCenterTableViewCell.h"
 #import "MessageCenterCollectionViewCell.h"
+#import "JSHAREService.h"
+#import "ShareView.h"
+#import "YiaJianViewController.h"
+#import "RCDChatListViewController.h"
 
 @interface MessageCenterViewController ()<UITableViewDataSource,UITableViewDelegate,UICollectionViewDataSource, UICollectionViewDelegate,UICollectionViewDelegateFlowLayout>
 @property(nonatomic,strong)UILabel* titleLb;
@@ -20,6 +24,7 @@
 @property(nonatomic,strong)NSArray *tableviewDataSourceImg;
 @property(nonatomic,strong)NSArray *tableviewDataSourceTitle;
 @property(nonatomic,strong)NSArray *tableviewDataSourceDes;
+@property (nonatomic, strong) ShareView * shareView;
 @end
 
 @implementation MessageCenterViewController
@@ -30,6 +35,11 @@
     [self newListView];
     [self newHeaderView];
     [self setContent];
+}
+
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
 }
 
 -(void)setContent{
@@ -61,7 +71,6 @@
     _tableView.delegate=self;
     _tableView.dataSource=self;
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
 }
 
 -(void)newView{
@@ -100,7 +109,6 @@
 
 //item个数
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
-    //NSLog(@"numberOfItemsInSection==%ld",_rightData.count);
     return _collectionDataSourceImg.count;
 }
 
@@ -138,16 +146,52 @@
             [self share];
             break;
         case 1:
-           // [self myOrder];
+           [self skipChatView];
             break;
         case 2:
-           // [self skipCollectGoods];
+           [self skipSuggestView];
             break;
     }
 }
 
+//    RCDChatListViewController *rong = [[RCDChatListViewController alloc]init];
+//    rong.hidesBottomBarWhenPushed=YES;
+//    [self.navigationController pushViewController:rong animated:YES];
+
+-(void)skipChatView{
+    RCDChatListViewController *rong = [[RCDChatListViewController alloc]init];
+    rong.hidesBottomBarWhenPushed=YES;
+    [self.navigationController pushViewController:rong animated:YES];
+}
+
+-(void)skipSuggestView{
+    YiaJianViewController *yijian = [YiaJianViewController new];
+    [self.navigationController pushViewController:yijian animated:YES];
+}
+
 -(void)share{
-    
+    [self.shareView showWithContentType:JSHARELink];
+}
+
+- (ShareView *)shareView {
+    if (!_shareView) {
+        _shareView = [ShareView getFactoryShareViewWithCallBack:^(JSHAREPlatform platform, JSHAREMediaType type) {
+            JSHAREMessage *message = [JSHAREMessage message];
+            message.mediaType = JSHARELink;
+            message.url = @"http://fx.mzsq.cc";
+            message.text = @"中国最接地气的社区OTO，我们只关注社区服务最后100米！";
+            message.title = @"拇指便利";
+            message.platform = platform;
+            NSString *imageURL = @"http://www.mzsq.com/tpl/simplebootx/Public/mzportal/images/index_iphone_qrcode.png";
+            NSData *imageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageURL]];
+            message.image = imageData;
+            [JSHAREService share:message handler:^(JSHAREState state, NSError *error) {
+                NSLog(@"分享回调");
+            }];
+        }];
+        [self.view addSubview:self.shareView];
+    }
+    return _shareView;
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -174,7 +218,17 @@
 }
 
 -(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    
+    switch (indexPath.row) {
+        case 0:
+           // [self share];
+            break;
+        case 1:
+            [self skipChatView];
+            break;
+        case 2:
+            [self skipChatView];
+            break;
+    }
 }
 
 @end

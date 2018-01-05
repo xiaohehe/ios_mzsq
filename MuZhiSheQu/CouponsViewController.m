@@ -8,6 +8,7 @@
 
 #import "CouponsViewController.h"
 #import "CouponsTableViewCell.h"
+#import "AppUtil.h"
 
 @interface CouponsViewController ()<UITableViewDataSource,UITableViewDelegate>
 @property(nonatomic,strong)UITableView *tableView;
@@ -97,6 +98,7 @@
     NSString* priceString= [NSString stringWithFormat:@"￥%@",_dataArray[indexPath.row][@"Money"]];
     NSString* couponName = [NSString stringWithFormat:@"%@",_dataArray[indexPath.row][@"CouponName"]];
     NSString* describe = [NSString stringWithFormat:@"%@",_dataArray[indexPath.row][@"Describe"]];
+    NSString* date=[NSString stringWithFormat:@"%@到期",[AppUtil dateConversion:_dataArray[indexPath.row][@"EndDay"]]];
     cell.selectedIv.hidden=YES;
     NSString * firstString = @"￥";
     NSMutableAttributedString * priceAttributeString = [[NSMutableAttributedString alloc]initWithString:priceString];
@@ -104,6 +106,7 @@
     cell.priceLa.attributedText = priceAttributeString;
     cell.nameLa.text=couponName;
     cell.desLb.text=describe;
+    cell.dateLb.text=date;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
 }

@@ -28,6 +28,7 @@
 @property(nonatomic,copy)NSString *payType;
 @property(nonatomic,assign)float zongProce;
 @property(nonatomic,strong)NSMutableDictionary *payDic;
+@property(nonatomic,strong) UIView* hideView;
 @end
 
 @implementation PaymentOrderViewController
@@ -210,7 +211,30 @@
         _codIv=[[UIImageView alloc]initWithFrame:CGRectMake(self.view.width-30*self.scale, 10*self.scale, 15*self.scale, 15*self.scale)];
         [_codIv setImage:[UIImage imageNamed:@"na9"]];
         [_codCtl addSubview:_codIv];
+    }else{
+        _hideView=[[UIView alloc]initWithFrame:CGRectMake(0, self.NavImg.bottom , self.view.width, 20*self.scale)];
+        _hideView.backgroundColor=[UIColor colorWithRed:0.922 green:0.361 blue:0.192 alpha:1.00];
+        [self.view addSubview:_hideView];
+        UIImageView* markIv=[[UIImageView alloc]initWithFrame:CGRectMake(10*self.scale, 5*self.scale, 10*self.scale, 10*self.scale)];
+        [markIv setImage:[UIImage imageNamed:@"exclamation_mark"]];
+        [markIv setContentMode:UIViewContentModeScaleAspectFill];
+        [_hideView addSubview:markIv];
+        UILabel* hideLb=[[UILabel alloc]initWithFrame:CGRectMake(markIv.right+5*self.scale, 2.5*self.scale, self.view.width-(markIv.right+35*self.scale), 15*self.scale)];
+        hideLb.font=SmallFont(self.scale*0.7);
+        hideLb.textColor=[UIColor whiteColor];
+        hideLb.text=@"您选择的优惠券仅支持在线支付";
+        [_hideView addSubview:hideLb];
+        
+        UIButton *closeBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [closeBtn setImage:[UIImage imageNamed:@"popup_close_white2"] forState:UIControlStateNormal];
+        closeBtn.frame=CGRectMake(self.view.width-20*self.scale, 5*self.scale, 10*self.scale, 10*self.scale);
+        [closeBtn addTarget:self action:@selector(closeHideView) forControlEvents:UIControlEventTouchUpInside];
+        [_hideView addSubview:closeBtn];
     }
+}
+
+-(void) closeHideView{
+    [_hideView removeFromSuperview];
 }
 
 -(void)setOrderView{

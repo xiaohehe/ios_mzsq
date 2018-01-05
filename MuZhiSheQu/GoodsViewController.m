@@ -19,8 +19,10 @@
 #import "BreakInfoTableViewCell.h"
 #import "SortCollectionViewCell.h"
 #import "RCDChatListViewController.h"
+#import "MessageCenterViewController.h"
+static const NSUInteger MESSAGE_TAG = 66;
 
-@interface GoodsViewController ()<BreakInfoCellDelegate>//shopInfoDelegate
+@interface GoodsViewController ()<RCIMReceiveMessageDelegate,BreakInfoCellDelegate>//shopInfoDelegate
 @property(nonatomic,strong)UIScrollView *scroll;
 @property(nonatomic,strong)UICollectionView *collectionView;
 @property(nonatomic,strong)UIView *headerView;
@@ -87,6 +89,8 @@
         [self ReshData];
     }
     _isFirst=true;
+    [RCIM sharedRCIM].disableMessageAlertSound=NO;
+    [RCIM sharedRCIM].receiveMessageDelegate=self;
 }
 
 -(void) reloadData{
@@ -112,6 +116,32 @@
         [_rightTable reloadData];
     }else{
         _isFirst=false;
+    }
+    [self ReshMessage];
+}
+
+- (void)onRCIMReceiveMessage:(RCMessage *)message left:(int)left{
+    //NSLog(@"onRCIMReceiveMessage==");
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self ReshMessage];
+        [self.appdelegate appNum];
+    });
+}
+
+-(void)ReshMessage{
+    int unreadMsgCount =[self.appdelegate ReshData];
+    UILabel * CarNum = (UILabel *)[self.view viewWithTag:MESSAGE_TAG];
+    if (unreadMsgCount>0) {
+        CarNum.hidden = NO;
+        CarNum.text=[NSString stringWithFormat:@"%d",unreadMsgCount];
+        if (unreadMsgCount>99) {
+            CarNum.text=[NSString stringWithFormat:@"99+"];
+            CarNum.width=25;
+        }else{
+            CarNum.width=20;
+        }
+    }else{
+        CarNum.hidden = YES;
     }
 }
 
@@ -254,11 +284,9 @@
         }];
         return;
     }
-    // self.hidesBottomBarWhenPushed=YES;
-    RCDChatListViewController *rong = [[RCDChatListViewController alloc]init];
+    MessageCenterViewController *rong = [[MessageCenterViewController alloc]init];
     rong.hidesBottomBarWhenPushed=YES;
     [self.navigationController pushViewController:rong animated:YES];
-    // self.hidesBottomBarWhenPushed=NO;
 }
 
 #pragma mark -----返回按钮
@@ -304,13 +332,13 @@
     //talkImg.backgroundColor = [UIColor blackColor];
     //talkImg.alpha = 0;
     [self.NavImg  addSubview:talkImg];
-    UILabel *CarNum=[[UILabel alloc]initWithFrame:CGRectMake(talkImg.width-4.5, -.5, 5, 5)];
+    UILabel *CarNum=[[UILabel alloc]initWithFrame:CGRectMake(talkImg.width-25, 2, 20, 18)];
     CarNum.backgroundColor=[UIColor redColor];
-    CarNum.layer.cornerRadius=CarNum.width/2;
+    CarNum.layer.cornerRadius=CarNum.height/2;
     CarNum.layer.masksToBounds=YES;
     CarNum.textAlignment=NSTextAlignmentCenter;
     CarNum.font=SmallFont(1);
-    CarNum.tag=99;
+    CarNum.tag=MESSAGE_TAG;
     CarNum.textColor=[UIColor whiteColor];
     CarNum.hidden=YES;
     [talkImg addSubview:CarNum];

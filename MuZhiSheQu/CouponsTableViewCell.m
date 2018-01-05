@@ -46,12 +46,16 @@
     [self.contentView addSubview:self.rightView];
     self.nameLa = [UILabel new];
     self.nameLa.textColor=[UIColor colorWithRed:0.290 green:0.290 blue:0.290 alpha:1.00];
-    self.nameLa.font = SmallFont(self.scale*0.8);
+    self.nameLa.font = [UIFont boldSystemFontOfSize:10*self.scale];
     [self.rightView addSubview:_nameLa];
     self.desLb = [UILabel new];
-    self.desLb.font = SmallFont(self.scale*0.8);
+    self.desLb.font = SmallFont(self.scale*0.7);
     self.desLb.textColor=[UIColor colorWithRed:0.663 green:0.663 blue:0.663 alpha:1.00];
     [self.rightView addSubview:_desLb];
+    self.dateLb = [UILabel new];
+    self.dateLb.font = SmallFont(self.scale*0.7);
+    self.dateLb.textColor=[UIColor colorWithRed:0.278 green:0.278 blue:0.278 alpha:1.00];
+    [self.rightView addSubview:_dateLb];
     _selectedIv=[[UIImageView alloc]init];
     [self.rightView addSubview:_selectedIv];
 }
@@ -61,7 +65,8 @@
     self.priceLa.frame = CGRectMake(0, 0, self.statusIv.width, self.statusIv.height);
     self.rightView.frame = CGRectMake(self.statusIv.right, self.statusIv.top, self.contentView.width-100*self.scale, self.statusIv.height);
     self.nameLa.frame = CGRectMake(10*self.scale, 10*self.scale, self.rightView.width-40*self.scale, 15*self.scale);
-    self.desLb.frame = CGRectMake(self.nameLa.left, self.nameLa.bottom+5*self.scale, self.rightView.width-40*self.scale, 15*self.scale);
+    self.desLb.frame = CGRectMake(self.nameLa.left, self.nameLa.bottom+5*self.scale, self.rightView.width-40*self.scale, 10*self.scale);
+    self.dateLb.frame = CGRectMake(self.nameLa.left, self.desLb.bottom+5*self.scale, self.rightView.width-40*self.scale, 10*self.scale);
     self.selectedIv.frame=CGRectMake(self.rightView.width-25*self.scale, self.rightView.height/2-7.5*self.scale, 15*self.scale, 15*self.scale);
 }
 

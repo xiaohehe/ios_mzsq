@@ -25,9 +25,10 @@
 #import <BaiduMapAPI_Location/BMKLocationService.h>
 #import "BusinessLocationViewController.h"
 #import "MessageCenterViewController.h"
+#import "SMAlert.h"
 
 static const NSUInteger SECTION_TAG=1000;
-static const NSUInteger MESSAGE_TAG = 10000+1;
+static const NSUInteger MESSAGE_TAG = 66;
 static const NSUInteger ADD_CART_TAG = 1000000;//增加购物车商品数量
 static const NSUInteger CART_NUM_TAG = 2000000;//购物车商品数量
 static const NSUInteger SUB_CART_TAG = 3000000;//减少购物车商品数量
@@ -35,12 +36,14 @@ static const NSUInteger FUNCTION_TAG = 400000;//表头小功能
 static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
 
 
-@interface HomeViewController ()<UITableViewDataSource,UITableViewDelegate,UIScrollViewDelegate,BMKLocationServiceDelegate>{
+@interface HomeViewController ()<RCIMReceiveMessageDelegate,UITableViewDataSource,UITableViewDelegate,UIScrollViewDelegate,BMKLocationServiceDelegate>{
     UILabel *community;
    // UITextField *souTf;
     UIButton *souTf;
     UITableView* goodsTv;
+    NSString *isCouponGive;
     NSDictionary *shopData;
+    NSDictionary *familyData;
     NSMutableArray* goodsArray;//商品数组
     UIView* headerView;
     UIImageView *otherIv;
@@ -75,6 +78,8 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
     goodsTv.showsVerticalScrollIndicator=NO;
     goodsTv.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.view addSubview:self.activityVC];
+    [RCIM sharedRCIM].disableMessageAlertSound=NO;
+    [RCIM sharedRCIM].receiveMessageDelegate=self;
 }
 
 -(void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
@@ -273,7 +278,7 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
             if (index==1) {
                 LoginViewController *login = [self login];
                 [login resggong:^(NSString *str) {//登录成功后需要加载的数据
-                    NSLog(@"登录成功");
+                    //NSLog(@"登录成功");
                     [self requestShopingCart:true];
                 }];
             }
@@ -289,6 +294,31 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
 
 }
 
+- (void)onRCIMReceiveMessage:(RCMessage *)message left:(int)left{
+    //NSLog(@"onRCIMReceiveMessage==");
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self ReshMessage];
+        [self.appdelegate appNum];
+    });
+}
+
+-(void)ReshMessage{
+    int unreadMsgCount =[self.appdelegate ReshData];
+    UILabel * CarNum = (UILabel *)[self.view viewWithTag:MESSAGE_TAG];
+    if (unreadMsgCount>0) {
+        CarNum.hidden = NO;
+        CarNum.text=[NSString stringWithFormat:@"%d",unreadMsgCount];
+        if (unreadMsgCount>99) {
+            CarNum.text=[NSString stringWithFormat:@"99+"];
+            CarNum.width=25;
+        }else{
+            CarNum.width=20;
+        }
+    }else{
+        CarNum.hidden = YES;
+    }
+}
+
 #pragma mark -----返回按钮
 -(void)returnVi{
     self.NavImg.frame=CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [self getStartHeight]+44+44);
@@ -296,13 +326,22 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
     [self.NavImg.layer insertSublayer:self.gradientLayer atIndex:0];
     //17年4.28新添加的消息按钮
     UIButton *talkImg = [UIButton buttonWithType:UIButtonTypeCustom];
+    //talkImg.backgroundColor=[UIColor redColor];
     [talkImg setImage:[UIImage imageNamed:@"msg_black"] forState:UIControlStateNormal];
     talkImg.frame=CGRectMake(self.view.width-self.TitleLabel.height, self.TitleLabel.top+2*self.scale, self.TitleLabel.height,self.TitleLabel.height);
     [talkImg addTarget:self action:@selector(talk) forControlEvents:UIControlEventTouchUpInside];
-    talkImg.tag = MESSAGE_TAG;
-    //talkImg.backgroundColor = [UIColor blackColor];
-    //talkImg.alpha = 0;
+    //talkImg.tag = MESSAGE_TAG;
     [self.NavImg  addSubview:talkImg];
+    UILabel *CarNum=[[UILabel alloc]initWithFrame:CGRectMake(talkImg.width-25, 2, 20, 18)];
+    CarNum.backgroundColor=[UIColor redColor];
+    CarNum.layer.cornerRadius=CarNum.height/2;
+    CarNum.layer.masksToBounds=YES;
+    CarNum.textAlignment=NSTextAlignmentCenter;
+    CarNum.font=SmallFont(1);
+    CarNum.tag=MESSAGE_TAG;
+    CarNum.textColor=[UIColor whiteColor];
+    CarNum.hidden=YES;
+    [talkImg addSubview:CarNum];
     UIImageView *souImg=[[UIImageView alloc]initWithFrame:CGRectMake(10*self.scale, self.TitleLabel.top+8*self.scale, 12*self.scale, 16*self.scale)];
     souImg.image=[UIImage imageNamed:@"location_black"];
    // souImg.alpha = 0.5;
@@ -381,10 +420,7 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
     [super viewWillAppear:YES];
     self.tabBarController.tabBar.hidden=NO;
     [self gouWuCheShuZi];
-//    //    self.navigationController.navigationBarHidden=YES;
-//    [RCIM sharedRCIM].disableMessageAlertSound=NO;
-//    [self ReshMessage];
-//    [RCIM sharedRCIM].receiveMessageDelegate=self;
+    [self ReshMessage];
     [self.navigationController setNavigationBarHidden:YES animated:YES];
 //    if(self.appdelegate.isRefresh){
 //        self.appdelegate.isRefresh=false;
@@ -403,54 +439,226 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
     //priceLb.text=shopData[@"notice"];
 }
 
+-(void)closeRedEnvelopeView{
+    [SMAlert hide];
+    self.appdelegate.isRefuse=true;
+}
+
+-(void)closeFamilyView{
+    [SMAlert hide];
+    [self showRedEnvelopeView];
+}
+
+-(void) agreedJoin{
+    [self commitFamily:@"1"];
+}
+
+-(void)refusedJoin{
+    [self commitFamily:@"-1"];
+}
+
+-(void) commitFamily:(NSString*) manner{
+    [SMAlert hide];
+    AnalyzeObject *analy=[[AnalyzeObject alloc]init];
+    [self.activityVC startAnimate];
+    NSDictionary *dic = @{@"fid":[NSString stringWithFormat:@"%@",familyData[@"HomeID"]],@"isConfirm":manner};
+    [analy confirmFamilyWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
+        [self.activityVC stopAnimate];
+        [self showRedEnvelopeView];
+    }];
+}
+
+-(void)showFamilyView{
+    NSInteger homeID=[[NSString stringWithFormat:@"%@",familyData[@"HomeID"]] integerValue];
+    NSInteger status=[[NSString stringWithFormat:@"%@",familyData[@"status"]] integerValue];
+    if(status!=0||homeID<1){
+        [self showRedEnvelopeView];
+        return;
+    }
+    [SMAlert setAlertBackgroundColor:[UIColor colorWithWhite:0 alpha:0.5]];
+    UIView *customView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 253, 262)];
+    customView.backgroundColor=[UIColor whiteColor];
+    UIButton* closeBtn=[[UIButton alloc] initWithFrame:CGRectMake(customView.width-26, 14, 11, 11)];
+    [closeBtn setImage:[UIImage imageNamed:@"popup_close"] forState:UIControlStateNormal];
+    [closeBtn addTarget:self action:@selector(closeFamilyView) forControlEvents:UIControlEventTouchUpInside];
+    [customView addSubview:closeBtn];
+    UIImageView* coverIv=[[UIImageView alloc] initWithFrame:CGRectMake(13, 14, 36, 36)];
+    [coverIv setImageWithURL:[NSURL URLWithString:familyData[@"refAvatar"]] placeholderImage:[UIImage imageNamed:@"head_sculpture"]];
+    [customView addSubview:coverIv];
+    UILabel* nameLb=[[UILabel alloc] initWithFrame:CGRectMake(coverIv.right+10, coverIv.top+10, customView.width-(coverIv.right+10)-36, 16)];
+    nameLb.text=familyData[@"refNickname"];
+    nameLb.textColor=[UIColor colorWithRed:0.373 green:0.373 blue:0.373 alpha:1.00];
+    nameLb.font=SmallFont(self.scale);
+    [customView addSubview:nameLb];
+    
+    UILabel* desLb=[[UILabel alloc] initWithFrame:CGRectMake(0, coverIv.bottom+30, customView.width, 18)];
+    desLb.text=@"邀请您加入拇指家庭";
+    desLb.textColor=[UIColor blackColor];
+    desLb.font=[UIFont boldSystemFontOfSize:19];
+    desLb.textAlignment=NSTextAlignmentCenter;
+    [customView addSubview:desLb];
+
+    UIButton* agreeBtn=[[UIButton alloc] initWithFrame:CGRectMake(56.5, desLb.bottom+43, 140, 37)];
+    [agreeBtn setBackgroundImage:[UIImage imageNamed:@"bg_order_big"] forState:UIControlStateNormal];
+    [agreeBtn setTitle:@"同意" forState:UIControlStateNormal];
+    [agreeBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [agreeBtn addTarget:self action:@selector(agreedJoin) forControlEvents:UIControlEventTouchUpInside];
+    agreeBtn.titleLabel.font=SmallFont(self.scale);
+    [customView addSubview:agreeBtn];
+    
+    UIButton* refuseBtn=[[UIButton alloc] initWithFrame:CGRectMake(56.5, agreeBtn.bottom+23, 140, 37)];
+    [refuseBtn setTitle:@"拒绝" forState:UIControlStateNormal];
+    refuseBtn.layer.cornerRadius = refuseBtn.height/2;
+    refuseBtn.layer.borderWidth = .5;
+    refuseBtn.layer.borderColor = [UIColor colorWithRed:0.922 green:0.922 blue:0.922 alpha:1.00].CGColor;
+    [refuseBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [refuseBtn addTarget:self action:@selector(refusedJoin) forControlEvents:UIControlEventTouchUpInside];
+    refuseBtn.titleLabel.font=SmallFont(self.scale);
+    [customView addSubview:refuseBtn];
+    [SMAlert showCustomView:customView];
+}
+
+-(void)showGetSuccessView:(NSString*)money{
+    [SMAlert setAlertBackgroundColor:[UIColor colorWithWhite:0 alpha:0.8]];
+    UIView *customView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 253, 289)];
+    
+    UIImageView* topIv=[[UIImageView alloc] initWithFrame:CGRectMake(16, 0, 227, 165)];
+    [topIv setImage:[UIImage imageNamed:@"discount_coupon_popup"]];
+    [customView addSubview:topIv];
+    
+    UILabel* moneyLb=[[UILabel alloc] initWithFrame:CGRectMake(43, 87, 62, 36)];
+    moneyLb.text=money;
+    moneyLb.textColor=[UIColor blackColor];
+    moneyLb.font=[UIFont boldSystemFontOfSize:50];
+    moneyLb.textAlignment=NSTextAlignmentRight;
+    [topIv addSubview:moneyLb];
+    
+    UILabel* desLb=[[UILabel alloc] initWithFrame:CGRectMake(0, topIv.bottom+24, customView.width, 20)];
+    //desLb.backgroundColor=[UIColor redColor];
+    desLb.text=@"恭喜您获得优惠券！";
+    desLb.textColor=[UIColor colorWithRed:0.996 green:0.929 blue:0.016 alpha:1.00];
+    desLb.font=[UIFont boldSystemFontOfSize:20];
+    desLb.textAlignment=NSTextAlignmentCenter;
+    [customView addSubview:desLb];
+    
+    UIButton* closeBtn=[[UIButton alloc] initWithFrame:CGRectMake(0, customView.height-33, 114, 24)];
+    closeBtn.backgroundColor=[UIColor colorWithRed:0.867 green:0.780 blue:0.043 alpha:1.00];
+    [closeBtn setTitle:@"知道了" forState:UIControlStateNormal];
+    closeBtn.layer.cornerRadius = closeBtn.height/2;
+    [closeBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [closeBtn addTarget:self action:@selector(closeGetSuccessView) forControlEvents:UIControlEventTouchUpInside];
+    closeBtn.titleLabel.font=SmallFont(self.scale*0.8);
+    [customView addSubview:closeBtn];
+    
+    UIButton* useBtn=[[UIButton alloc] initWithFrame:CGRectMake(customView.width-closeBtn.width, closeBtn.top, closeBtn.width, closeBtn.height)];
+    useBtn.backgroundColor=[UIColor colorWithRed:0.992 green:0.925 blue:0.000 alpha:1.00];
+    [useBtn setTitle:@"去用券" forState:UIControlStateNormal];
+    useBtn.layer.cornerRadius = closeBtn.height/2;
+    [useBtn setTitleColor:[UIColor colorWithRed:0.741 green:0.000 blue:0.176 alpha:1.00] forState:UIControlStateNormal];
+    [useBtn addTarget:self action:@selector(useCoupons) forControlEvents:UIControlEventTouchUpInside];
+    useBtn.titleLabel.font=SmallFont(self.scale*0.8);
+    [customView addSubview:useBtn];
+    
+    [SMAlert showCustomView:customView];
+}
+
+-(void)closeGetSuccessView{
+    [SMAlert hide];
+}
+
+-(void)useCoupons{
+    [SMAlert hide];
+    self.tabBarController.selectedIndex = 1;
+}
+
+-(void)ReceiveCoupon{
+    NSString *shopid =[NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults] objectForKey:@"shopid"]];
+    AnalyzeObject *anle = [AnalyzeObject new];
+    NSDictionary *dic = @{@"shopid":shopid};
+    [self.activityVC startAnimate];
+    [anle receiveCouponWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
+        [self.activityVC stopAnimate];
+        if ([code isEqualToString:@"0"]) {
+            NSString* money=[NSString stringWithFormat:@"%@",models[@"Money"]];
+            [self showGetSuccessView:money];
+        }else{
+            if([AppUtil isBlank:msg])
+                [AppUtil showToast:self.view withContent:@"领取失败"];
+            else{
+                [AppUtil showToast:self.view withContent:msg];
+            }
+        }
+    }];
+}
+
+-(void) openRedEnvelope{
+    [SMAlert hide];
+    if ([Stockpile sharedStockpile].isLogin==NO) {
+        [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
+            if (index==1) {
+                LoginViewController *login = [self login];
+                [login resggong:^(NSString *str) {//登录成功后需要加载的数据
+                    NSLog(@"登录成功");
+                    [self requestShopingCart:true];
+                    [self ReceiveCoupon];
+                }];
+            }
+        }];
+        return;
+    }
+    [self ReceiveCoupon];
+}
+
+-(void)showRedEnvelopeView{
+    if(![isCouponGive isEqualToString:@"1"]||self.appdelegate.isRefuse)
+        return;
+    [SMAlert setAlertBackgroundColor:[UIColor colorWithWhite:0 alpha:0.5]];
+    UIImageView *customView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 251, 298)];
+    customView.backgroundColor=[UIColor clearColor];
+    [customView setImage:[UIImage imageNamed:@"red_envelope"]];
+    customView.userInteractionEnabled=YES;
+    UIButton* closeBtn=[[UIButton alloc] initWithFrame:CGRectMake(customView.width-26, 14, 20, 20)];
+    [closeBtn setImage:[UIImage imageNamed:@"popup_close_white"] forState:UIControlStateNormal];
+    [closeBtn addTarget:self action:@selector(closeRedEnvelopeView) forControlEvents:UIControlEventTouchUpInside];
+    [customView addSubview:closeBtn];
+    UIButton* openBtn=[[UIButton alloc] initWithFrame:CGRectMake(58, customView.height-82, 140, 36)];
+    //openBtn.backgroundColor=[UIColor blueColor];
+    [openBtn addTarget:self action:@selector(openRedEnvelope) forControlEvents:UIControlEventTouchUpInside];
+    [customView addSubview:openBtn];
+    [SMAlert showCustomView:customView];
+}
+
 -(void) loadCommunityShop{
     NSString *commid =[NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults] objectForKey:@"commid"]];
     NSString *shopid =[NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults] objectForKey:@"shopid"]];
     NSString* comName=[[NSUserDefaults standardUserDefaults]objectForKey:@"commname"] ;
     NSLog(@"shopid==%@==%@",shopid,comName);
     AnalyzeObject *analy=[[AnalyzeObject alloc]init];
+    [self.activityVC startAnimate];
     NSDictionary *dic = @{@"cid":commid,@"shopid":shopid};
     [analy getCommunityShop:dic Block:^(id models, NSString *code, NSString *msg) {
+        [self.activityVC stopAnimate];
         if ([code isEqualToString:@"0"]) {
             [goodsArray removeAllObjects];
             [functionArray removeAllObjects];
             [imageArray removeAllObjects];
             shopData=models[@"shopinfo"];
+            isCouponGive=[NSString stringWithFormat:@"%@",models[@"isCouponGive"]];
             self.appdelegate.shopInfoDic=models[@"shopinfo"];
             NSArray* funArr=models[@"module"];
             [functionArray addObjectsFromArray:funArr];
             NSArray* imgArr=models[@"advertlist"];
             [imageArray addObjectsFromArray:imgArr];
+            familyData=models[@"FamilyInfo"];
             [self newHeaderView];
             [self setHeaderInfo];
+            [self showFamilyView];
+            //[self showGetSuccessView:@"5"];
             NSLog(@"shopData==%@==%@",dic,models);
             NSArray* arr=models[@"prolist"];
             [goodsArray addObjectsFromArray:arr];
             goodsTv.tableHeaderView=headerView;
-//            for(NSDictionary* obj in arr){
-//                Goods* goods=[[Goods alloc]init];
-//                goods.gid=[obj objectForKey:@"id"];
-//                goods.shopid=[obj objectForKey:@"shopid"];
-//                goods.categoryid=[obj objectForKey:@"categoryid"];
-//                goods.prodname=[obj objectForKey:@"prodname"];
-//                goods.price=[obj objectForKey:@"price"];
-//                goods.unit=[obj objectForKey:@"unit"];
-//                goods.des=[obj objectForKey:@"description"];
-//                goods.inventory=[obj objectForKey:@"inventory"];
-//                goods.salecount=[obj objectForKey:@"salecount"];
-//                NSString *string = [NSString stringWithFormat:@"%@",[obj objectForKey:@"imgs"][0]];
-//                NSArray *imgArr = [string componentsSeparatedByString:@"|"];
-//                goods.imgs=[imgArr mutableCopy];
-//                goods.activityid=[obj objectForKey:@"activityid"];
-//                goods.isjoinact=[obj objectForKey:@"isjoinact"];
-//                goods.actmark=[obj objectForKey:@"actmark"];
-//                goods.actmaxbuy=[obj objectForKey:@"actmaxbuy"];
-//                goods.actmaxstock=[obj objectForKey:@"actmaxstock"];
-//                goods.actmaxdaystock=[obj objectForKey:@"actmaxdaystock"];
-//                goods.acticon=[obj objectForKey:@"acticon"];
-//                [goodsArray addObject:goods];
-//            }
-             [goodsTv reloadData];
+            [goodsTv reloadData];
         }
     }];
 }
@@ -483,11 +691,6 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
 
 //语音下单
 - (void)voiceOrder:(UITapGestureRecognizer*) tap{
-    //    self.hidesBottomBarWhenPushed = YES;
-    //    BreakInfoViewController *info = [[BreakInfoViewController alloc]init];
-    //    info.ID = _gongGaoDic[@"shop_id"];
-    //    [self.navigationController pushViewController:info animated:YES];
-    //    self.hidesBottomBarWhenPushed = NO;
     if ([Stockpile sharedStockpile].isLogin==NO) {
         [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
             if (index==1) {
@@ -577,11 +780,6 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
     [cell.addBt addTarget:self action:@selector(changeShopingCartNum:) forControlEvents:UIControlEventTouchUpInside];
     [cell.subBtn addTarget:self action:@selector(changeShopingCartNum:) forControlEvents:UIControlEventTouchUpInside];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-//    if((goodsArray.count-indexPath.row)==1){
-//        cell.lineView.hidden=YES;
-//    }else{
-//        cell.lineView.hidden=NO;
-//    }
     cell.lineView.hidden=YES;
     return cell;
 }
@@ -768,11 +966,6 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
 //    [self dingwei];
 }
 
-//算路取消回调
--(void)routePlanDidUserCanceled:(NSDictionary*)userInfo {
-    NSLog(@"算路取消");
-}
-
 -(void)skipToSearchView{
     SouViewController *vi=[SouViewController new];
     vi.hidesBottomBarWhenPushed=YES;
@@ -786,7 +979,7 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
         return 30*self.scale;
     }
     CGFloat w=[[NSString stringWithFormat:@"%@",groupDic[@"w"]] floatValue];
-    CGFloat h=[[NSString stringWithFormat:@"%@",groupDic[@"w"]] floatValue];
+    CGFloat h=[[NSString stringWithFormat:@"%@",groupDic[@"h"]] floatValue];
     if(w==0.0||h==0.0){
         w=750;
         h=160;
@@ -798,7 +991,7 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
     NSDictionary* groupDic=goodsArray[section];
     NSString* isShowAdImg=[NSString stringWithFormat:@"%@",groupDic[@"IsShowAdImg"]];
     CGFloat w=[[NSString stringWithFormat:@"%@",groupDic[@"w"]] floatValue];
-    CGFloat h=[[NSString stringWithFormat:@"%@",groupDic[@"w"]] floatValue];
+    CGFloat h=[[NSString stringWithFormat:@"%@",groupDic[@"h"]] floatValue];
     if(w==0.0||h==0.0){
         w=750;
         h=160;

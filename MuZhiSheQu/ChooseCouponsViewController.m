@@ -8,6 +8,7 @@
 
 #import "ChooseCouponsViewController.h"
 #import "CouponsTableViewCell.h"
+#import "AppUtil.h"
 
 @interface ChooseCouponsViewController ()<UITableViewDataSource,UITableViewDelegate>
 @property(nonatomic,assign)BOOL isUsable;
@@ -195,11 +196,13 @@
     NSString* priceString=@"";
     NSString* couponName=@"";
     NSString* describe=@"";
+    NSString* date=@"";
     if(_isUsable){
         [cell.statusIv setImage:[UIImage imageNamed:@"discount_coupon"]];
         priceString = [NSString stringWithFormat:@"￥%@",_usableArray[indexPath.row][@"Money"]];
         couponName = [NSString stringWithFormat:@"%@",_usableArray[indexPath.row][@"CouponName"]];
         describe = [NSString stringWithFormat:@"%@",_usableArray[indexPath.row][@"Describe"]];
+        date = [NSString stringWithFormat:@"%@到期",[AppUtil dateConversion:_usableArray[indexPath.row][@"EndDay"]]];
         cell.selectedIv.hidden=NO;
         NSString* couponID=[NSString stringWithFormat:@"%@",_usableArray[indexPath.row][@"CouponID"]];
         if([couponID isEqualToString:self.couponID]){
@@ -213,6 +216,7 @@
         priceString = [NSString stringWithFormat:@"￥%@",_disabledArray[indexPath.row][@"Money"]];
         couponName = [NSString stringWithFormat:@"%@",_disabledArray[indexPath.row][@"CouponName"]];
         describe = [NSString stringWithFormat:@"%@",_disabledArray[indexPath.row][@"Describe"]];
+        date = [NSString stringWithFormat:@"%@到期",[AppUtil dateConversion:_disabledArray[indexPath.row][@"EndDay"]]];
         cell.selectedIv.hidden=YES;
     }
     NSString *firstString = @"￥";
@@ -221,6 +225,7 @@
     cell.priceLa.attributedText = priceAttributeString;
     cell.nameLa.text=couponName;
     cell.desLb.text=describe;
+    cell.dateLb.text=date;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
 }

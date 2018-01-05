@@ -166,11 +166,13 @@ static const NSUInteger PRAISE_TAG = 20000;
             dic[@"praise_status"]=[NSNumber numberWithInt:sender.selected?1:0];
             int praisenumcount=[dic[@"praisenumcount"] intValue];
             dic[@"praisenumcount"]=[NSNumber numberWithInt:sender.selected?++praisenumcount:--praisenumcount];
+            NSLog(@"praisenumcount==%d==%@",praisenumcount,dic[@"praisenumcount"]);
             if(praisenumcount<99){
                 [sender setTitle:[NSString stringWithFormat:@"赞(%d)",praisenumcount] forState:UIControlStateNormal];
             }else{
                 [sender setTitle:@"赞(99+)" forState:UIControlStateNormal];
             }
+            _data[sender.tag-PRAISE_TAG]=[dic copy];
            // [_data replaceObjectAtIndex:sender.tag-PRAISE_TAG withObject:dic];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"reshNeighbourhood" object:nil];
         }

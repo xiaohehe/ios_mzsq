@@ -27,6 +27,8 @@
  */
 #import "OrderDetailsViewController.h"
 #import "AppUtil.h"
+#import "PaymentOrderViewController.h"
+#import "OrderViewController.h"
 
 @interface OrderDetailsViewController ()
 @property(nonatomic,strong)NSMutableArray *data;
@@ -51,6 +53,9 @@
     _data =[NSMutableArray new];
     _isShowAll=false;
     [self newNav];
+}
+
+- (void)viewWillAppear:(BOOL)animated{
     [self reshData];
     [self.view addSubview:self.activityVC];
 }
@@ -130,13 +135,18 @@
     [_sv addSubview:_goodsView];
     for(int i=0;i<pCount;i++){
         UIImageView* coverIv=[[UIImageView alloc]initWithFrame:CGRectMake(10*self.scale*(i+1), 10*self.scale, 30*self.scale, 30*self.scale)];
-        NSString *string = [NSString stringWithFormat:@"%@",[_data[0][@"prods"][i] objectForKey:@"img"][0]];
-        NSArray *imgArr = [string componentsSeparatedByString:@"|"];
-        [coverIv setImageWithURL:[NSURL URLWithString:imgArr[0]] placeholderImage:[UIImage imageNamed:@"not_1"]];
-        coverIv.layer.masksToBounds=YES;
-        coverIv.layer.cornerRadius=5;
-        [_goodsView addSubview:coverIv];
-        
+        NSArray* imgs=[_data[0][@"prods"][i] objectForKey:@"img"];
+        //NSLog(@"img===%lu",imgs.count);
+        if(imgs.count>0){
+            NSString *string = [NSString stringWithFormat:@"%@",[_data[0][@"prods"][i] objectForKey:@"img"][0]];
+            NSArray *imgArr = [string componentsSeparatedByString:@"|"];
+            [coverIv setImageWithURL:[NSURL URLWithString:imgArr[0]] placeholderImage:[UIImage imageNamed:@"not_1"]];
+            coverIv.layer.masksToBounds=YES;
+            coverIv.layer.cornerRadius=5;
+            [_goodsView addSubview:coverIv];
+        }else{
+            [coverIv setImage:[UIImage imageNamed:@"not_1"]];
+        }
         UILabel *nameLa = [[UILabel alloc]initWithFrame:CGRectMake(coverIv.right+10*self.scale, coverIv.top, self.view.width/3*2-coverIv.right-10*self.scale, 15*self.scale)];
         nameLa.text =_data[0][@"prods"][i][@"prod_name"];
         nameLa.textColor=[UIColor colorWithRed:0.200 green:0.200 blue:0.200 alpha:1.00];
@@ -207,7 +217,23 @@
 }
 
 -(void)leftClick{
-    
+    //[self.view addSubview:self.activityVC];
+    [self ShowAlertTitle:nil Message:@"确认删除?" Delegate:self Block:^(NSInteger index) {
+        if (index==1) {
+            [self.activityVC startAnimate];
+            NSString *userid = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
+            NSDictionary *dic = @{@"user_id":userid,@"sub_order_no":self.orderId};
+            AnalyzeObject *anle = [AnalyzeObject new];
+            [anle delOrderWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
+                [self.activityVC stopAnimate];
+                if ([code isEqualToString:@"0"]) {
+                    [self.navigationController popViewControllerAnimated:YES];
+                }else{
+                    [self ShowAlertWithMessage:msg];
+                }
+            }];
+        }
+    }];
 }
 
 -(void)setmiddleButton:(NSString*) title{
@@ -223,7 +249,30 @@
 }
 
 -(void)middleClick{
-    
+    [self ShowAlertTitle:nil Message:@"确认取消?" Delegate:self Block:^(NSInteger index) {
+        if (index==1) {
+            [self.view addSubview:self.activityVC];
+            [self.activityVC startAnimate];
+            NSString *userid = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
+            NSDictionary *dic = @{@"user_id":userid,@"sub_order_no":self.orderId,@"order_no":self.orderId};
+            AnalyzeObject *anle = [AnalyzeObject new];
+            [anle cancelOrderWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
+                [self.activityVC stopAnimate];
+                if ([code isEqualToString:@"0"]) {
+                    if(![AppUtil isBlank:msg])
+                        [self ShowAlertWithMessage:msg];
+                    //[self dropDownRefresh];
+                    [self reshData];
+                }else{
+                    if([AppUtil isBlank:msg])
+                        [AppUtil showToast:self.view withContent:@"取消失败"];
+                    else{
+                        [AppUtil showToast:self.view withContent:msg];
+                    }
+                }
+            }];
+        }
+    }];
 }
 
 -(void)setRightButton:(NSString*) title{
@@ -237,13 +286,123 @@
 }
 
 -(void)rightClick{
+    NSInteger status=[_data[0][@"status"] integerValue];
+    if(status==1){
+        [self paymentOrder];
+    }else if(status!=6){
+        [self singleAgainClick];
+    }
+}
+
+-(void)paymentOrder{
+    NSMutableDictionary *orderDic=[NSMutableDictionary dictionary];
+    [orderDic setObject:_data[0][@"isOnLinePay"] forKey:@"isOnLinePay"];
+    [orderDic setObject:self.orderId forKey:@"OrderID"];
+    [orderDic setObject:_data[0][@"total_amount"] forKey:@"AllMoney"];
+    PaymentOrderViewController* paymentOrderView=[[PaymentOrderViewController alloc] init];
+    paymentOrderView.hidesBottomBarWhenPushed=YES;
+    paymentOrderView.orderDic=orderDic;
+    [self.navigationController pushViewController:paymentOrderView animated:YES];
+}
+
+/*
+ *再来一单
+ */
+-(void)singleAgainClick{
+    [self ShowAlertTitle:nil Message:@"再来一单?" Delegate:self Block:^(NSInteger index) {
+        if (index==1) {
+            [self.activityVC startAnimate];
+            NSString *userid = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
+            NSDictionary *dic = @{@"orderid":self.orderId};
+            AnalyzeObject *anle = [AnalyzeObject new];
+            [anle reOrderWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
+                [self.activityVC stopAnimate];
+                if ([code isEqualToString:@"0"]) {
+                    NSLog(@"reOrder==%@==%@",dic,models);
+                    [self settleAccount:models];
+                }
+            }];
+        }
+    }];
+}
+
+-(void)settleAccount:(NSDictionary*) models{
+    NSArray *dataSource=models[@"prodList"];
+    if(dataSource.count==0){
+        [self ShowAlertWithMessage:@"当前商品已下架"];
+        return;
+    }
+    NSDictionary* dataDic=models[@"shopinfo"];
+    NSMutableArray *settleArray=[NSMutableArray array];
+    CGFloat amount=0.0;
+    for(int i=0;i<dataSource.count;i++){
+        NSMutableDictionary* dic=[dataSource[i] mutableCopy];
+        [dic setObject:dataSource[i][@"prod_id"] forKey:@"pro_id"];
+        [dic setObject:dataSource[i][@"prod_count"] forKey:@"pro_allnum"];
+        [dic setObject:dataSource[i][@"price"] forKey:@"pro_price"];
+        NSArray* imgs=dataSource[i][@"img"];
+        if(imgs.count>0){
+            NSString *string = [NSString stringWithFormat:@"%@",imgs[0]];
+            NSArray *imgArr = [string componentsSeparatedByString:@","];
+            [dic setObject:imgArr[0] forKey:@"pro_cover"];
+        }
+        amount+=[dataSource[i][@"price"] floatValue];
+        NSInteger activityid=[[NSString stringWithFormat:@"%@",dic[@"activity_id"]] integerValue];
+        if(activityid>0){
+            NSInteger actmaxbuy=[[NSString stringWithFormat:@"%@",[dic objectForKey:@"actmaxbuy"]] integerValue];
+            NSInteger havedbuy=[[NSString stringWithFormat:@"%@",[dic objectForKey:@"havedbuy"]] integerValue];
+            if(actmaxbuy>0){
+                NSInteger pro_allnum=[[NSString stringWithFormat:@"%@",[dic objectForKey:@"pro_allnum"]] integerValue];
+                NSInteger sub=pro_allnum-(actmaxbuy-havedbuy);
+                if(sub>0){
+                    if((actmaxbuy-havedbuy)>0){
+                        [dic setObject:[NSNumber numberWithInteger:(actmaxbuy-havedbuy)] forKey:@"pro_allnum"];
+                        [settleArray addObject:dic];
+                    }
+                    NSMutableDictionary* dic1=[dic mutableCopy];
+                    [dic1 setObject:[NSNumber numberWithInteger:sub] forKey:@"pro_allnum"];
+                    [dic1 setObject:[NSNumber numberWithInteger:0] forKey:@"activity_id"];
+                    [settleArray addObject:dic1];
+                }else{
+                    [settleArray addObject:dic];
+                }
+            }else{
+                [settleArray addObject:dic];
+            }
+        }else{
+            [settleArray addObject:dic];
+        }
+    }
+    CGFloat delivery_free=[dataDic[@"delivery_free"] floatValue];
+    CGFloat delivery_fee=[dataDic[@"delivery_fee"] floatValue];
+    CGFloat total=amount;
+    if(amount<delivery_free){
+        total+=delivery_fee;
+    }
+    NSMutableDictionary* settleDic=[NSMutableDictionary dictionary];
+    [settleDic setObject:dataDic[@"delivery_fee"] forKey:@"delivery_fee"];
+    [settleDic setObject:dataDic[@"delivery_free"] forKey:@"delivery_free"];
+    [settleDic setObject:dataDic[@"shop_icon"] forKey:@"shop_icon"];
+    [settleDic setObject:dataDic[@"shop_id"] forKey:@"shop_id"];
+    [settleDic setObject:dataDic[@"shop_name"] forKey:@"shop_name"];
+    [settleDic setObject:[NSString stringWithFormat:@"%.1f",amount] forKey:@"amount"];
+    [settleDic setObject:[NSString stringWithFormat:@"%.1f",total] forKey:@"total"];
     
+    NSLog(@"dic==%@",settleDic);
+    OrderViewController *orde = [OrderViewController new];
+    orde.hidesBottomBarWhenPushed=YES;
+    orde.dataArray = settleArray;
+    orde.dataDic=settleDic;
+    orde.couponDic=models[@"coupon"];
+    orde.isReOrder=YES;
+    // orde.gouwucheData=_dataSource;
+    [self.navigationController pushViewController:orde animated:YES];
 }
 
 
 -(void)setBottomView{
     //if(!_totalView){
-    _totalView=[[UILabel alloc]initWithFrame:CGRectMake(0, _bottom, self.view.width, 40*self.scale)];
+    _totalView=[[UIView alloc]initWithFrame:CGRectMake(0, _bottom, self.view.width, 40*self.scale)];
     _totalView.backgroundColor=[UIColor whiteColor];
     [_sv addSubview:_totalView];
     UIView* line=[[UIView alloc]initWithFrame:CGRectMake(10*self.scale, 0, self.view.width-20*self.scale, .5)];
@@ -410,6 +569,7 @@
     [anle myOrderDetailWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
         NSLog(@"myOrderDetailWithDic==%@",models);
         if ([code isEqualToString:@"0"]) {
+            [_data removeAllObjects];
             [_data addObjectsFromArray:models];
             [self setOrderInfo];
         }

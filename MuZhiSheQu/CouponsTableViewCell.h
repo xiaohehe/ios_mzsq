@@ -14,6 +14,7 @@
 @property(nonatomic,strong)UIView *rightView;
 @property(nonatomic,strong)UILabel *nameLa;
 @property(nonatomic,strong)UILabel *desLb;
+@property(nonatomic,strong)UILabel *dateLb;
 @property(nonatomic,strong)UIImageView *selectedIv;
 + (instancetype)cellWithTableView:(UITableView *)tableView;
 @end
