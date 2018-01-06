@@ -70,68 +70,50 @@
         singleRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(ShouShi:)];
         singleRecognizer.numberOfTapsRequired = 1; // 单击
         [scrollView addGestureRecognizer:singleRecognizer];
-
     }
-    
     return self;
-    
 }
-- (void)ShouShi:(UITapGestureRecognizer *)ShouShi{
 
+- (void)ShouShi:(UITapGestureRecognizer *)ShouShi{
     if (_delegate && [_delegate respondsToSelector:@selector(tabaryes)]) {
         [_delegate tabaryes];
     }
     [self removeFromSuperview];
 }
 
-
 - (void)index:(NSInteger )index{
-
     [scrollView setContentOffset:CGPointMake(index *self.frame.size.width, 0) animated:NO];
 }
+
 - (void) tick {
     [scrollView setContentOffset:CGPointMake((currentPhotoNum+1 == pages.count ? 0 : currentPhotoNum+1)*self.frame.size.width, 0) animated:YES];
 }
 
 - (void) initShow {
     int scrollPhotoNumber = MAX(0, MIN(pages.count-1, (int)(scrollView.contentOffset.x / self.frame.size.width)));
-    
     if(scrollPhotoNumber != currentPhotoNum) {
         currentPhotoNum = scrollPhotoNumber;
-        
 //        backgroundImage1.image = currentPhotoNum != 0 ? [(IntroModel*)[pages objectAtIndex:currentPhotoNum-1] image] : nil;
 //        backgroundImage1.image = [(IntroModel*)[pages objectAtIndex:currentPhotoNum] image];
 //        backgroundImage2.image = currentPhotoNum+1 != [pages count] ? [(IntroModel*)[pages objectAtIndex:currentPhotoNum+1] image] : nil;
-
         [backgroundImage1 sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",[(IntroModel*)[pages objectAtIndex:currentPhotoNum] image]]]];
         [backgroundImage2 sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",currentPhotoNum+1 != [pages count] ? [(IntroModel*)[pages objectAtIndex:currentPhotoNum + 1] image]: nil]]];
-         
-
-    
     }
-    
     float offset =  scrollView.contentOffset.x - (currentPhotoNum * self.frame.size.width);
-    
-    
     //left
     if(offset < 0) {
         pageControl.currentPage = 0;
-        
         offset = self.frame.size.width - MIN(-offset, self.frame.size.width);
         backgroundImage2.alpha = 0;
         backgroundImage1.alpha = (offset / self.frame.size.width);
-    
     //other
     } else if(offset != 0) {
         //last
         if(scrollPhotoNumber == pages.count-1) {
             pageControl.currentPage = pages.count-1;
-            
             backgroundImage1.alpha = 1.0 - (offset / self.frame.size.width);
         } else {
-            
             pageControl.currentPage = (offset > self.frame.size.width/2) ? currentPhotoNum+1 : currentPhotoNum;
-            
             backgroundImage2.alpha = offset / self.frame.size.width;
             backgroundImage1.alpha = 1.0 - backgroundImage2.alpha;
         }

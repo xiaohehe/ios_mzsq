@@ -9,5 +9,4 @@
 #import "SuperViewController.h"
 
 @interface MessageCenterViewController : SuperViewController
-
 @end

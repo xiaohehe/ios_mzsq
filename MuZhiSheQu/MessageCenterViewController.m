@@ -13,6 +13,7 @@
 #import "ShareView.h"
 #import "YiaJianViewController.h"
 #import "RCDChatListViewController.h"
+#import "IMViewController.h"
 
 @interface MessageCenterViewController ()<UITableViewDataSource,UITableViewDelegate,UICollectionViewDataSource, UICollectionViewDelegate,UICollectionViewDelegateFlowLayout>
 @property(nonatomic,strong)UILabel* titleLb;
@@ -154,14 +155,18 @@
     }
 }
 
+-(void)skipChatView{
 //    RCDChatListViewController *rong = [[RCDChatListViewController alloc]init];
 //    rong.hidesBottomBarWhenPushed=YES;
 //    [self.navigationController pushViewController:rong animated:YES];
-
--(void)skipChatView{
-    RCDChatListViewController *rong = [[RCDChatListViewController alloc]init];
-    rong.hidesBottomBarWhenPushed=YES;
-    [self.navigationController pushViewController:rong animated:YES];
+    if(self.appdelegate.shopUserInfo==nil)
+        return;
+    IMViewController *_conversationVC = [[IMViewController alloc]init];
+    _conversationVC.hidesBottomBarWhenPushed=YES;
+    _conversationVC.conversationType = ConversationType_PRIVATE;
+    _conversationVC.targetId = [NSString stringWithFormat:@"%@",self.appdelegate.shopUserInfo[@"shop_user_id"]];
+    _conversationVC.title = self.appdelegate.shopUserInfo[@"shop_name"];
+    [self.navigationController pushViewController:_conversationVC animated:YES];
 }
 
 -(void)skipSuggestView{

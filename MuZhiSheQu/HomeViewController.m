@@ -26,6 +26,8 @@
 #import "BusinessLocationViewController.h"
 #import "MessageCenterViewController.h"
 #import "SMAlert.h"
+#import "LunBoWebViewController.h"
+#import "BreakInfoViewController.h"
 
 static const NSUInteger SECTION_TAG=1000;
 static const NSUInteger MESSAGE_TAG = 66;
@@ -56,6 +58,7 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
     NSMutableArray* functionArray;//功能数组
     NSMutableArray* imageArray;//活动图片数组
     BMKLocationService *sre;
+    BOOL isFromLogin;
 }
 @end
 
@@ -80,6 +83,7 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
     [self.view addSubview:self.activityVC];
     [RCIM sharedRCIM].disableMessageAlertSound=NO;
     [RCIM sharedRCIM].receiveMessageDelegate=self;
+    isFromLogin=NO;
 }
 
 -(void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
@@ -160,13 +164,36 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
 
 -(void)imageClick:(UIControl *)sender{
     NSDictionary* dic=imageArray[sender.tag-IMAGE_TAG];
-//    if([dic[@"OpenKey"] isEqual:@"Neighbourhood"]){
-//        [self skipLinLiQuan];
-//    }else if([dic[@"OpenKey"] isEqual:@"Shopping"]){
-//        [self skipWindowShopping];
-//    }else if([dic[@"OpenKey"] isEqual:@"CommonPhone"]){
-//        [self usefulTelephoneNumbers];
-//    }
+    NSString* redirectTo=[NSString stringWithFormat:@"%@",dic[@"redirect_to"]];
+    [self skipRedirectTo:redirectTo openKey:dic[@"OpenKey"]];
+}
+
+-(void)skipRedirectTo:(NSString*) redirectTo openKey:(NSString*)openKey {
+    if([AppUtil isBlank:openKey]||[AppUtil isBlank:redirectTo]||[redirectTo isEqualToString:@"1"])
+        return;
+    if ([redirectTo isEqualToString:@"2"]){
+        LunBoWebViewController *lunbo = [LunBoWebViewController new];
+        lunbo.hidesBottomBarWhenPushed=YES;
+        lunbo.url = openKey;
+        [self.navigationController pushViewController:lunbo animated:YES];
+    }else if ([redirectTo isEqualToString:@"4"]){
+        BreakInfoViewController *info = [[BreakInfoViewController alloc]init];
+        info.hidesBottomBarWhenPushed=YES;
+        info.shop_id=openKey;
+        info.ID=openKey;
+        [self.navigationController pushViewController:info animated:YES];
+    }else if ([redirectTo isEqualToString:@"5"]){
+        ShopInfoViewController *buess = [ShopInfoViewController new];
+        buess.hidesBottomBarWhenPushed=YES;
+        buess.prod_id=openKey;
+        [self.navigationController pushViewController:buess animated:YES];
+    }else if ([redirectTo isEqualToString:@"6"]){
+        SouViewController *souView = [SouViewController new];
+        souView.hidesBottomBarWhenPushed=YES;
+        souView.isRedirectTo=YES;
+        souView.keyword=openKey;
+        [self.navigationController pushViewController:souView animated:YES];
+    }
 }
 
 -(void)newHeaderView{
@@ -471,7 +498,7 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
 -(void)showFamilyView{
     NSInteger homeID=[[NSString stringWithFormat:@"%@",familyData[@"HomeID"]] integerValue];
     NSInteger status=[[NSString stringWithFormat:@"%@",familyData[@"status"]] integerValue];
-    if(status!=0||homeID<1){
+    if(status!=0||homeID<1||isFromLogin){
         [self showRedEnvelopeView];
         return;
     }
@@ -592,13 +619,14 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
 }
 
 -(void) openRedEnvelope{
-    [SMAlert hide];
     if ([Stockpile sharedStockpile].isLogin==NO) {
         [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
             if (index==1) {
+                [SMAlert hide];
                 LoginViewController *login = [self login];
                 [login resggong:^(NSString *str) {//登录成功后需要加载的数据
                     NSLog(@"登录成功");
+                    isFromLogin=YES;
                     [self requestShopingCart:true];
                     [self ReceiveCoupon];
                 }];
@@ -606,6 +634,7 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
         }];
         return;
     }
+    [SMAlert hide];
     [self ReceiveCoupon];
 }
 
@@ -643,6 +672,7 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
             [functionArray removeAllObjects];
             [imageArray removeAllObjects];
             shopData=models[@"shopinfo"];
+            self.appdelegate.shopUserInfo=shopData;
             isCouponGive=[NSString stringWithFormat:@"%@",models[@"isCouponGive"]];
             self.appdelegate.shopInfoDic=models[@"shopinfo"];
             NSArray* funArr=models[@"module"];
@@ -701,8 +731,8 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
     }
     if(shopData==nil)
         return;
-    self.hidesBottomBarWhenPushed = YES;
     IMViewController *_conversationVC = [[IMViewController alloc]init];
+    _conversationVC.hidesBottomBarWhenPushed=YES;
     _conversationVC.conversationType = ConversationType_PRIVATE;
     _conversationVC.targetId = [NSString stringWithFormat:@"%@",shopData[@"shop_user_id"]];
     NSLog(@"imtargetid==%@",shopData[@"shop_user_id"]);
@@ -710,7 +740,6 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
     _conversationVC.title = shopData[@"shop_name"];
     //_conversationVC.conversation = model;
     [self.navigationController pushViewController:_conversationVC animated:YES];
-    self.hidesBottomBarWhenPushed = NO;
 }
 
 #pragma mark - 按钮事件//地址按钮点击事件
@@ -1009,7 +1038,6 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
     specialPriceLb.font=[UIFont boldSystemFontOfSize:12*self.scale];
     specialPriceLb.textColor=[UIColor colorWithRed:0.255 green:0.255 blue:0.255 alpha:1.00];
     [headerView addSubview:specialPriceLb];
-    
     UILabel *priceLb=[[UILabel alloc]initWithFrame:CGRectMake(specialPriceLb.right+5*self.scale, flag.top, self.view.width-specialPriceLb.right-15*self.scale, 20*self.scale)];
     priceLb.font=[UIFont systemFontOfSize:12*self.scale];
     priceLb.textColor=[UIColor colorWithRed:0.255 green:0.255 blue:0.255 alpha:1.00];
@@ -1019,9 +1047,20 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
     if([isShowAdImg isEqualToString:@"1"]){
         UIImageView* adIv = [[UIImageView alloc]initWithFrame:CGRectMake(0, 30*self.scale, self.view.width, self.view.width/w*h)];
         [adIv setImageWithURL:[NSURL URLWithString:goodsArray[section][@"AdImg"]] placeholderImage:[UIImage imageNamed:@"not_1"]];
+        adIv.userInteractionEnabled = YES;
+        UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
+        [adIv addGestureRecognizer:singleTap];
+        [singleTap view].tag=section;
         [headerView addSubview:adIv];
     }
     return headerView;
+}
+
+- (void)handleSingleTap:(UIGestureRecognizer *)gestureRecognizer {
+   // NSLog(@"handleSingleTap==%u",[gestureRecognizer view].tag);
+    NSDictionary* dic=goodsArray[[gestureRecognizer view].tag];
+    NSString* redirectTo=[NSString stringWithFormat:@"%@",dic[@"redirect_to"]];
+    [self skipRedirectTo:redirectTo openKey:dic[@"OpenKey"]];
 }
 
 @end
