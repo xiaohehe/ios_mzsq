@@ -56,6 +56,9 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:YES];
+    self.navigationController.navigationBarHidden = NO;
+    self.navigationController.navigationBar.hidden = YES;
     [self reshData];
     [self.view addSubview:self.activityVC];
 }
@@ -134,19 +137,19 @@
     _goodsView.backgroundColor=[UIColor whiteColor];
     [_sv addSubview:_goodsView];
     for(int i=0;i<pCount;i++){
-        UIImageView* coverIv=[[UIImageView alloc]initWithFrame:CGRectMake(10*self.scale*(i+1), 10*self.scale, 30*self.scale, 30*self.scale)];
+        UIImageView* coverIv=[[UIImageView alloc]initWithFrame:CGRectMake(10*self.scale, 10*self.scale+i*50*self.scale, 30*self.scale, 30*self.scale)];
         NSArray* imgs=[_data[0][@"prods"][i] objectForKey:@"img"];
         //NSLog(@"img===%lu",imgs.count);
         if(imgs.count>0){
             NSString *string = [NSString stringWithFormat:@"%@",[_data[0][@"prods"][i] objectForKey:@"img"][0]];
             NSArray *imgArr = [string componentsSeparatedByString:@"|"];
             [coverIv setImageWithURL:[NSURL URLWithString:imgArr[0]] placeholderImage:[UIImage imageNamed:@"not_1"]];
-            coverIv.layer.masksToBounds=YES;
-            coverIv.layer.cornerRadius=5;
-            [_goodsView addSubview:coverIv];
         }else{
             [coverIv setImage:[UIImage imageNamed:@"not_1"]];
         }
+        coverIv.layer.masksToBounds=YES;
+        coverIv.layer.cornerRadius=5;
+        [_goodsView addSubview:coverIv];
         UILabel *nameLa = [[UILabel alloc]initWithFrame:CGRectMake(coverIv.right+10*self.scale, coverIv.top, self.view.width/3*2-coverIv.right-10*self.scale, 15*self.scale)];
         nameLa.text =_data[0][@"prods"][i][@"prod_name"];
         nameLa.textColor=[UIColor colorWithRed:0.200 green:0.200 blue:0.200 alpha:1.00];
@@ -296,7 +299,7 @@
 
 -(void)paymentOrder{
     NSMutableDictionary *orderDic=[NSMutableDictionary dictionary];
-    [orderDic setObject:_data[0][@"isOnLinePay"] forKey:@"isOnLinePay"];
+    [orderDic setObject:[NSString stringWithFormat:@"%@",_data[0][@"isOnLinePay"]] forKey:@"isOnLinePay"];
     [orderDic setObject:self.orderId forKey:@"OrderID"];
     [orderDic setObject:_data[0][@"total_amount"] forKey:@"AllMoney"];
     PaymentOrderViewController* paymentOrderView=[[PaymentOrderViewController alloc] init];

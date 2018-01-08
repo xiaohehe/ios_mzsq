@@ -119,7 +119,7 @@ static const NSUInteger DELETE_ORDER_TAG = 2000;
     id start = _orderArray[indexPath.section];
     NSString *starts = [[NSString alloc]init];
     starts=start[@"order_detail"][0][@"status"];
-    if (![starts isEqualToString:@"1"]) {
+//    if (![starts isEqualToString:@"1"]) {
 //        OderStatesViewController *oder = [OderStatesViewController new];
 //        oder.hidesBottomBarWhenPushed=YES;
 //        oder.price = start[@"order_detail"][0][@"total_amount"];
@@ -132,12 +132,12 @@ static const NSUInteger DELETE_ORDER_TAG = 2000;
         details.orderId =start[@"order_detail"][0][@"order_no"];
         details.subOrderId =start[@"order_detail"][0][@"prods"][0][@"sub_order_no"];
         [self.navigationController pushViewController:details animated:YES];
-    }else{
-        weifukuanViewController *weifu = [weifukuanViewController new];
-        weifu.hidesBottomBarWhenPushed=YES;
-        weifu.order_id=start[@"order_detail"][0][@"order_no"];
-        [self.navigationController pushViewController:weifu animated:YES];
-    }
+//    }else{
+//        weifukuanViewController *weifu = [weifukuanViewController new];
+//        weifu.hidesBottomBarWhenPushed=YES;
+//        weifu.order_id=start[@"order_detail"][0][@"order_no"];
+//        [self.navigationController pushViewController:weifu animated:YES];
+//    }
 }
 
 - (CGFloat) tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
@@ -344,7 +344,7 @@ static const NSUInteger DELETE_ORDER_TAG = 2000;
     //        starts = start[@"status"];
     //    }
     starts=start[@"order_detail"][0][@"status"];
-    if (![starts isEqualToString:@"1"]) {
+//    if (![starts isEqualToString:@"1"]) {
 //        OderStatesViewController *oder = [OderStatesViewController new];
 //        oder.hidesBottomBarWhenPushed=YES;
 //        oder.price = start[@"order_detail"][0][@"total_amount"];
@@ -357,12 +357,12 @@ static const NSUInteger DELETE_ORDER_TAG = 2000;
         details.orderId =start[@"order_detail"][0][@"order_no"];
         details.subOrderId =start[@"order_detail"][0][@"prods"][0][@"sub_order_no"];
         [self.navigationController pushViewController:details animated:YES];
-    }else{
-        weifukuanViewController *weifu = [weifukuanViewController new];
-        weifu.hidesBottomBarWhenPushed=YES;
-        weifu.order_id=start[@"order_detail"][0][@"order_no"];
-        [self.navigationController pushViewController:weifu animated:YES];
-    }
+//    }else{
+//        weifukuanViewController *weifu = [weifukuanViewController new];
+//        weifu.hidesBottomBarWhenPushed=YES;
+//        weifu.order_id=start[@"order_detail"][0][@"order_no"];
+//        [self.navigationController pushViewController:weifu animated:YES];
+//    }
 }
 
 -(void)fuAndQUxiAO:(UIButton *)sender{

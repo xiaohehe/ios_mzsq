@@ -13,6 +13,7 @@
 @interface PaymentCompletionViewController ()
 @property(nonatomic,strong)UIButton* orderBtn;
 @property(nonatomic,strong)UIControl* familyCtl;
+@property(nonatomic,strong)UILabel* integralLb;
 @end
 
 @implementation PaymentCompletionViewController
@@ -51,13 +52,13 @@
     integraltitleLb.text=@"拇指家庭积分：";
     integraltitleLb.font=SmallFont(self.scale*0.9);
     [self.view addSubview:integraltitleLb];
-    UILabel* integralLb=[[UILabel alloc]initWithFrame:CGRectMake(integraltitleLb.right,integraltitleLb.top, 100*self.scale, 15*self.scale)];
-    integralLb.textColor=[UIColor colorWithRed:0.290 green:0.290 blue:0.290 alpha:1.00];
-    integralLb.text=[NSString stringWithFormat:@"￥%@",_integral];
-    integralLb.font=SmallFont(self.scale*0.9);
-    [self.view addSubview:integralLb];
+    _integralLb=[[UILabel alloc]initWithFrame:CGRectMake(integraltitleLb.right,integraltitleLb.top, 100*self.scale, 15*self.scale)];
+    _integralLb.textColor=[UIColor colorWithRed:0.290 green:0.290 blue:0.290 alpha:1.00];
+    //integralLb.text=[NSString stringWithFormat:@"%@",_integral];
+    _integralLb.font=SmallFont(self.scale*0.9);
+    [self.view addSubview:_integralLb];
     
-    _orderBtn=[[UIButton alloc]initWithFrame:CGRectMake(self.view.width/2-80*self.scale, integralLb.bottom+100*self.scale, 160*self.scale, 30*self.scale)];
+    _orderBtn=[[UIButton alloc]initWithFrame:CGRectMake(self.view.width/2-80*self.scale, _integralLb.bottom+100*self.scale, 160*self.scale, 30*self.scale)];
     [_orderBtn setTitle:@"查看订单" forState:UIControlStateNormal];
     _orderBtn.titleLabel.font=DefaultFont(self.scale);
     [_orderBtn setTitleColor:[UIColor colorWithRed:0.384 green:0.384 blue:0.384 alpha:1.00] forState:UIControlStateNormal];
@@ -67,7 +68,25 @@
     _orderBtn.layer.borderColor = [UIColor colorWithRed:0.384 green:0.384 blue:0.384 alpha:1.00].CGColor;
     _orderBtn.layer.borderWidth = .5;
     [self.view addSubview:_orderBtn];
-    [self setFamilyView];
+    [self orderFinish];
+    //[self setFamilyView];
+}
+
+-(void)orderFinish{
+    AnalyzeObject *analy=[[AnalyzeObject alloc]init];
+    NSDictionary *dic = @{@"orderid":_orderID};
+    [analy orderFinishWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
+        NSLog(@"orderFinis==%@",models);
+        if ([code isEqualToString:@"0"]) {
+            NSString* myfamily=[NSString stringWithFormat:@"%@",models[@"myfamily"]];
+            if([myfamily isEqualToString:@"0"]){
+                [self setFamilyView];
+                _integralLb.text=@"无";
+            }else{
+                _integralLb.text=[NSString stringWithFormat:@"%@",models[@"Integral"]];
+            }
+        }
+    }];
 }
 
 -(void)setFamilyView{
@@ -118,9 +137,9 @@
 }
 
 -(NSString*)getPayType{
-    if([_payType isEqualToString:@"1"])
+    if([_payType isEqualToString:@"2"])
         return @"微信支付";
-    else if([_payType isEqualToString:@"2"])
+    else if([_payType isEqualToString:@"1"])
         return @"支付宝支付";
     else
         return @"货到付款";

@@ -27,6 +27,11 @@
     [self reshData];
 }
 
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:YES];
+    self.navigationController.navigationBarHidden = NO;
+    self.navigationController.navigationBar.hidden = YES;
+}
 
 -(void)reshData{
     [self.activityVC startAnimate];

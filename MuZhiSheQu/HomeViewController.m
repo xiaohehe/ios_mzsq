@@ -81,6 +81,7 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
     goodsTv.showsVerticalScrollIndicator=NO;
     goodsTv.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.view addSubview:self.activityVC];
+    [self.activityVC startAnimate];
     [RCIM sharedRCIM].disableMessageAlertSound=NO;
     [RCIM sharedRCIM].receiveMessageDelegate=self;
     isFromLogin=NO;
@@ -663,7 +664,6 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
     NSString* comName=[[NSUserDefaults standardUserDefaults]objectForKey:@"commname"] ;
     NSLog(@"shopid==%@==%@",shopid,comName);
     AnalyzeObject *analy=[[AnalyzeObject alloc]init];
-    [self.activityVC startAnimate];
     NSDictionary *dic = @{@"cid":commid,@"shopid":shopid};
     [analy getCommunityShop:dic Block:^(id models, NSString *code, NSString *msg) {
         [self.activityVC stopAnimate];
@@ -788,8 +788,8 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
        cell.desLb.text=goods[@"description"];
     //NSLog(@"prodname==%@",goods[@"prodname"]);
     CGFloat pri=[[goods objectForKey:@"price"] floatValue];
-    NSString * priceString = [NSString stringWithFormat:@"￥%.1f/%@",pri,goods[@"unit"]];
-    NSString * firstString = [NSString stringWithFormat:@"%.1f",pri];
+    NSString * priceString = [NSString stringWithFormat:@"￥%.2f/%@",pri,goods[@"unit"]];
+    NSString * firstString = [NSString stringWithFormat:@"%.2f",pri];
     NSMutableAttributedString * priceAttributeString = [[NSMutableAttributedString alloc]initWithString:priceString];
     [priceAttributeString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:12*self.scale] range:NSMakeRange(1, firstString.length)];
     cell.priceLa.attributedText = priceAttributeString;

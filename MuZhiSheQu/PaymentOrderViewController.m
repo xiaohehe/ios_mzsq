@@ -73,7 +73,7 @@
         NSLog(@"orderPay==%@==%@==%@==%@",param,models,code,msg);
         if ([code isEqualToString:@"0"]) {
             _payDic=models;
-            if([_payType isEqualToString:@"1"]){
+            if([_payType isEqualToString:@"2"]){
                 if (![WXApi isWXAppInstalled]){
                     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"未安装微信" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
                     [alert show];
@@ -85,7 +85,7 @@
                         [self suessToVi];
                     }
                 }];
-            }else  if([_payType isEqualToString:@"2"]){
+            }else  if([_payType isEqualToString:@"1"]){
                 [self.appdelegate AliPayNewPrice:[NSString stringWithFormat:@"%.2f",_zongProce] OrderID:[NSString stringWithFormat:@"%@",models[@"order_no"]] OrderName:@"拇指社区" Sign:models[@"sign"]  OrderDescription:[NSString stringWithFormat:@"%@",models[@"order_no"]] complete:^(NSDictionary *resp) {
                     [self.activityVC stopAnimate];
                     if ([[resp objectForKey:@"resultStatus"] isEqualToString:@"9000"]) {
@@ -151,7 +151,7 @@
         [_alipayCtl addSubview:titleLb1];
         _alipayIv=[[UIImageView alloc]initWithFrame:CGRectMake(self.view.width-30*self.scale, 10*self.scale, 15*self.scale, 15*self.scale)];
         [_alipayIv setImage:[UIImage imageNamed:@"na10"]];
-        _payType=@"2";
+        _payType=@"1";
         [_alipayCtl addSubview:_alipayIv];
         _bottom=_alipayCtl.bottom;
     }else{
@@ -161,14 +161,14 @@
 }
 
 -(void)weChatPayClick{
-    _payType=@"1";
+    _payType=@"2";
     [_codIv setImage:[UIImage imageNamed:@"na9"]];
     [_weChatPayIv setImage:[UIImage imageNamed:@"na10"]];
     [_alipayIv setImage:[UIImage imageNamed:@"na9"]];
 }
 
 -(void)alipayClick{
-    _payType=@"2";
+    _payType=@"1";
     [_codIv setImage:[UIImage imageNamed:@"na9"]];
     [_weChatPayIv setImage:[UIImage imageNamed:@"na9"]];
     [_alipayIv setImage:[UIImage imageNamed:@"na10"]];

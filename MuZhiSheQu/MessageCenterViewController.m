@@ -14,6 +14,7 @@
 #import "YiaJianViewController.h"
 #import "RCDChatListViewController.h"
 #import "IMViewController.h"
+#import "SystemMessageViewController.h"
 
 @interface MessageCenterViewController ()<UITableViewDataSource,UITableViewDelegate,UICollectionViewDataSource, UICollectionViewDelegate,UICollectionViewDelegateFlowLayout>
 @property(nonatomic,strong)UILabel* titleLb;
@@ -40,7 +41,8 @@
 
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    [self.navigationController setNavigationBarHidden:YES animated:YES];
+    self.navigationController.navigationBarHidden = NO;
+    self.navigationController.navigationBar.hidden = YES;
 }
 
 -(void)setContent{
@@ -52,7 +54,6 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 -(void) newHeaderView{
@@ -225,7 +226,7 @@
 -(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     switch (indexPath.row) {
         case 0:
-           // [self share];
+            [self skipSystemMessageView];
             break;
         case 1:
             [self skipChatView];
@@ -234,6 +235,12 @@
             [self skipChatView];
             break;
     }
+}
+
+-(void)skipSystemMessageView{
+    SystemMessageViewController *rong = [[SystemMessageViewController alloc]init];
+    rong.hidesBottomBarWhenPushed=YES;
+    [self.navigationController pushViewController:rong animated:YES];
 }
 
 @end
