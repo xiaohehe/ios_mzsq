@@ -20,6 +20,7 @@
 #import "SortCollectionViewCell.h"
 #import "RCDChatListViewController.h"
 #import "MessageCenterViewController.h"
+//#import "LoadFailureView.h"
 static const NSUInteger MESSAGE_TAG = 66;
 
 @interface GoodsViewController ()<RCIMReceiveMessageDelegate,BreakInfoCellDelegate>//shopInfoDelegate
@@ -47,6 +48,7 @@ static const NSUInteger MESSAGE_TAG = 66;
 @property(nonatomic,assign)BOOL isOpenCol;
 @property(nonatomic,strong)NSString * curClassID;//当前分类ID
 @property(nonatomic,assign)BOOL isFirst;
+
 @end
 
 @implementation GoodsViewController
@@ -113,10 +115,13 @@ static const NSUInteger MESSAGE_TAG = 66;
     //[self ReshBotView];
     //[self shangJiaXiangQing];
     if(!_isFirst){
-        [_rightTable reloadData];
-    }else{
-        _isFirst=false;
+        //[_rightTable reloadData];
+        [self requestShopingCart:false];
+        //NSLog(@"reloadData==%@",self.appdelegate.shopDictionary);
     }
+//    else{
+//        _isFirst=false;
+//    }
     [self ReshMessage];
 }
 
@@ -212,19 +217,44 @@ static const NSUInteger MESSAGE_TAG = 66;
                         self.yunfei=[NSString stringWithFormat:@"%@",models[0][@"delivery_fee"]];
                         self.manduoshaofree = [NSString stringWithFormat:@"%@",models[0][@"free_delivery_amount"]];
                         int p = [self.yunfei intValue];
-                        int m = [self.manduoshaofree intValue];
+                        //int m = [self.manduoshaofree intValue];
                         _tishiLa.text = [NSString stringWithFormat:@"本店配送费%d元",p];
                     }
                     [_rightData removeAllObjects];
                     [_rightData addObjectsFromArray:models];
+                }else if(_isFirst){
+                    [self loadFailure:msg];
                 }
                 [_rightTable reloadData];
                 [self modifyHeaderView:false];
             }];
+        }else if(_isFirst){
+            [self loadFailure:msg];
         }
     }];
     [_collectionView.footer endRefreshing];
     [_collectionView.header endRefreshing];
+}
+
+/*
+ *重新加载
+ */
+-(void)reloadView{
+    [self.errorView removeFromSuperview];
+    [self.activityVC startAnimate];
+    [self ReshData];
+}
+
+-(void)loadFailure:(NSString*) msg{
+    _isFirst=false;
+    if(!self.errorView){
+        self.errorView=[[LoadFailureView alloc] initWithFrame:CGRectMake(0, [self getStartHeight]+44, self.view.width, self.view.bounds.size.height-([self getStartHeight]+44))];
+    }
+    if([AppUtil isBlank:msg])
+        msg=@"网络连接失败,请重试";
+    self.errorView.errorLb.text=msg;
+    [self.errorView.reloadBtn addTarget:self action:@selector(reloadView) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.errorView];
 }
 
 #pragma mark -- 购物车的数字
@@ -829,11 +859,12 @@ static const NSUInteger MESSAGE_TAG = 66;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    //NSLog(@"cellForRowAtIndexPath==");
     BreakInfoCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
     cell.delegate=self;
     NSString *string = [NSString stringWithFormat:@"%@",[_rightData[indexPath.row] objectForKey:@"imgs"][0]];
     NSArray *imgArr = [string componentsSeparatedByString:@"|"];
-   // NSLog(@"smallImgUrl==%@",imgArr[0]);
+    //NSLog(@"smallImgUrl==%@",imgArr[0]);
     [cell.headImg setImageWithURL:[NSURL URLWithString:imgArr[0]] placeholderImage:[UIImage imageNamed:@"za"]];
     cell.headImg.clipsToBounds=YES;
     cell.headImg.layer.cornerRadius=5;
@@ -1029,10 +1060,15 @@ static const NSUInteger MESSAGE_TAG = 66;
         //NSLog(@"self.appdelegate.shopDictionary==%@",self.appdelegate.shopDictionary);
         if(isRefresh)
             [self reloadData];
+        else{
+            [_rightTable reloadData];
+        }
     }else{
         //[self.appdelegate.shopDictionary removeAllObjects];
         if(isRefresh)
             [self reloadData];
+        else
+            [_rightTable reloadData];
     }
 }
 
