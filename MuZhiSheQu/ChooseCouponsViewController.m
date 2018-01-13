@@ -99,6 +99,7 @@
     [headView addSubview:_usableBtn];
     [_usableBtn setTitle:@"可用优惠券" forState:UIControlStateNormal];
     [_usableBtn setTitleColor:[UIColor colorWithRed:0.310 green:0.310 blue:0.310 alpha:1.00] forState:UIControlStateNormal];
+    _usableBtn.titleLabel.font=[UIFont systemFontOfSize:16];
     [_usableBtn addTarget:self action:@selector(cutUsadle) forControlEvents:UIControlEventTouchUpInside];
     CAGradientLayer *gradientLayer=[CAGradientLayer layer];
     gradientLayer.colors = @[(__bridge id)[UIColor colorWithRed:1.000 green:0.925 blue:0.000 alpha:1.00].CGColor, (__bridge id)[UIColor colorWithRed:0.996 green:0.800 blue:0.000 alpha:1.00].CGColor];
@@ -114,6 +115,7 @@
     [headView addSubview:_disabledBtn];
     [_disabledBtn setTitle:@"不可用优惠券" forState:UIControlStateNormal];
     [_disabledBtn setTitleColor:[UIColor colorWithRed:0.310 green:0.310 blue:0.310 alpha:1.00] forState:UIControlStateNormal];
+    _disabledBtn.titleLabel.font=[UIFont systemFontOfSize:16];
      [_disabledBtn addTarget:self action:@selector(cutDisabled) forControlEvents:UIControlEventTouchUpInside];
     _disabledFlag=[[UIView alloc]initWithFrame:CGRectMake(self.view.width/4*3-50*self.scale, _disabledBtn.bottom, 100*self.scale, 2*self.scale)];
     CAGradientLayer *gradientLayer2=[CAGradientLayer layer];

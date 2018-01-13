@@ -17,7 +17,6 @@
 #import "LoginViewController.h"
 #import "ShopInfoViewController.h"
 #import "MuZhiSheQu-Swift.h"
-#import "MineCollectionViewCell.h"
 #import "ForumViewController.h"
 #import "LifeServiceViewController.h"
 #import "WindowShoppingViewController.h"
@@ -28,6 +27,8 @@
 #import "SMAlert.h"
 #import "LunBoWebViewController.h"
 #import "BreakInfoViewController.h"
+#import "CollectingExpressViewController.h"
+#import "GroupProductViewController.h"
 
 static const NSUInteger SECTION_TAG=1000;
 static const NSUInteger MESSAGE_TAG = 66;
@@ -36,6 +37,8 @@ static const NSUInteger CART_NUM_TAG = 2000000;//购物车商品数量
 static const NSUInteger SUB_CART_TAG = 3000000;//减少购物车商品数量
 static const NSUInteger FUNCTION_TAG = 400000;//表头小功能
 static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
+static const NSUInteger GROUP_IMAGE_TAG = 600000;//区头活动图片
+static const NSUInteger GROUP_TAG = 700000;//区头
 
 
 @interface HomeViewController ()<RCIMReceiveMessageDelegate,UITableViewDataSource,UITableViewDelegate,UIScrollViewDelegate,BMKLocationServiceDelegate>{
@@ -59,6 +62,7 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
     NSMutableArray* imageArray;//活动图片数组
     BMKLocationService *sre;
     BOOL isFromLogin;
+    LoadFailureView* errorView;
 }
 @end
 
@@ -66,6 +70,7 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    NSLog(@"width==%f",self.view.width);
     [self returnVi];
     goodsArray=[[NSMutableArray alloc]init];
     shopData=[[NSMutableDictionary alloc] init];
@@ -152,6 +157,38 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
     [self.navigationController pushViewController:shangjiaVC animated:YES];
 }
 
+-(void) skipCopyPrint{
+    if ([Stockpile sharedStockpile].isLogin==NO) {
+        [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
+            if (index==1) {
+                [self login];
+            }
+        }];
+        return;
+    }
+    IMViewController *_conversationVC = [[IMViewController alloc]init];
+    _conversationVC.hidesBottomBarWhenPushed=YES;
+    _conversationVC.conversationType = ConversationType_PRIVATE;
+    _conversationVC.targetId = [NSString stringWithFormat:@"%@",shopData[@"shop_user_id"]];
+    NSLog(@"imtargetid==%@",shopData[@"shop_user_id"]);
+    _conversationVC.title = shopData[@"shopname"];
+    [self.navigationController pushViewController:_conversationVC animated:YES];
+}
+
+-(void) skipExpressDelivery{
+    if ([Stockpile sharedStockpile].isLogin==NO) {
+        [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
+            if (index==1) {
+                [self login];
+            }
+        }];
+        return;
+    }
+    CollectingExpressViewController *vc = [[CollectingExpressViewController alloc]init];
+    vc.hidesBottomBarWhenPushed=YES;
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
 -(void)functionClick:(UIControl *)sender{
     NSDictionary* dic=functionArray[sender.tag-FUNCTION_TAG];
     if([dic[@"OpenKey"] isEqual:@"Neighbourhood"]){
@@ -160,6 +197,10 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
         [self skipWindowShopping];
     }else if([dic[@"OpenKey"] isEqual:@"CommonPhone"]){
         [self usefulTelephoneNumbers];
+    }else if([dic[@"OpenKey"] isEqual:@"CopyPrint"]){
+        [self skipCopyPrint];
+    }else if([dic[@"OpenKey"] isEqual:@"ExpressDelivery"]){
+        [self skipExpressDelivery];
     }
 }
 
@@ -191,6 +232,7 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
     }else if ([redirectTo isEqualToString:@"6"]){
         SouViewController *souView = [SouViewController new];
         souView.hidesBottomBarWhenPushed=YES;
+        souView.shopData=shopData;
         souView.isRedirectTo=YES;
         souView.keyword=openKey;
         [self.navigationController pushViewController:souView animated:YES];
@@ -219,10 +261,9 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
     for (int i=0;i<[functionArray count];i++) {
         NSDictionary* functionDic=functionArray[i];
         UIControl *itemCt=[[UIControl alloc] initWithFrame:CGRectMake(self.view.width/4*i, 0, self.view.width/4, functionSv.height)];
-        UIImageView *coverIv=[[UIImageView alloc] initWithFrame:CGRectMake(0+(itemCt.width-23*self.scale)/2, 15*self.scale, 23*self.scale, 20*self.scale)];
-        //[coverIv setImage:[UIImage imageNamed:_dataSourceImg[i]]];
+        UIImageView *coverIv=[[UIImageView alloc] initWithFrame:CGRectMake(0+(itemCt.width-23*self.scale)/2, 15*self.scale, 23*self.scale, 23*self.scale)];
         [coverIv setImageWithURL:[NSURL URLWithString:functionDic[@"Icon"]] placeholderImage:[UIImage imageNamed:@"not_1"]];
-        UILabel *nameLb=[[UILabel alloc]initWithFrame:CGRectMake(0, coverIv.bottom+10*self.scale,itemCt.width,15*self.scale)];
+        UILabel *nameLb=[[UILabel alloc]initWithFrame:CGRectMake(0, coverIv.bottom+7*self.scale,itemCt.width,15*self.scale)];
         nameLb.textColor=[UIColor blackColor];
         nameLb.textAlignment = UIViewContentModeScaleAspectFit;
         nameLb.font=SmallFont(self.scale*0.8);;//名称
@@ -586,7 +627,6 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
     [useBtn addTarget:self action:@selector(useCoupons) forControlEvents:UIControlEventTouchUpInside];
     useBtn.titleLabel.font=SmallFont(self.scale*0.8);
     [customView addSubview:useBtn];
-    
     [SMAlert showCustomView:customView];
 }
 
@@ -668,6 +708,8 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
     [analy getCommunityShop:dic Block:^(id models, NSString *code, NSString *msg) {
         [self.activityVC stopAnimate];
         if ([code isEqualToString:@"0"]) {
+            if(self.appdelegate.isNewShop)
+                self.appdelegate.isNewShop=NO;
             [goodsArray removeAllObjects];
             [functionArray removeAllObjects];
             [imageArray removeAllObjects];
@@ -677,20 +719,43 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
             self.appdelegate.shopInfoDic=models[@"shopinfo"];
             NSArray* funArr=models[@"module"];
             [functionArray addObjectsFromArray:funArr];
+//            NSMutableDictionary* funDic=[NSMutableDictionary dictionary];
+//            [funDic setObject:@"代收快递" forKey:@"ModuleName"];
+//            [funDic setObject:@"express" forKey:@"OpenKey"];
+//            [functionArray addObject:funDic];
             NSArray* imgArr=models[@"advertlist"];
             [imageArray addObjectsFromArray:imgArr];
             familyData=models[@"FamilyInfo"];
             [self newHeaderView];
             [self setHeaderInfo];
             [self showFamilyView];
-            //[self showGetSuccessView:@"5"];
             NSLog(@"shopData==%@==%@",dic,models);
             NSArray* arr=models[@"prolist"];
             [goodsArray addObjectsFromArray:arr];
             goodsTv.tableHeaderView=headerView;
             [goodsTv reloadData];
+        }else if(self.appdelegate.isNewShop){
+            self.appdelegate.isNewShop=NO;
+            if(!errorView){
+                errorView=[[LoadFailureView alloc] initWithFrame:goodsTv.frame];
+            }
+            if([AppUtil isBlank:msg])
+                msg=@"网络连接失败,请重试";
+            errorView.errorLb.text=msg;
+            [errorView.reloadBtn addTarget:self action:@selector(reloadData) forControlEvents:UIControlEventTouchUpInside];
+            [self.view addSubview:errorView];
+            
         }
     }];
+}
+
+/*
+ *重新加载
+ */
+-(void)reloadData{
+    [errorView removeFromSuperview];
+    [self.activityVC startAnimate];
+    [self loadCommunityShop];
 }
 
 - (void)gouWuCheShuZi{
@@ -702,21 +767,6 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
     }else{
         [item setBadgeValue:value];
     }
-}
-
--(void)loadShopDetail{
-//    [self.activityVC startAnimate];
-//    AnalyzeObject *analyze=[[AnalyzeObject alloc]init];
-//    NSDictionary *dic=@{@"shop_id":_gongGaoDic[@"shop_id"]};
-//    if ([Stockpile sharedStockpile].isLogin) {
-//        dic=@{@"shop_id":_gongGaoDic[@"shop_id"],@"user_id":[self getuserid]};
-//    }
-//    NSLog(@"%@",dic);
-//    [analyze queryShopDetailwithDic:dic WithBlock:^(id models, NSString *code, NSString *msg) {
-//        if ([code isEqualToString:@"0"]) {
-//            shopData=models;
-//        }
-//    }];
 }
 
 //语音下单
@@ -737,7 +787,7 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
     _conversationVC.targetId = [NSString stringWithFormat:@"%@",shopData[@"shop_user_id"]];
     NSLog(@"imtargetid==%@",shopData[@"shop_user_id"]);
     // _conversationVC.userName = @"123456";
-    _conversationVC.title = shopData[@"shop_name"];
+    _conversationVC.title = shopData[@"shopname"];
     //_conversationVC.conversation = model;
     [self.navigationController pushViewController:_conversationVC animated:YES];
 }
@@ -902,7 +952,6 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
         isAdd=false;
     }
     subBtn=(UIButton *)[self.view viewWithTag:SUB_CART_TAG+(SECTION_TAG*section)+index];
-    
     NSArray* prodArr=goodsArray[section][@"ProdDetailList"];
     NSDictionary* goods=prodArr[index];
     
@@ -998,6 +1047,7 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
 -(void)skipToSearchView{
     SouViewController *vi=[SouViewController new];
     vi.hidesBottomBarWhenPushed=YES;
+    vi.shopData=shopData;
     [self.navigationController pushViewController:vi animated:YES];
 }
 
@@ -1030,35 +1080,49 @@ static const NSUInteger IMAGE_TAG = 500000;//表头活动图片
         height+=self.view.width/w*h;
     }
     UIView *headerView=[[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.width, height)];
+    UIControl* headerCtl=[[UIControl alloc]initWithFrame:CGRectMake(0, 0, self.view.width, 30*self.scale)];
+    headerCtl.userInteractionEnabled = YES;
+    headerCtl.tag=GROUP_TAG+section;
+    [headerCtl addTarget:self action:@selector(groupClick:) forControlEvents:UIControlEventTouchUpInside];
+    [headerView addSubview:headerCtl];
     UIImageView* flag = [[UIImageView alloc]initWithFrame:CGRectMake(10*self.scale, 5*self.scale, 20*self.scale, 20*self.scale)];
     [flag setImageWithURL:[NSURL URLWithString:goodsArray[section][@"Icon"]] placeholderImage:[UIImage imageNamed:@"not_1"]];
-    [headerView addSubview:flag];
+    [headerCtl addSubview:flag];
     UILabel *specialPriceLb=[[UILabel alloc]initWithFrame:CGRectMake(flag.right+5*self.scale, flag.top, 50*self.scale, 20*self.scale)];
     specialPriceLb.text=goodsArray[section][@"GroupName"];
     specialPriceLb.font=[UIFont boldSystemFontOfSize:12*self.scale];
     specialPriceLb.textColor=[UIColor colorWithRed:0.255 green:0.255 blue:0.255 alpha:1.00];
-    [headerView addSubview:specialPriceLb];
+    [headerCtl addSubview:specialPriceLb];
     UILabel *priceLb=[[UILabel alloc]initWithFrame:CGRectMake(specialPriceLb.right+5*self.scale, flag.top, self.view.width-specialPriceLb.right-15*self.scale, 20*self.scale)];
     priceLb.font=[UIFont systemFontOfSize:12*self.scale];
     priceLb.textColor=[UIColor colorWithRed:0.255 green:0.255 blue:0.255 alpha:1.00];
     priceLb.text=goodsArray[section][@"MoreText"];
     priceLb.textAlignment=NSTextAlignmentRight;
-    [headerView addSubview:priceLb];
+    [headerCtl addSubview:priceLb];
     if([isShowAdImg isEqualToString:@"1"]){
         UIImageView* adIv = [[UIImageView alloc]initWithFrame:CGRectMake(0, 30*self.scale, self.view.width, self.view.width/w*h)];
         [adIv setImageWithURL:[NSURL URLWithString:goodsArray[section][@"AdImg"]] placeholderImage:[UIImage imageNamed:@"not_1"]];
         adIv.userInteractionEnabled = YES;
         UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
         [adIv addGestureRecognizer:singleTap];
-        [singleTap view].tag=section;
+        [singleTap view].tag=section+GROUP_IMAGE_TAG;
         [headerView addSubview:adIv];
     }
     return headerView;
 }
 
+-(void) groupClick:(UIControl*) groupCtl{
+    //NSLog(@"groupClick==%u",groupCtl.tag-GROUP_TAG);
+    GroupProductViewController* vc=[[GroupProductViewController alloc]init];
+    vc.hidesBottomBarWhenPushed=YES;
+    vc.shopData=shopData;
+    vc.dataDic=goodsArray[groupCtl.tag-GROUP_TAG];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
 - (void)handleSingleTap:(UIGestureRecognizer *)gestureRecognizer {
    // NSLog(@"handleSingleTap==%u",[gestureRecognizer view].tag);
-    NSDictionary* dic=goodsArray[[gestureRecognizer view].tag];
+    NSDictionary* dic=goodsArray[[gestureRecognizer view].tag-GROUP_IMAGE_TAG];
     NSString* redirectTo=[NSString stringWithFormat:@"%@",dic[@"redirect_to"]];
     [self skipRedirectTo:redirectTo openKey:dic[@"OpenKey"]];
 }

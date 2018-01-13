@@ -186,7 +186,6 @@
     if(self.isRoot){
         ChooseQuViewController *ch = [[ChooseQuViewController alloc]initWithBlock:^(BOOL success) {
             [[NSUserDefaults standardUserDefaults]setBool:YES forKey:@"GuideKey"];
-            //self.window.rootViewController=_tabBarController;
         }];
         [self.navigationController pushViewController:ch animated:YES];
         return;
@@ -228,7 +227,6 @@
         [alert show];
         return;
     }
-    NSString* time=[self getTime];//@"time":time,,@"token":[self getMD5String:time]
     NSDictionary *dic = @{@"lng":lon,@"lat":lat};
     AnalyzeObject *anle = [AnalyzeObject new];
     [anle getNearbyCommunity:dic Block:^(id models, NSString *code, NSString *msg) {
@@ -316,13 +314,11 @@
 
 -(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    self.appdelegate.isNewShop=YES;
     [self.activityVC startAnimate];
     Plot* plot=self.plotArray[indexPath.row];
     AnalyzeObject *nale = [AnalyzeObject new];
     if(self.isRoot){
-//        UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-//        cell.accessoryType = UITableViewCellAccessoryCheckmark;
-//        plotTv.userInteractionEnabled=NO;
         [[NSNotificationCenter defaultCenter]postNotificationName:@"go" object:nil];
         [[NSUserDefaults standardUserDefaults]setObject:plot.pid forKey:@"commid"];
         [[NSUserDefaults standardUserDefaults]setBool:YES forKey:@"GuideKey"];
@@ -349,7 +345,6 @@
         }];
         return;
     }
-    //  self.commid = [[NSUserDefaults standardUserDefaults]objectForKey:@"commid"];
     NSString *userid = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
     if([AppUtil isBlank:userid]){
         [[NSUserDefaults standardUserDefaults]setObject:plot.pid forKey:@"commid"];

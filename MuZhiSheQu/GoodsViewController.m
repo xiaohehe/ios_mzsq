@@ -22,7 +22,9 @@
 #import "MessageCenterViewController.h"
 //#import "LoadFailureView.h"
 static const NSUInteger MESSAGE_TAG = 66;
-
+static const NSUInteger ADD_CART_TAG = 1000000;//增加购物车商品数量
+static const NSUInteger CART_NUM_TAG = 2000000;//购物车商品数量
+static const NSUInteger SUB_CART_TAG = 3000000;//减少购物车商品数量
 @interface GoodsViewController ()<RCIMReceiveMessageDelegate,BreakInfoCellDelegate>//shopInfoDelegate
 @property(nonatomic,strong)UIScrollView *scroll;
 @property(nonatomic,strong)UICollectionView *collectionView;
@@ -55,7 +57,6 @@ static const NSUInteger MESSAGE_TAG = 66;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    //self.view.backgroundColor=[UIColor whiteColor];
     _shop_id= [[NSUserDefaults standardUserDefaults] objectForKey:@"shopid"];
     if(!_shop_id){
         self.appdelegate.tabBarController.selectedIndex=0;
@@ -72,8 +73,8 @@ static const NSUInteger MESSAGE_TAG = 66;
     _carNum = @"0";
     _gonggao = @"";
     [self leftScrollview];
-    [self RightTable];
     [self setHeaderView];
+    [self RightTable];
    // [self RightCollectionView];
     //[self shangJiaXiangQing];
     [self returnView];
@@ -103,30 +104,22 @@ static const NSUInteger MESSAGE_TAG = 66;
 
 -(void) setLock{
     _isLock=false;
-    NSLog(@"isLock=false");
+    //NSLog(@"isLock=false");
 }
 
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:YES];
     [UmengCollection intoPage:NSStringFromClass([self class])];
-//    self.navigationController.navigationBarHidden = NO;
-//    self.navigationController.navigationBar.hidden = YES;
     [self.navigationController setNavigationBarHidden:YES animated:YES];
     //[self ReshBotView];
     //[self shangJiaXiangQing];
     if(!_isFirst){
-        //[_rightTable reloadData];
         [self requestShopingCart:false];
-        //NSLog(@"reloadData==%@",self.appdelegate.shopDictionary);
     }
-//    else{
-//        _isFirst=false;
-//    }
     [self ReshMessage];
 }
 
 - (void)onRCIMReceiveMessage:(RCMessage *)message left:(int)left{
-    //NSLog(@"onRCIMReceiveMessage==");
     dispatch_async(dispatch_get_main_queue(), ^{
         [self ReshMessage];
         [self.appdelegate appNum];
@@ -550,7 +543,8 @@ static const NSUInteger MESSAGE_TAG = 66;
     newFrame.size.height = 30*self.scale+_collectionView.height;
     _headerView.frame = newFrame;
     [_rightTable beginUpdates];
-    self.rightTable.tableHeaderView=_headerView;
+    //self.rightTable.tableHeaderView=_headerView;
+    _rightTable.frame=CGRectMake(self.scroll.right, self.headerView.bottom, self.view.width-60*self.scale, self.view.bounds.size.height- self.headerView.bottom);
     [_rightTable endUpdates];
 }
 
@@ -575,7 +569,8 @@ static const NSUInteger MESSAGE_TAG = 66;
     newFrame.size.height = 30*self.scale+_collectionView.height;
     _headerView.frame = newFrame;
     [_rightTable beginUpdates];
-    self.rightTable.tableHeaderView=_headerView;
+    //self.rightTable.tableHeaderView=_headerView;
+    _rightTable.frame=CGRectMake(self.scroll.right, self.headerView.bottom, self.view.width-60*self.scale, self.view.bounds.size.height- self.headerView.bottom-self.tabBarController.tabBar.frame.size.height);
     [_rightTable endUpdates];
     _isOpenCol=!_isOpenCol;
 }
@@ -617,7 +612,8 @@ static const NSUInteger MESSAGE_TAG = 66;
     
     [self setSortState];
     [self.headerView addSubview:self.sortView];
-    self.rightTable.tableHeaderView=_headerView;
+    [self.view addSubview:self.headerView];
+    //self.rightTable.tableHeaderView=_headerView;
 }
 
 -(void)setDefSort{
@@ -658,7 +654,7 @@ static const NSUInteger MESSAGE_TAG = 66;
 
 #pragma mark ----------右边表视图
 -(void)RightTable{
-    self.rightTable = [[UITableView alloc]initWithFrame:CGRectMake(self.scroll.right, [self getStartHeight]+44, self.view.width-60*self.scale, self.view.bounds.size.height- ([self getStartHeight]+44)-self.tabBarController.tabBar.frame.size.height) style:UITableViewStylePlain];
+    self.rightTable = [[UITableView alloc]initWithFrame:CGRectMake(self.scroll.right, self.headerView.bottom, self.view.width-60*self.scale, self.view.bounds.size.height) style:UITableViewStylePlain];
     //    self.view.bounds.size.height-100-100/2.25*self.scale-58*self.scale
     self.rightTable.dataSource=self;
     self.rightTable.delegate=self;
@@ -859,7 +855,6 @@ static const NSUInteger MESSAGE_TAG = 66;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    //NSLog(@"cellForRowAtIndexPath==");
     BreakInfoCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
     cell.delegate=self;
     NSString *string = [NSString stringWithFormat:@"%@",[_rightData[indexPath.row] objectForKey:@"imgs"][0]];
@@ -901,8 +896,8 @@ static const NSUInteger MESSAGE_TAG = 66;
         xiao=[_rightData[indexPath.row] objectForKey:@"description"];
     cell.salesLa.text = xiao;
     CGFloat pri=[[_rightData[indexPath.row] objectForKey:@"price"] floatValue];
-    NSString * priceString = [NSString stringWithFormat:@"￥%.1f/%@",pri,_rightData[indexPath.row][@"unit"]];
-    NSString * firstString = [NSString stringWithFormat:@"%.1f",pri];
+    NSString * priceString = [NSString stringWithFormat:@"￥%.2f/%@",pri,_rightData[indexPath.row][@"unit"]];
+    NSString * firstString = [NSString stringWithFormat:@"%.2f",pri];
     NSMutableAttributedString * priceAttributeString = [[NSMutableAttributedString alloc]initWithString:priceString];
     [priceAttributeString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:12*self.scale] range:NSMakeRange(1, firstString.length)];
     cell.priceLa.attributedText = priceAttributeString;
@@ -911,19 +906,33 @@ static const NSUInteger MESSAGE_TAG = 66;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     NSString *prod_id = _rightData[indexPath.row][@"id"];
     int index=[self.appdelegate.shopDictionary[@([prod_id intValue])] intValue];
-    ShopModel *model=[ShopModel new];
-    model.selectNum=index;
-    cell.shopModel = model;
+//    ShopModel *model=[ShopModel new];
+//    model.selectNum=index;
+    //cell.shopModel = model;
     //NSLog(@"index_reload==%d  param==%@",index,self.appdelegate.shopDictionary);
-    cell.numberLa.text=[NSString stringWithFormat:@"%d",index];
-    if (index==0) {
-        cell.jianBt.hidden=YES;
-        cell.numberLa.hidden=YES;
-    }else{
+//    cell.numberLa.text=[NSString stringWithFormat:@"%d",index];
+//    if (index==0) {
+//        cell.jianBt.hidden=YES;
+//        cell.numberLa.hidden=YES;
+//    }else{
+//        cell.jianBt.hidden=NO;
+//        cell.numberLa.hidden=NO;
+//    }
+//    cell.addBt.hidden=NO;
+    if (index>0&&[Stockpile sharedStockpile].isLogin==YES) {
         cell.jianBt.hidden=NO;
         cell.numberLa.hidden=NO;
+        cell.numberLa.text=self.appdelegate.shopDictionary[@([prod_id intValue])];
+    }else{
+        cell.jianBt.hidden=YES;
+        cell.numberLa.hidden=YES;
     }
-    cell.addBt.hidden=NO;
+    cell.addBt.tag=ADD_CART_TAG+indexPath.row;
+    cell.numberLa.tag=CART_NUM_TAG+indexPath.row;
+    cell.jianBt.tag=SUB_CART_TAG+indexPath.row;
+    [cell.addBt addTarget:self action:@selector(changeShopingCartNum:) forControlEvents:UIControlEventTouchUpInside];
+    [cell.jianBt addTarget:self action:@selector(changeShopingCartNum:) forControlEvents:UIControlEventTouchUpInside];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
 }
 
@@ -968,12 +977,122 @@ static const NSUInteger MESSAGE_TAG = 66;
     [self BreakInfoCellChangeNumber:[NSNumber numberWithInteger:number] IndexPath:indexPath jiaAndJian:isAdd];
 }
 
+/*更改购车车内商品数量*/
+-(void)changeShopingCartNum:(UIButton *)btn{
+    if ([Stockpile sharedStockpile].isLogin==NO) {
+        [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
+            if (index==1) {
+                LoginViewController *login = [self login];
+                [login resggong:^(NSString *str) {//登录成功后需要加载的数据
+                    NSLog(@"登录成功");
+                    [self requestShopingCart:false];
+                }];
+            }
+        }];
+        return;
+    }
+    NSInteger isOffLine=[[NSString stringWithFormat:@"%@",self.appdelegate.shopInfoDic[@"is_off_online"]] integerValue];
+    if(isOffLine==1){
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"临时歇业中"
+                                                            message:@"暂停营业。很快回来^_^!"
+                                                           delegate:nil
+                                                  cancelButtonTitle:@"确定"
+                                                  otherButtonTitles:nil];
+        [alertView show];
+        return;
+    }else if(![AppUtil isDoBusiness:self.appdelegate.shopInfoDic]){
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"歇业中"
+                                                            message:[NSString stringWithFormat:@"%@",self.appdelegate.shopInfoDic[@"onlinemark"]]
+                                                           delegate:nil
+                                                  cancelButtonTitle:@"确定"
+                                                  otherButtonTitles:nil];
+        [alertView show];
+        return;
+    }
+    NSInteger tag=btn.tag;
+    NSInteger index=-1;//商品项，为了获取商品id
+    UIButton* subBtn=nil;
+    UILabel* numLb=nil;
+    BOOL isAdd=true;
+    if (tag<CART_NUM_TAG) {
+        index=tag-ADD_CART_TAG;//tag-100000;
+        numLb=(UILabel *)[self.view viewWithTag:CART_NUM_TAG+index];
+    }else{
+        index=tag-SUB_CART_TAG;//tag-100000;
+        numLb=(UILabel *)[self.view viewWithTag:CART_NUM_TAG+index];
+        isAdd=false;
+    }
+    subBtn=(UIButton *)[self.view viewWithTag:SUB_CART_TAG+index];
+    
+    NSString* ID= [_rightData[index] objectForKey:@"id"];
+    NSMutableDictionary* param=[NSMutableDictionary dictionary];
+    [param setObject:ID forKey:@"prod_id"];
+    [param setObject:[_rightData[index] objectForKey:@"shopid"] forKey:@"shop_id"];
+    [param setObject:@"" forKey:@"shop_name"];
+    [param setObject:@"" forKey:@"shop_logo"];
+    [param setObject:@"" forKey:@"free_delivery_amount"];
+    [param setObject:[_rightData[index] objectForKey:@"prodname"] forKey:@"prod_name"];
+    NSString *string = [NSString stringWithFormat:@"%@",[_rightData[index] objectForKey:@"imgs"][0]];
+    NSArray *imgArr = [string componentsSeparatedByString:@"|"];
+    [param setObject:imgArr[0] forKey:@"img1"];
+    [param setObject:[_rightData[index] objectForKey:@"originPrice"] forKey:@"origin_price"];
+    [param setObject:[_rightData[index] objectForKey:@"price"] forKey:@"price"];
+    [param setObject:[_rightData[index] objectForKey:@"unit"] forKey:@"unit"];
+    
+    NSInteger num=[self.appdelegate.shopDictionary[@([ID  intValue])] intValue];
+    NSString * value = [[NSUserDefaults standardUserDefaults]objectForKey:@"GouWuCheShuLiang"];
+    int cartNum=[value intValue];
+    if(isAdd){
+        num++;
+        NSLog(@"param=-=-1111=%d==%@",num,self.appdelegate.shopDictionary);
+        NSInteger activityid=[[NSString stringWithFormat:@"%@",param[@"activityid"]] integerValue];
+        if(activityid>0){
+            NSInteger actmaxbuy=[[NSString stringWithFormat:@"%@",param[@"actmaxbuy"]] integerValue];
+            if(actmaxbuy>0&&num>actmaxbuy){
+                [AppUtil showToast:self.view withContent:[NSString stringWithFormat:@"活动商品限购%ld份，超出%ld份恢复原价",actmaxbuy,actmaxbuy]];
+            }
+        }
+        [[DataBase sharedDataBase] updateCart:param withType:1];
+        [self.appdelegate.shopDictionary setObject:[NSString stringWithFormat:@"%d",num] forKey:@([param[@"id"] intValue])];
+        [[NSUserDefaults standardUserDefaults] setObject:[NSString stringWithFormat:@"%d",cartNum+1] forKey:@"GouWuCheShuLiang"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }else{
+        num--;
+        [[DataBase sharedDataBase] updateCart:param withType:0];
+        [self.appdelegate.shopDictionary setObject:[NSString stringWithFormat:@"%d",num] forKey:@([param[@"id"] intValue])];
+        [[NSUserDefaults standardUserDefaults] setObject:[NSString stringWithFormat:@"%d",cartNum-1] forKey:@"GouWuCheShuLiang"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    NSLog(@"param==%@",param);
+    numLb.text=[NSString stringWithFormat:@"%d",num];
+    if(num<=0){
+        numLb.hidden=YES;
+        subBtn.hidden=YES;
+    }else{
+        numLb.hidden=NO;
+        subBtn.hidden=NO;
+    }
+    [self gouWuCheShuZi];
+}
+
+
 //yes是加   no是减
 -(void)BreakInfoCellChangeNumber:(NSNumber *)number IndexPath:(NSIndexPath *)indexPath jiaAndJian:(BOOL)jiaAndJian{
+    if ([Stockpile sharedStockpile].isLogin==NO) {
+        [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
+            if (index==1) {
+                LoginViewController *login = [self login];
+                [login resggong:^(NSString *str) {//登录成功后需要加载的数据
+                    NSLog(@"登录成功");
+                    [self requestShopingCart:false];
+                }];
+            }
+        }];
+        return;
+    }
     NSString* ID= [_rightData[indexPath.row] objectForKey:@"id"];
     NSMutableDictionary* param=[NSMutableDictionary dictionary];
     [param setObject:ID forKey:@"prod_id"];
-    // [param setObject:@"" forKey:@"shop_logo"];
     [param setObject:[_rightData[indexPath.row] objectForKey:@"shopid"] forKey:@"shop_id"];
     [param setObject:@"" forKey:@"shop_name"];
     [param setObject:@"" forKey:@"shop_logo"];

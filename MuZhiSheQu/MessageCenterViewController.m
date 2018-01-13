@@ -48,7 +48,7 @@
 -(void)setContent{
     _tableviewDataSourceImg=@[@"system_messages",@"voice_down2",@"copy_print"];
     _tableviewDataSourceTitle=@[@"系统消息",@"语音下单",@"打字复印"];
-    _tableviewDataSourceDes=@[@"系统消息",@"语音下单",@"打字复印"];
+    _tableviewDataSourceDes=@[@"系统消息",@"语音下单",@"请将您需要打印的图片或文件传给店小二"];
     [self.tableView reloadData];
 }
 
@@ -166,7 +166,7 @@
     _conversationVC.hidesBottomBarWhenPushed=YES;
     _conversationVC.conversationType = ConversationType_PRIVATE;
     _conversationVC.targetId = [NSString stringWithFormat:@"%@",self.appdelegate.shopUserInfo[@"shop_user_id"]];
-    _conversationVC.title = self.appdelegate.shopUserInfo[@"shop_name"];
+    _conversationVC.title = self.appdelegate.shopUserInfo[@"shopname"];
     [self.navigationController pushViewController:_conversationVC animated:YES];
 }
 

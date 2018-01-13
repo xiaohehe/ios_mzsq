@@ -57,8 +57,10 @@
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:YES];
-    self.navigationController.navigationBarHidden = NO;
-    self.navigationController.navigationBar.hidden = YES;
+    if(!_isToRoot){
+        self.navigationController.navigationBarHidden = NO;
+        self.navigationController.navigationBar.hidden = YES;
+    }
     [self reshData];
     [self.view addSubview:self.activityVC];
 }
@@ -462,11 +464,11 @@
     titleLb3.textAlignment=NSTextAlignmentRight;
     [_detailsView addSubview:titleLb3];
     
-    CGFloat discountCoupon=[_data[0][@"discount_coupon"] floatValue];
+    CGFloat discountCoupon=[_data[0][@"CouponID"] floatValue];
     UILabel* contentLb3=[[UILabel alloc]initWithFrame:CGRectMake(titleLb3.right+10*self.scale,titleLb3.top, self.view.width-(titleLb1.right+20*self.scale), 15*self.scale)];
-    if(![AppUtil isBlank:_data[0][@"discount_coupon"]]||discountCoupon>0){
+    if(discountCoupon>0){
         contentLb3.textColor=[UIColor colorWithRed:0.200 green:0.200 blue:0.200 alpha:1.00];
-        contentLb3.text=[NSString stringWithFormat:@"-￥%@",_data[0][@"discount_coupon"]];
+        contentLb3.text=[NSString stringWithFormat:@"-￥%@",_data[0][@"CouponMoney"]];
     }else{
         contentLb3.textColor=[UIColor colorWithRed:0.655 green:0.655 blue:0.655 alpha:1.00];
         contentLb3.text=[NSString stringWithFormat:@"暂无优惠券"];
@@ -585,7 +587,7 @@
     self.TitleLabel.text=@"订单详情";
     UIButton *popBtn=[[UIButton alloc]initWithFrame:CGRectMake(0, self.TitleLabel.top, self.TitleLabel.height, self.TitleLabel.height)];
     [popBtn setImage:[UIImage imageNamed:@"left"] forState:UIControlStateNormal];
-    //    [popBtn setImage:[UIImage imageNamed:@"left_b"] forState:UIControlStateHighlighted];
+    [popBtn setImage:[UIImage imageNamed:@"left_b"] forState:UIControlStateHighlighted];
     [popBtn addTarget:self action:@selector(PopVC:) forControlEvents:UIControlEventTouchUpInside];
     [self.NavImg addSubview:popBtn];
 }

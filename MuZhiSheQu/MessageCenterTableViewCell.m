@@ -45,7 +45,7 @@
     [self.contentView addSubview:_titleLa];
     
     self.desLb = [UILabel new];
-    self.desLb.font = SmallFont(self.scale*0.9);
+    self.desLb.font = SmallFont(self.scale*0.8);
     self.desLb.textColor=[UIColor colorWithRed:0.690 green:0.690 blue:0.690 alpha:1.00];
     [self.contentView addSubview:_desLb];
 
