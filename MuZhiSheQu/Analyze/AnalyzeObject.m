@@ -851,16 +851,12 @@
         }else{
             block(nil,nil,nil);
         }
-        
-        
-        
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         
                 block(nil,nil,nil);
         
         NSLog(@"%@",error);
     }];
-
 }
 
 -(void)delProdInCartWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
@@ -3016,7 +3012,307 @@
  */
 -(void)checkCart:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
     [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"Cart/checkCart"] parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
-        // NSLog(@"--res--%@",responseObject);
+       // NSLog(@"--checkCart--%@",responseObject);
+        NSNumber *retn = [responseObject objectForKey:@"ret"];
+        NSString *ret = [NSString stringWithFormat:@"%@",retn];
+        if ([ret isEqualToString:@"200"]) {
+            NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
+            NSLog(@"%@",code);
+            NSString *msg =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"msg"]];
+            if ([code isEqualToString:@"0"]) {
+                block([[responseObject objectForKey:@"data"] objectForKey:@"info"],code,msg);
+            }else{
+                block(nil,code,msg);
+                if([code isEqualToString:@"-1"])
+                    [self clearUserInfo];
+            }
+        }else{
+            block(nil,nil,nil);
+        }
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+       // NSLog(@"--checkCart--failure==%d",error.code);
+        block(nil,nil,nil);
+    }];
+}
+
+/**
+ * 我的优惠券(新增)
+ *2017-12-27
+ */
+-(void)getMyCouponWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
+    [[AFAppDotNetAPIClient sharedClient] GET:@"GetMyCoupon" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+        NSNumber *retn = [responseObject objectForKey:@"ret"];
+        NSString *ret = [NSString stringWithFormat:@"%@",retn];
+        if ([ret isEqualToString:@"200"]) {
+            NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
+            //NSLog(@"%@",code);
+            NSString *msg =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"msg"]];
+            if ([code isEqualToString:@"0"]) {
+                block([[responseObject objectForKey:@"data"] objectForKey:@"info"],code,msg);
+            }else{
+                block(nil,code,msg);
+                if([code isEqualToString:@"-1"])
+                    [self clearUserInfo];
+            }
+        }else{
+            block(nil,nil,nil);
+        }
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        block(nil,nil,nil);
+    }];
+}
+
+/**
+ * 订单检测(新增)
+ *2017-12-28
+ */
+-(void)orderCheckWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
+    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"v2/OrderCheck"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
+        NSNumber *retn = [responseObject objectForKey:@"ret"];
+        NSString *ret = [NSString stringWithFormat:@"%@",retn];
+        if ([ret isEqualToString:@"200"]) {
+            NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
+            NSString *msg =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"msg"]];
+            if ([code isEqualToString:@"0"]) {
+                block([[responseObject objectForKey:@"data"] objectForKey:@"info"],code,msg);
+            }else{
+                block(nil,code,msg);
+            }
+        }else{
+            block(nil,nil,nil);
+        }
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        block(nil,nil,nil);
+        NSLog(@"%@",error);
+    }];
+}
+
+/**
+ * 提交订单(新增)
+ *2017-12-27
+ */
+-(void)orderSubmitWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
+    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"v2/OrderSubmit"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
+        NSNumber *retn = [responseObject objectForKey:@"ret"];
+        NSString *ret = [NSString stringWithFormat:@"%@",retn];
+        if ([ret isEqualToString:@"200"]) {
+            NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
+            NSString *msg =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"msg"]];
+           // NSLog(@"%@",responseObject);
+            if ([code isEqualToString:@"0"]) {
+                block([[responseObject objectForKey:@"data"] objectForKey:@"info"],code,msg);
+            }else{
+                block(nil,code,msg);
+            }
+        }else{
+            block(nil,nil,nil);
+        }
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        block(nil,nil,nil);
+        NSLog(@"%@",error);
+    }];
+}
+
+/**
+ * 支付订单(新增)
+ *2017-12-27
+ */
+-(void)orderPayWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
+    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"v2/OrderPay"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
+        NSNumber *retn = [responseObject objectForKey:@"ret"];
+        NSString *ret = [NSString stringWithFormat:@"%@",retn];
+        if ([ret isEqualToString:@"200"]) {
+            NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
+            NSString *msg =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"msg"]];
+            //NSLog(@"%@",responseObject);
+            if ([code isEqualToString:@"0"]) {
+                block([[responseObject objectForKey:@"data"] objectForKey:@"info"],code,msg);
+            }else{
+                block(nil,code,msg);
+            }
+        }else{
+            block(nil,nil,nil);
+        }
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        block(nil,nil,nil);
+        NSLog(@"%@",error);
+    }];
+}
+
+/**
+ *导入快递信息(新增)
+ *2018-01-09
+ */
+-(void)importExpressWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
+    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"ImportExpress"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
+        NSNumber *retn = [responseObject objectForKey:@"ret"];
+        NSString *ret = [NSString stringWithFormat:@"%@",retn];
+        if ([ret isEqualToString:@"200"]) {
+            NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
+            NSString *msg =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"msg"]];
+            
+            NSLog(@"%@",responseObject);
+            if ([code isEqualToString:@"0"]) {
+                block([[responseObject objectForKey:@"data"] objectForKey:@"info"],code,msg);
+            }else{
+                block(nil,code,msg);
+            }
+        }else{
+            block(nil,nil,nil);
+        }
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        block(nil,nil,nil);
+        NSLog(@"%@",error);
+    }];
+}
+
+/**
+ * 消息列表(新增)
+ *2018-01-11
+ */
+-(void)getMessagesWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
+    [[AFAppDotNetAPIClient sharedClient] GET:@"GetMessages" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+        //NSLog(@"ReceiveCoupon==%@",responseObject);
+        NSNumber *retn = [responseObject objectForKey:@"ret"];
+        NSString *ret = [NSString stringWithFormat:@"%@",retn];
+        if ([ret isEqualToString:@"200"]) {
+            NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
+            NSLog(@"%@",code);
+            NSString *msg =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"msg"]];
+            if ([code isEqualToString:@"0"]) {
+                block([[responseObject objectForKey:@"data"] objectForKey:@"info"],code,msg);
+            }else{
+                block(nil,code,msg);
+                if([code isEqualToString:@"-1"])
+                    [self clearUserInfo];
+            }
+        }else{
+            block(nil,nil,nil);
+        }
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        block(nil,nil,nil);
+    }];
+}
+
+/**
+ * 获取商品分组详细内容(新增)
+ *2018-01-11
+ */
+-(void)getProductGroupDetailWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
+    [[AFAppDotNetAPIClient sharedClient] GET:@"GetProductGroupDetail" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+        //NSLog(@"ReceiveCoupon==%@",responseObject);
+        NSNumber *retn = [responseObject objectForKey:@"ret"];
+        NSString *ret = [NSString stringWithFormat:@"%@",retn];
+        if ([ret isEqualToString:@"200"]) {
+            NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
+            NSLog(@"%@",code);
+            NSString *msg =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"msg"]];
+            if ([code isEqualToString:@"0"]) {
+                block([[responseObject objectForKey:@"data"] objectForKey:@"info"],code,msg);
+            }else{
+                block(nil,code,msg);
+                if([code isEqualToString:@"-1"])
+                    [self clearUserInfo];
+            }
+        }else{
+            block(nil,nil,nil);
+        }
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        block(nil,nil,nil);
+    }];
+}
+
+/**
+ *支付完成(新增)
+ *2018-01-08
+ */
+-(void)orderFinishWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
+    [[AFAppDotNetAPIClient sharedClient] GET:@"v2/OrderFinish" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+        NSLog(@"ReceiveCoupon==%@",responseObject);
+        NSNumber *retn = [responseObject objectForKey:@"ret"];
+        NSString *ret = [NSString stringWithFormat:@"%@",retn];
+        if ([ret isEqualToString:@"200"]) {
+            NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
+            NSLog(@"%@",code);
+            NSString *msg =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"msg"]];
+            if ([code isEqualToString:@"0"]) {
+                block([[responseObject objectForKey:@"data"] objectForKey:@"info"],code,msg);
+            }else{
+                block(nil,code,msg);
+                if([code isEqualToString:@"-1"])
+                    [self clearUserInfo];
+            }
+        }else{
+            block(nil,nil,nil);
+        }
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        block(nil,nil,nil);
+    }];
+}
+
+/**
+ * 再来一单(新增)
+ *2018-01-04
+ */
+-(void)reOrderWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
+    [[AFAppDotNetAPIClient sharedClient] GET:@"v2/ReOrder" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+        NSLog(@"ReceiveCoupon==%@",responseObject);
+        NSNumber *retn = [responseObject objectForKey:@"ret"];
+        NSString *ret = [NSString stringWithFormat:@"%@",retn];
+        if ([ret isEqualToString:@"200"]) {
+            NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
+            NSLog(@"%@",code);
+            NSString *msg =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"msg"]];
+            if ([code isEqualToString:@"0"]) {
+                block([[responseObject objectForKey:@"data"] objectForKey:@"info"],code,msg);
+            }else{
+                block(nil,code,msg);
+                if([code isEqualToString:@"-1"])
+                    [self clearUserInfo];
+            }
+        }else{
+            block(nil,nil,nil);
+        }
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        block(nil,nil,nil);
+    }];
+}
+
+/**
+ *领取登录券(新增)
+ *2018-01-03
+ */
+-(void)receiveCouponWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
+    [[AFAppDotNetAPIClient sharedClient] GET:@"ReceiveCoupon" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+        NSLog(@"ReceiveCoupon==%@",responseObject);
+        NSNumber *retn = [responseObject objectForKey:@"ret"];
+        NSString *ret = [NSString stringWithFormat:@"%@",retn];
+        if ([ret isEqualToString:@"200"]) {
+            NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
+            NSLog(@"%@",code);
+            NSString *msg =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"msg"]];
+            if ([code isEqualToString:@"0"]) {
+                block([[responseObject objectForKey:@"data"] objectForKey:@"info"],code,msg);
+            }else{
+                block(nil,code,msg);
+                if([code isEqualToString:@"-1"])
+                    [self clearUserInfo];
+            }
+        }else{
+            block(nil,nil,nil);
+        }
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        block(nil,nil,nil);
+    }];
+}
+
+/**
+ *是否同意加入拇指家庭(新增)
+ *2018-01-03
+ */
+-(void)confirmFamilyWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
+    [[AFAppDotNetAPIClient sharedClient] GET:@"ConfirmFamily" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+        NSLog(@"confirmFamily==%@",responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -3074,6 +3370,7 @@
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"GouWuCheShuLiang"];
     [((AppDelegate*)[UIApplication sharedApplication].delegate).shopDictionary removeAllObjects];
     [((AppDelegate*)[UIApplication sharedApplication].delegate) outLogin];
+    //NSLog(@"islogin==%d",[Stockpile sharedStockpile].isLogin);
 }
 
 -(NSString*) getURLWithParam:(NSString*) url{

@@ -35,7 +35,7 @@
     [self newNav];
     
     _data=[NSMutableArray new];
-    self.TitleLabel.text=@"选择服务社区";
+    self.TitleLabel.text=@"选择您的小区";
     [self newView];
     
     [self reshData];

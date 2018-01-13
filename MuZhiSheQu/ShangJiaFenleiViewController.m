@@ -48,24 +48,26 @@
 //    self.shenghuoTableView.bounces = NO;
 //    self.shenghuoTableView.scrollEnabled = NO;
     self.shenghuoTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
     [self.shenghuoTableView registerClass:[ShengHuoTableViewCell class] forCellReuseIdentifier:@"cell"];
     [self.shenghuoTableView addLegendFooterWithRefreshingTarget:self refreshingAction:@selector(shangla)];
     [self.shenghuoTableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(xiala)];
     self.shenghuoTableView.footer.automaticallyRefresh = NO;
     [self.view addSubview:self.shenghuoTableView];
 }
+
 #pragma mark ------- tableView协议方法
 #pragma  mark -- 获取区头的个数
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     return 1;
 }
+
 #pragma mark -- 获取tableViewcell的个数
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return self.dataArray.count;
 }
+
 #pragma mark -- 配置tableViewcell
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {

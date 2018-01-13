@@ -9,12 +9,14 @@
 #import "SuperViewController.h"
 #import "CellView.h"
 #import "XiangQingTableViewCell.h"
-#import <ShareSDK/ShareSDK.h>
-
+#import "PassValueDelegate.h"
 #import "WXApi.h"
-#import <TencentOpenAPI/QQApiInterface.h>
+
 @interface GongGaoInfoViewController : SuperViewController
 @property(nonatomic,strong)NSString *gongID,*type;
 @property(nonatomic,strong)UITextField *mesay;
+@property(nonatomic,assign)NSInteger gIndex;
+@property(nonatomic,assign) NSObject<PassValueDelegate> *delegate;
 @property(nonatomic,assign)BOOL bian;
+@property(nonatomic,strong)NSMutableDictionary *gDic;
 @end

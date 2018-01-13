@@ -14,4 +14,6 @@
 @property(nonatomic,strong)UIImageView *bottomR,*bottomL;
 @property(nonatomic,strong)UIView *botROne,*botRTwo;
 @property(nonatomic,strong)NSDictionary * shopData;
+@property(nonatomic,assign)BOOL isRedirectTo;
+
 @end

@@ -174,6 +174,42 @@
     return subTime;
 }
 
++(NSString*) postSendTime3:(NSString*) time{
+    NSDate *now = [NSDate date];
+    NSTimeZone *zone1 = [NSTimeZone systemTimeZone];
+    NSInteger interval1 = [zone1 secondsFromGMTForDate:now];
+    NSDate *localDate1 = [now dateByAddingTimeInterval:interval1];
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+    // 时间格式,此处遇到过坑,建议时间HH大写,手机24小时进制和12小时禁止都可以完美格式化
+    [dateFormat setDateFormat:@"yyyy/MM/dd HH:mm:ss"];
+    NSDate *start = [dateFormat dateFromString:time];
+    NSInteger interval2 = [zone1 secondsFromGMTForDate:start];
+    NSDate *localDate2 = [start dateByAddingTimeInterval:interval2];
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSString* subTime=time;
+    NSArray *d1 = [subTime componentsSeparatedByString:@" "];
+    NSString* t1=[d1 lastObject];
+    int unit = NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear ;
+    //1.获得当前时间的 年月日
+    NSDateComponents *nowCmps = [calendar components:unit fromDate:localDate2];
+    //2.获得self
+    NSDateComponents *selfCmps = [calendar components:unit fromDate:localDate1];
+    if((selfCmps.year == nowCmps.year) && (selfCmps.month == nowCmps.month) && (selfCmps.day == nowCmps.day)){
+        if([t1 length]>=5){
+            subTime=[t1 substringToIndex:5];
+        }
+    }else if((selfCmps.year == nowCmps.year) && (selfCmps.month == nowCmps.month) && ((selfCmps.day+1) == nowCmps.day)){
+        if([t1 length]>=5){
+            subTime=[NSString stringWithFormat:@"昨天 %@",[t1 substringToIndex:5]];
+        }
+    }else{
+        if([t1 length]>=5){
+            subTime=[NSString stringWithFormat:@"%@ %@",[d1 firstObject],[t1 substringToIndex:5]];
+        }
+    }
+    return subTime;
+}
+
 +(NSString*) getCurrentTime{
     NSDate *date = [NSDate date];
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
@@ -200,5 +236,19 @@
     if(arr==nil||arr.count==0)
         return YES;
     return NO;
+}
+
++(NSString*) dateConversion:(NSString*) time{
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+    // 时间格式,此处遇到过坑,建议时间HH大写,手机24小时进制和12小时禁止都可以完美格式化
+    [dateFormat setDateFormat:@"yyyy/MM/dd HH:mm:ss"];
+    NSDate *start = [dateFormat dateFromString:time];
+    
+    NSDateFormatter *dateFormatter2 = [[NSDateFormatter alloc] init];
+    //设置格式：zzz表示时区
+    [dateFormatter2 setDateFormat:@"yyyy年MM月dd日"];
+    //NSDate转NSString
+    NSString* format = [dateFormatter2 stringFromDate:start];
+    return format;
 }
 @end

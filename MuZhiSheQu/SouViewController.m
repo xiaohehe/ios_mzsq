@@ -28,15 +28,12 @@ static const NSUInteger SUB_CART_TAG = 300000;//减少购物车商品数量
 @property(nonatomic,assign)NSInteger index;
 @property(nonatomic,strong)UILabel *la;
 @property(nonatomic,strong)UIButton * numberImg;
-//@property(nonatomic,strong)UILabel *priceLa, *shopCarLa;
 @property(nonatomic,strong)NSString * carPrice;
 @property(nonatomic,strong)NSDictionary * remindDic;
 @property(nonatomic,strong)UILabel * peiSongLab;
 @property(nonatomic,strong)NSMutableArray *dataSource;
 @property(nonatomic,assign)CGFloat totalPrice;
-//@property(nonatomic,strong)UICollectionView *collectionView;
 @property(nonatomic,assign)BOOL isLock;
-//@property(nonatomic,assign) CGFloat dangerAreaHeight;
 @property(nonatomic,strong)UIView *keywordsView;
 @property(nonatomic,strong)UICollectionView *hotSearchCollectionView;//热搜
 @property(nonatomic,strong)UITableView *historyTableView;//搜索历史
@@ -45,7 +42,6 @@ static const NSUInteger SUB_CART_TAG = 300000;//减少购物车商品数量
 @property(nonatomic,strong)NSMutableArray *hotSearchData;
 @property(nonatomic,strong)NSMutableArray *searchHistoryData;
 @property(nonatomic,assign)BOOL isFirst;
-
 
 @end
 @implementation SouViewController
@@ -66,11 +62,11 @@ static const NSUInteger SUB_CART_TAG = 300000;//减少购物车商品数量
     _hotSearchData=[[NSMutableArray alloc]init];
     _searchHistoryData=[[NSMutableArray alloc]init];
     [self newKeywordsView];
-//  UITextField *tf=[self.view viewWithTag:888];
-//  tf.text=_keyword;
-   //[self reshData];
-   // [self loadShopingCart];
-    //NSLog(@"shop_ip:%@",_shop_id);
+    if(_isRedirectTo){
+        UITextField *souTf=[self.view viewWithTag:888];
+        souTf.text=_keyword;
+        [self startSearch:souTf];
+    }
 }
 
 -(void)newKeywordsView{
@@ -628,7 +624,7 @@ static const NSUInteger SUB_CART_TAG = 300000;//减少购物车商品数量
     _numberImg.titleLabel.font = Small10Font(self.scale);
     [shopcarImgL addSubview:_numberImg];
     float r = shopcarImgL.right;
-    float t = shopcarImgL.top;
+    //float t = shopcarImgL.top;
     _peiSongLab = [[UILabel alloc]initWithFrame:CGRectMake(r+5*self.scale, 14*self.scale, [UIScreen mainScreen].bounds.size.width - r - 110*self.scale, 20*self.scale)];
     _peiSongLab.text = [self xianShiPeiSongFei];
     _peiSongLab.font = Small10Font(self.scale);
@@ -649,7 +645,7 @@ static const NSUInteger SUB_CART_TAG = 300000;//减少购物车商品数量
     gradientLayer.colors = @[(__bridge id)[UIColor colorWithRed:1.000 green:0.925 blue:0.000 alpha:1.00].CGColor, (__bridge id)[UIColor colorWithRed:0.996 green:0.800 blue:0.000 alpha:1.00].CGColor];
     gradientLayer.startPoint = CGPointMake(0, 0);
     gradientLayer.endPoint = CGPointMake(1.0, 0);
-    gradientLayer.frame = CGRectMake(0, 0, 80*self.scale , 49*self.scale);
+    gradientLayer.frame = CGRectMake(0, 0, shopCarR.width , shopCarR.height);
     [shopCarR.layer insertSublayer:gradientLayer atIndex:0];
     
     [self.botRTwo addSubview:shopCarR];

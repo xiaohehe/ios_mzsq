@@ -31,7 +31,7 @@
     [super viewDidLoad];
     _type=2;
     _data=[NSMutableArray new];
-    self.TitleLabel.text=@"选择服务社区";
+    self.TitleLabel.text=@"选择您的小区";
     [self.view addSubview:self.activityVC];
     [self.activityVC startAnimate];
     [self newView];

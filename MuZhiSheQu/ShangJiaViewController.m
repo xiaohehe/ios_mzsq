@@ -32,7 +32,9 @@
 //@property(nonatomic,strong)CellView *heardView;
 //@property(nonatomic,assign)int typee;
 @end
+
 @implementation ShangJiaViewController
+
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:YES];
     [UmengCollection intoPage:NSStringFromClass([self class])];
@@ -53,7 +55,6 @@
 //        if (self.commid==nil || [self.commid isEqualToString:@""]) {
 //            // [self ShowAlertWithMessage:@"没有数据，请重新选择社区"];
 //        }
-//        
 //        return;
     }
     //
@@ -61,11 +62,11 @@
     self.navigationController.navigationBar.hidden = YES;
 }
 
--(void)viewWillDisappear:(BOOL)animated
-{
+-(void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     [UmengCollection outPage:NSStringFromClass([self class])];
 }
+
 -(void)viewDidLoad{
     [super viewDidLoad];
 //    _typee=0;
@@ -77,12 +78,10 @@
 //    if (_ToolView) {
 //        [_ToolView removeFromSuperview];
 //    }
-//    
 //    [[NSUserDefaults standardUserDefaults]setBool:YES forKey:@"changeCommShang"];
 //    if ([self getCommid]==nil || [[self getCommid] isEqualToString:@""]) {
 //        [[NSUserDefaults standardUserDefaults]setBool:NO forKey:@"changeCommShang"];
 //    }
-//    
 //    _ToolView=[[UIView alloc]initWithFrame:CGRectMake(0, self.NavImg.bottom, self.view.width, 40*self.scale)];
 //    _ToolView.backgroundColor=[UIColor whiteColor];
 //    [self.view addSubview:_ToolView];
@@ -95,7 +94,6 @@
 //    [self.view addSubview:self.activityVC];
 //    [self.activityVC startAnimate];
 //    [self reshData];
-//    
 //    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(TextFieldChange) name:UITextFieldTextDidChangeNotification object:nil];
     _X=0;
     _index=0;
@@ -110,7 +108,6 @@
 }
 
 //-(void)newView{
-//
 //    _tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 64, self.view.width, self.view.height-64-49-30*self.scale)];
 //    _tableView.dataSource=self;
 //    _tableView.delegate=self;
@@ -122,24 +119,19 @@
 ////    [_tableView registerClass:[ShengHuoTableViewCell class] forCellReuseIdentifier:@"cell"];
 ////    [_tableView addLegendFooterWithRefreshingTarget:self refreshingAction:@selector(shangla)];
 //    [_tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(xiala)];
-//  
-//  
 //}
 
 -(void)botView{
-
     float h = 30*self.scale;
     UIView *vi = [[UIView alloc]initWithFrame:CGRectMake(0, self.view.height-h, self.view.width, h)];
     vi.backgroundColor=[UIColor colorWithRed:245/255.0 green:1 blue:170/255.0 alpha:1];
     [self.view addSubview:vi];
-    
     UILabel *la = [[UILabel alloc]initWithFrame:CGRectMake(10*self.scale, 0, 0, 0)];
     la.text=@"如果您也想为社区提供服务，点击联系管理员";
     la.font=[UIFont systemFontOfSize:11*self.scale];
     [la sizeToFit];
     la.height=h;
     [vi addSubview:la];
-
     UIButton *btn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 0, 0)];
     btn.titleLabel.font=DefaultFont(self.scale);
     [btn setTitle:@"管理员" forState:0];
@@ -150,29 +142,21 @@
     [btn sizeToFit];
     btn.width=btn.width+7*self.scale;
     btn.height=btn.height-7*self.scale;
-
     btn.right=vi.width-10*self.scale;
     btn.centerY=la.centerY;
     [vi addSubview:btn];
-    
-    
     la.width=vi.width-btn.width-20*self.scale;
-    
-    
 }
+
 #pragma mark -- 获取电话号码
 -(void)teltalk{
-    
 //    if (![[NSString stringWithFormat:@"%@",_guanliTel] isEmptyString]) {
 //        [self telWithTel:_guanliTel];
 //        return;
 //    }
-    
     [self.view addSubview:self.activityVC];
     [self.activityVC startAnimate];
-    
     NSDictionary *dic = @{@"pindex":[NSString stringWithFormat:@"%d",1],@"community_id":[self getCommid]};
-    
     AnalyzeObject *anle =[AnalyzeObject new];
     [anle showCommonTelWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
         [self.activityVC stopAnimate];
@@ -180,26 +164,18 @@
             NSLog(@"tel==%@",models);
             _guanliTel=[NSString stringWithFormat:@"%@",models[@"platform_tel"]];
             [self telWithTel:_guanliTel];
-
         }
     }];
-
-    
-    
-    
-    
 }
 
 #pragma mark-- 管理员点击按钮
 -(void)telWithTel:(NSString *)str{
-
     NSMutableString * str1=[[NSMutableString alloc] initWithFormat:@"telprompt://%@",str];
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:str1]];
 
 }
 #pragma mark -- 创建刷新按钮
-- (void)createReshBtn
-{
+- (void)createReshBtn{
     if (_reshBtn)
     {
         [_reshBtn removeFromSuperview];
@@ -429,57 +405,44 @@
 //    [self.navigationController pushViewController:gan animated:YES];
 //    self.hidesBottomBarWhenPushed=NO;
 //}
+
 #pragma mark -- 初始化数据和刷新数据
 -(void)reshData{
     [self.view addSubview:self.activityVC];
     [self.activityVC startAnimate];
     AnalyzeObject *anle = [AnalyzeObject new];
-    
-    NSDictionary *dic = @{@"community_id":[self getCommid],@"lng":[NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults] objectForKey:@"longitude"]],@"lat":[NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults] objectForKey:@"latitude"]]};
+    NSDictionary *dic = @{@"communityid":[self getCommid],@"lng":[NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults] objectForKey:@"longitude"]],@"lat":[NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults] objectForKey:@"latitude"]]};
     [anle leibiaol:dic Block:^(id models, NSString *code, NSString *msg) {
         [_topData removeAllObjects];
         [self.activityVC stopAnimate];
         [_tableView.header endRefreshing];
-        if ([code isEqualToString:@"0"])
-        {
+        if ([code isEqualToString:@"0"]){
             NSLog(@"init==%@",models);
             [_topData addObjectsFromArray:models];
             if (_topData.count>0 && [_IdStr isEqualToString:@"!"]) {
-//                _IdStr = [NSString stringWithFormat:@"%@",_topData[0][@"id"]];
+                //                _IdStr = [NSString stringWithFormat:@"%@",_topData[0][@"id"]];
                 [self createSonViewControllerWith:_topData];
             }
         }else{
             [self createReshBtn];
-//            [self.activityVC stopAnimate];
-//            [_tableView.header endRefreshing];
-//          
-//            [_tableView reloadData];
+            //            [self.activityVC stopAnimate];
+            //            [_tableView.header endRefreshing];
+            //            [_tableView reloadData];
         }
-////        [_tableView.header endRefreshing];
-////        [_tableView.footer endRefreshing];
-//        [_tableView reloadData];
-     
-//        [self reshList];
-        
-       
-
+        ////        [_tableView.header endRefreshing];
+        ////        [_tableView.footer endRefreshing];
+        //        [_tableView reloadData];
+        //        [self reshList];
     }];
-    
-
 }
+
 //#pragma mark -- 上拉加载
 //-(void)reshList{
 //    _index++;
 //    AnalyzeObject *anle = [AnalyzeObject new];
-//    
 //    NSDictionary *dic = @{@"community_id":[self getCommid],@"lng":[NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults] objectForKey:@"longitude"]],@"lat":[NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults] objectForKey:@"latitude"]],@"pindex":[NSString stringWithFormat:@"%ld",(long)_index],@"shop_type":@"2",@"profession_class":[NSString stringWithFormat:@"%@",_IdStr]};
-//    
-//    
 //    [self.view addSubview:self.activityVC];
 //    [self.activityVC startAnimate];
-//    
-//    
-//    
 //    [anle shangjial:dic Block:^(id models, NSString *code, NSString *msg) {
 //        [self.activityVC stopAnimate];
 //        [_tableView.header endRefreshing];
@@ -534,7 +497,6 @@
         shangjiafenleiVC.view.frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, self.view.height-64-30*self.scale);
         __block ShangJiaFenleiViewController *weakVC = shangjiafenleiVC;
         weakVC.selectIndexRow=^(NSDictionary *dic){
-            
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.hidesBottomBarWhenPushed=YES;
                 BOOL issleep = [self getTimeWith:dic];
@@ -1537,15 +1499,12 @@
 //}
 //-(void)ShangJiaTableViewCellEnterShop:(NSIndexPath *)indexPath{
 //    self.hidesBottomBarWhenPushed=YES;
-//
-//    
 //    if ([_botData[indexPath.row][@"shop_type"] isEqualToString:@"2"]) {
 //        GanXiShopViewController *gan = [GanXiShopViewController new];
 //        gan.ID = _botData[indexPath.row][@"id"];
 //        gan.titlee=_botData[indexPath.row][@"shop_name"];
 //        [self.navigationController pushViewController:gan animated:YES];
 //    }else{
-//    
 //    BreakInfoViewController *ganxi = [BreakInfoViewController new];
 //    ganxi.ID = _botData[indexPath.row][@"id"];
 //    ganxi.titlete =_botData[indexPath.row][@"shop_name"];
@@ -1556,11 +1515,12 @@
 //    [self.navigationController pushViewController:ganxi animated:YES];
 //    }
 //    self.hidesBottomBarWhenPushed=NO;
-// 
 //}
+
 //-(void)dealloc{
 //    [[NSNotificationCenter defaultCenter]removeObserver:self];
 //}
+
 #pragma mark -- 获取字体的高度和宽度
 - (CGRect)getStringWithFont:(UIFont *)font withWidth:(CGFloat)width withString:(NSString *)string
 {
@@ -1571,10 +1531,7 @@
 #pragma mark - 导航
 -(void)newNav{
 //    NSString *addrss = [[NSUserDefaults standardUserDefaults]objectForKey:@"commname"];
-    
-    
     self.TitleLabel.text=@"生活服务";
-    
     UIButton *popBtn=[[UIButton alloc]initWithFrame:CGRectMake(0, self.TitleLabel.top, self.TitleLabel.height, self.TitleLabel.height)];
     [popBtn setImage:[UIImage imageNamed:@"left"] forState:UIControlStateNormal];
 //    [popBtn setImage:[UIImage imageNamed:@"left_b"] forState:UIControlStateHighlighted];

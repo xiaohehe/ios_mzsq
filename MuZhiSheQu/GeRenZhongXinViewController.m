@@ -32,9 +32,18 @@
 #import "SigningViewController.h"
 #import "FamilyViewController.h"
 #import "OrderDetailsViewController.h"
+#import "CouponsViewController.h"
+#import "PaymentOrderViewController.h"
+#import "MessageCenterViewController.h"
+#import "LunBoWebViewController.h"
+#import "SouViewController.h"
+static const NSUInteger MESSAGE_TAG = 66;
 
 static const NSUInteger ORDER_HEADER_TAG = 1000000;
-static const NSUInteger ORDER_PROD_TAG = 2000000;
+//static const NSUInteger ORDER_PROD_TAG = 2000000;
+static const NSUInteger SINGLE_AGAIN_TAG = 1000;
+static const NSUInteger DELETE_ORDER_TAG = 2000;
+
 //#define SERVICE_ID @"KEFU151236833413783"
 
 @interface GeRenZhongXinViewController()<UITableViewDataSource,UITableViewDelegate,UICollectionViewDataSource, UICollectionViewDelegate,UICollectionViewDelegateFlowLayout,RCIMReceiveMessageDelegate>
@@ -49,6 +58,7 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
 @property(nonatomic,strong) NSMutableArray* orderArray;//
 @property(nonatomic,strong) NSDictionary* familyDic;//
 @property(nonatomic,strong)UIButton *loginBtn;
+@property(nonatomic,strong)UIButton *coverImg;
 @end
 @implementation GeRenZhongXinViewController
 
@@ -56,7 +66,6 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
     [super viewDidLoad];
     self.view.backgroundColor=[UIColor colorWithRed:0.937 green:0.937 blue:0.937 alpha:1.00];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(logok) name:@"logsuccedata" object:nil];
-    //[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(creatFamily) name:@"creatFamily" object:nil];
     _orderArray=[[NSMutableArray alloc]init];
     [self newNav];
     [self newListView];
@@ -66,6 +75,8 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
     if (![Stockpile sharedStockpile].isLogin) {
         [self reshData];
     }
+    [RCIM sharedRCIM].disableMessageAlertSound=NO;
+    [RCIM sharedRCIM].receiveMessageDelegate=self;
 }
 
 -(void)dropDownRefresh{
@@ -73,7 +84,7 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
 }
 
 -(void) newHeaderView{
-    _headerView=[[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.width, 70*self.scale+70*self.scale)];
+    _headerView=[[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.width, 70*self.scale+140*self.scale)];
     _headerView.backgroundColor=[UIColor whiteColor];
     _headerView.userInteractionEnabled=YES;
     [self newLogin];
@@ -109,7 +120,6 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
         _loginBtn.titleLabel.textAlignment=NSTextAlignmentCenter;
         [_loginBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     }
-    
 }
 
 #pragma mark -- 下拉刷新
@@ -130,12 +140,26 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
         if ([code isEqualToString:@"0"]) {
             NSLog(@"_orderArray==%@==%@",dic,models);
             [_orderArray removeAllObjects];
-            if ([Stockpile sharedStockpile].isLogin) {
+            if([models isKindOfClass:[NSArray class]]){
+                 [_orderArray addObjectsFromArray:models];
+                if ([Stockpile sharedStockpile].isLogin) {
+                    [[Stockpile sharedStockpile] setIsLogin:NO];
+                    [[Stockpile sharedStockpile]setID:@""];
+                    [[NSUserDefaults standardUserDefaults]setObject:@"" forKey:@"user_id"];
+                    [[NSUserDefaults standardUserDefaults]synchronize];
+                    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"GouWuCheShuLiang"];
+                    [self.appdelegate.shopDictionary removeAllObjects];
+                    NSLog(@"islogin==%d",[Stockpile sharedStockpile].isLogin);
+                    [self logok];
+                    [self setFamilyInfo];
+                    _coverImg.selected=NO;
+                    [_coverImg setBackgroundImage:[UIImage imageNamed:@"head_sculpture"] forState:UIControlStateNormal];
+                }
+            }else{
                 [_orderArray addObjectsFromArray:models[@"Order"]];
                 _familyDic=models[@"Family"];
                 [self setFamilyInfo];
-            }else{
-                [_orderArray addObjectsFromArray:models];
+                _tableView.tableFooterView=[self footerView];
             }
             [_tableView reloadData];
         }
@@ -181,19 +205,15 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
         [self reshData];
     }
     [self ReshMessage];
-    [RCIM sharedRCIM].disableMessageAlertSound=NO;
     [self gouWuCheShuZi];
     self.navigationController.navigationBarHidden=YES;
-    [RCIM sharedRCIM].receiveMessageDelegate=self;
     NSString *commid =[NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults]objectForKey:@"commid"]];// ;
-    NSLog(@"commid222222==%@",commid);
+    //NSLog(@"commid222222==%@",commid);
     if ([commid isEqualToString:@"0"] && [Stockpile sharedStockpile].isLogin==YES) {
-        //self.hidesBottomBarWhenPushed=YES;
         SheQuManagerViewController *shequ = [SheQuManagerViewController new];
         shequ.hidesBottomBarWhenPushed=YES;
         shequ.nojiantou=NO;
         [self.navigationController pushViewController:shequ animated:NO];
-        //self.hidesBottomBarWhenPushed=NO;
     }
 }
 
@@ -202,22 +222,22 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
     [_HeaderImg setImage:[UIImage imageNamed:@"round_edge"]];
     _HeaderImg.userInteractionEnabled=YES;
     [_headerView addSubview:_HeaderImg];
-    UIButton *Image=[[UIButton alloc]initWithFrame:CGRectMake(10*self.scale, 5*self.scale, 40*self.scale, 40*self.scale)];
-    Image.layer.masksToBounds=YES;
-    Image.layer.cornerRadius=Image.height/2;
-    Image.userInteractionEnabled=YES;
+    _coverImg=[[UIButton alloc]initWithFrame:CGRectMake(10*self.scale, 5*self.scale, 40*self.scale, 40*self.scale)];
+    _coverImg.layer.masksToBounds=YES;
+    _coverImg.layer.cornerRadius=_coverImg.height/2;
+    _coverImg.userInteractionEnabled=YES;
     if ([Stockpile sharedStockpile].isLogin) {
-        Image.selected=YES;
-        [Image setBackgroundImageForState:UIControlStateNormal withURL:[NSURL URLWithString:[Stockpile sharedStockpile].logo] placeholderImage:[UIImage imageNamed:@"head_sculpture"]];
+        _coverImg.selected=YES;
+        [_coverImg setBackgroundImageForState:UIControlStateNormal withURL:[NSURL URLWithString:[Stockpile sharedStockpile].logo] placeholderImage:[UIImage imageNamed:@"head_sculpture"]];
     }else{
-        Image.selected=NO;
-        [Image setBackgroundImage:[UIImage imageNamed:@"head_sculpture"] forState:UIControlStateNormal];
+        _coverImg.selected=NO;
+        [_coverImg setBackgroundImage:[UIImage imageNamed:@"head_sculpture"] forState:UIControlStateNormal];
     }
-    [Image addTarget:self action:@selector(gozhanghumanager:) forControlEvents:UIControlEventTouchUpInside];
-    [_HeaderImg addSubview:Image];
-    _loginBtn=[[UIButton alloc]initWithFrame:CGRectMake(60*self.scale, 15*self.scale, self.view.width-Image.right-50*self.scale, 20*self.scale)];
+    [_coverImg addTarget:self action:@selector(gozhanghumanager:) forControlEvents:UIControlEventTouchUpInside];
+    [_HeaderImg addSubview:_coverImg];
+    _loginBtn=[[UIButton alloc]initWithFrame:CGRectMake(60*self.scale, 15*self.scale, self.view.width-_coverImg.right-50*self.scale, 20*self.scale)];
     if ([Stockpile sharedStockpile].isLogin) {
-        _loginBtn.frame=CGRectMake(60*self.scale, 5*self.scale, self.view.width-Image.right-50*self.scale, 20*self.scale);
+        _loginBtn.frame=CGRectMake(60*self.scale, 5*self.scale, self.view.width-_coverImg.right-50*self.scale, 20*self.scale);
         [_loginBtn setTitle:[Stockpile sharedStockpile].nickName forState:UIControlStateNormal];
         _loginBtn.userInteractionEnabled=NO;
         _loginBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
@@ -236,13 +256,11 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
     [_HeaderImg addGestureRecognizer:tapGesture];
     _familyBtn=[[UIButton alloc]initWithFrame:CGRectMake(self.view.width-(self.view.width/750*265), 70*self.scale-(self.view.width/750*110), (self.view.width/750*265), (self.view.width/750*110))];
     [_familyBtn addTarget:self action:@selector(skipSigning) forControlEvents:UIControlEventTouchUpInside];
-
     //_familyBtn.backgroundColor=[UIColor greenColor];
     [_HeaderImg addSubview:_familyBtn];
      _integralBtn=[[UIButton alloc]initWithFrame:CGRectMake(_loginBtn.left, 30*self.scale, 113*self.scale*0.75, 15*self.scale)];
 //    [_integralBtn setTitleColor:[UIColor colorWithRed:0.792 green:0.675 blue:0.416 alpha:1.00] forState:UIControlStateNormal];
 //    _integralBtn.titleLabel.font = [UIFont systemFontOfSize: 11.0];
-
     [_integralBtn addTarget:self action:@selector(skipSigning) forControlEvents:UIControlEventTouchUpInside];
     [self setFamilyInfo];
     [_HeaderImg addSubview:_integralBtn];
@@ -250,8 +268,16 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
 
 -(void)skipUserInfo{
     NSLog(@"skipUserInfo");
-    if (![Stockpile sharedStockpile].isLogin) {
-        [self ShowAlertWithMessage:@"请先登录"];
+    if ([Stockpile sharedStockpile].isLogin==NO) {
+        [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
+            if (index==1) {
+                LoginViewController *login = [self login];
+                [login resggong:^(NSString *str) {//登录成功后需要加载的数据
+                    NSLog(@"登录成功");
+                    [self dropDownRefresh];
+                }];
+            }
+        }];
         return;
     }
     //self.hidesBottomBarWhenPushed=YES;
@@ -264,7 +290,15 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
 -(void)gozhanghumanager:(UIButton *)btn{
     NSLog(@"gozhanghumanager");
     if (btn.selected==NO) {
-        [self ShowAlertWithMessage:@"请先登录"];
+        [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
+            if (index==1) {
+                LoginViewController *login = [self login];
+                [login resggong:^(NSString *str) {//登录成功后需要加载的数据
+                    NSLog(@"登录成功");
+                    [self dropDownRefresh];
+                }];
+            }
+        }];
         return;
     }
     //self.hidesBottomBarWhenPushed=YES;
@@ -275,10 +309,10 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
 }
 
 -(void)newView{
-    _dataSourceImg=@[@"forum",@"my_order",@"collection_goods",@"shipping_address"];
-    _dataSourceName=@[@"邻里圈",@"我的订单",@"常购清单",@"收货地址"];
+    _dataSourceImg=@[@"forum",@"my_order",@"collection_goods",@"shipping_address",@"discount_coupon_icon"];
+    _dataSourceName=@[@"邻里圈",@"我的订单",@"常购清单",@"收货地址",@"优惠券"];
     UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
-    self.collectionView=[[UICollectionView alloc] initWithFrame:CGRectMake(0, self.HeaderImg.bottom+0*self.scale, self.view.width, 70*self.scale) collectionViewLayout:layout];
+    self.collectionView=[[UICollectionView alloc] initWithFrame:CGRectMake(0, self.HeaderImg.bottom+0*self.scale, self.view.width, 140*self.scale) collectionViewLayout:layout];
     self.collectionView.backgroundColor=[UIColor clearColor];
     self.collectionView.dataSource=self;
     self.collectionView.delegate=self;
@@ -292,11 +326,18 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
 
 #pragma mark - 按钮事件
 -(void)ButtonEvent:(UIButton *)button{
-    if (![Stockpile sharedStockpile].isLogin) {
-        [self ShowAlertWithMessage:@"请先登录"];
+    if ([Stockpile sharedStockpile].isLogin==NO) {
+        [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
+            if (index==1) {
+                LoginViewController *login = [self login];
+                [login resggong:^(NSString *str) {//登录成功后需要加载的数据
+                    NSLog(@"登录成功");
+                    [self dropDownRefresh];
+                }];
+            }
+        }];
         return;
     }
-    //self.hidesBottomBarWhenPushed=YES;
     if (button.tag==1)
     {
         WoDeGongGaoViewController *gonggaoVc=[[WoDeGongGaoViewController alloc]init];
@@ -330,15 +371,18 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
 
 -(void)ReshMessage{
     int unreadMsgCount =[self.appdelegate ReshData];
-    UILabel *CarNum=(UILabel *)[self.view viewWithTag:666];
+    UILabel * CarNum = (UILabel *)[self.view viewWithTag:MESSAGE_TAG];
     if (unreadMsgCount>0) {
-        CarNum.hidden=NO;
+        CarNum.hidden = NO;
         CarNum.text=[NSString stringWithFormat:@"%d",unreadMsgCount];
         if (unreadMsgCount>99) {
             CarNum.text=[NSString stringWithFormat:@"99+"];
+            CarNum.width=25;
+        }else{
+            CarNum.width=20;
         }
     }else{
-        CarNum.hidden=YES;
+        CarNum.hidden = YES;
     }
 }
 
@@ -368,13 +412,13 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
     talkImg.frame=CGRectMake(self.view.width-self.TitleLabel.height, self.TitleLabel.top+2*self.scale, self.TitleLabel.height,self.TitleLabel.height);
     [talkImg addTarget:self action:@selector(talk) forControlEvents:UIControlEventTouchUpInside];
     [self.NavImg addSubview:talkImg];
-    UILabel *CarNum=[[UILabel alloc]initWithFrame:CGRectMake(talkImg.width-20, 2, 18, 18)];
+    UILabel *CarNum=[[UILabel alloc]initWithFrame:CGRectMake(talkImg.width-25, 2, 20, 18)];
     CarNum.backgroundColor=[UIColor redColor];
-    CarNum.layer.cornerRadius=CarNum.width/2;
+    CarNum.layer.cornerRadius=CarNum.height/2;
     CarNum.layer.masksToBounds=YES;
     CarNum.textAlignment=NSTextAlignmentCenter;
     CarNum.font=SmallFont(1);
-    CarNum.tag=666;
+    CarNum.tag=MESSAGE_TAG;
     CarNum.textColor=[UIColor whiteColor];
     CarNum.hidden=YES;
     [talkImg addSubview:CarNum];
@@ -409,11 +453,9 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
         }];
         return;
     }
-   // self.hidesBottomBarWhenPushed=YES;
-    RCDChatListViewController *rong = [[RCDChatListViewController alloc]init];
+    MessageCenterViewController *rong = [[MessageCenterViewController alloc]init];
     rong.hidesBottomBarWhenPushed=YES;
     [self.navigationController pushViewController:rong animated:YES];
-   // self.hidesBottomBarWhenPushed=NO;
 }
 
 -(void)dealloc{
@@ -461,8 +503,16 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
         [self.navigationController pushViewController:setVC animated:YES];
         return;
     }
-    if (![Stockpile sharedStockpile].isLogin) {
-        [self ShowAlertWithMessage:@"请先登录"];
+    if ([Stockpile sharedStockpile].isLogin==NO) {
+        [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
+            if (index==1) {
+                LoginViewController *login = [self login];
+                [login resggong:^(NSString *str) {//登录成功后需要加载的数据
+                    NSLog(@"登录成功");
+                    [self dropDownRefresh];
+                }];
+            }
+        }];
         return;
     }
     switch (indexPath.row) {
@@ -478,7 +528,16 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
         case 3:
             [self shippingAddress];
             break;
+        case 4:
+            [self skipCouponsView];
+            break;
     }
+}
+
+-(void)skipCouponsView{
+    CouponsViewController* couponsViewController=[[CouponsViewController alloc]init];
+    couponsViewController.hidesBottomBarWhenPushed=YES;
+    [self.navigationController pushViewController:couponsViewController animated:YES];
 }
 
 -(void) skipLinLiQuan{
@@ -551,34 +610,47 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
     }
 }
 
+-(void)skipRedirectTo:(NSString*) redirectTo openKey:(NSString*)openKey {
+    if([AppUtil isBlank:openKey]||[AppUtil isBlank:redirectTo]||[redirectTo isEqualToString:@"1"])
+        return;
+    if ([redirectTo isEqualToString:@"2"]){
+        LunBoWebViewController *lunbo = [LunBoWebViewController new];
+        lunbo.hidesBottomBarWhenPushed=YES;
+        lunbo.url = openKey;
+        [self.navigationController pushViewController:lunbo animated:YES];
+    }else if ([redirectTo isEqualToString:@"4"]){
+        BreakInfoViewController *info = [[BreakInfoViewController alloc]init];
+        info.hidesBottomBarWhenPushed=YES;
+        info.shop_id=openKey;
+        info.ID=openKey;
+        [self.navigationController pushViewController:info animated:YES];
+    }else if ([redirectTo isEqualToString:@"5"]){
+        ShopInfoViewController *buess = [ShopInfoViewController new];
+        buess.hidesBottomBarWhenPushed=YES;
+        buess.prod_id=openKey;
+        [self.navigationController pushViewController:buess animated:YES];
+    }else if ([redirectTo isEqualToString:@"6"]){
+        SouViewController *souView = [SouViewController new];
+        souView.hidesBottomBarWhenPushed=YES;
+        souView.isRedirectTo=YES;
+        souView.keyword=openKey;
+        [self.navigationController pushViewController:souView animated:YES];
+    }
+}
+
 -(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     if (![Stockpile sharedStockpile].isLogin) {
+        NSDictionary* dic= _orderArray[indexPath.section];
+        NSString* redirectTo=[NSString stringWithFormat:@"%@",dic[@"redirect_to"]];
+        [self skipRedirectTo:redirectTo openKey:dic[@"OpenKey"]];
         return;
     }
-    //self.hidesBottomBarWhenPushed=YES;
     id start = _orderArray[indexPath.section];
-    NSString *starts = [[NSString alloc]init];
-    starts=start[@"order_detail"][0][@"status"];
-    if (![starts isEqualToString:@"1"]) {
-//        OderStatesViewController *oder = [OderStatesViewController new];
-//        oder.hidesBottomBarWhenPushed=YES;
-//        oder.price = start[@"order_detail"][0][@"total_amount"];
-//        oder.orderid =start[@"order_detail"][0][@"order_no"];
-//        oder.smallOder =start[@"order_detail"][0][@"prods"][0][@"sub_order_no"];
-//        [self.navigationController pushViewController:oder animated:YES];
-        
-        
-        OrderDetailsViewController* details=[[OrderDetailsViewController alloc] init];
-        details.hidesBottomBarWhenPushed=YES;
-        details.orderId =start[@"order_detail"][0][@"order_no"];
-        details.subOrderId =start[@"order_detail"][0][@"prods"][0][@"sub_order_no"];
-        [self.navigationController pushViewController:details animated:YES];
-    }else{
-        weifukuanViewController *weifu = [weifukuanViewController new];
-        weifu.hidesBottomBarWhenPushed=YES;
-        weifu.order_id=start[@"order_detail"][0][@"order_no"];
-        [self.navigationController pushViewController:weifu animated:YES];
-    }
+    OrderDetailsViewController* details=[[OrderDetailsViewController alloc] init];
+    details.hidesBottomBarWhenPushed=YES;
+    details.orderId =start[@"order_detail"][0][@"order_no"];
+    details.subOrderId =start[@"order_detail"][0][@"prods"][0][@"sub_order_no"];
+    [self.navigationController pushViewController:details animated:YES];
 }
 
 - (CGFloat) tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
@@ -615,7 +687,7 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
     totalLb.font =[UIFont systemFontOfSize:11*self.scale];
     totalLb.textColor =[UIColor colorWithRed:0.204 green:0.204 blue:0.204 alpha:1.00];
     CGFloat total_amount=[groupDic[@"order_detail"][0][@"total_amount"] floatValue];
-    NSString *content=[NSString stringWithFormat:@"共%d件商品，实付￥%.1f",total,total_amount];
+    NSString *content=[NSString stringWithFormat:@"共%d件商品，实付￥%.2f",total,total_amount];
     NSString * firstString = [NSString stringWithFormat:@"共%d件商品，实付",total];
     NSMutableAttributedString * priceAttributeString = [[NSMutableAttributedString alloc]initWithString:content];
     [priceAttributeString addAttribute:NSFontAttributeName value:[UIFont boldSystemFontOfSize:11*self.scale] range:NSMakeRange(0, firstString.length)];
@@ -627,34 +699,53 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
     line.backgroundColor=blackLineColore;
     [footerView addSubview:line];
     NSString* status=groupDic[@"order_detail"][0][@"status"];
-    if ([status isEqualToString:@"1"]) {
-        UIButton *fuKuanBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        fuKuanBtn.frame = CGRectMake(self.view.width-82.5*self.scale, line.bottom+7.5*self.scale, 72.5*self.scale, 30*self.scale);
-        [fuKuanBtn setBackgroundImage:[UIImage imageNamed:@"bg_order"] forState:UIControlStateNormal];
-        [fuKuanBtn setTitle:@"付款" forState:UIControlStateNormal];
-        [fuKuanBtn addTarget:self action:@selector(fuAndQUxiAO:) forControlEvents:UIControlEventTouchUpInside];
-        fuKuanBtn.titleLabel.font = SmallFont(self.scale);
-        [fuKuanBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        fuKuanBtn.tag=600+section;
-        [footerView addSubview:fuKuanBtn];
+    if ([status isEqualToString:@"-1"]) {
+        UIButton *rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        rightBtn.frame = CGRectMake(self.view.width-82.5*self.scale, line.bottom+7.5*self.scale, 72.5*self.scale, 30*self.scale);
+        [rightBtn setBackgroundImage:[UIImage imageNamed:@"bg_order"] forState:UIControlStateNormal];
+        [rightBtn setTitle:@"再来一单" forState:UIControlStateNormal];
+        [rightBtn addTarget:self action:@selector(singleAgainClick:) forControlEvents:UIControlEventTouchUpInside];
+        rightBtn.titleLabel.font = SmallFont(self.scale);
+        [rightBtn setTitleColor:[UIColor colorWithRed:0.216 green:0.216 blue:0.196 alpha:1.00] forState:UIControlStateNormal];
+        rightBtn.tag=SINGLE_AGAIN_TAG+section;
+        [footerView addSubview:rightBtn];
+    }else if ([status isEqualToString:@"1"]) {
+        UIButton *rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        rightBtn.frame = CGRectMake(self.view.width-82.5*self.scale, line.bottom+7.5*self.scale, 72.5*self.scale, 30*self.scale);
+        [rightBtn setBackgroundImage:[UIImage imageNamed:@"bg_order"] forState:UIControlStateNormal];
+        [rightBtn setTitle:@"立即付款" forState:UIControlStateNormal];
+        [rightBtn addTarget:self action:@selector(fuAndQUxiAO:) forControlEvents:UIControlEventTouchUpInside];
+        rightBtn.titleLabel.font = SmallFont(self.scale);
+        [rightBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        rightBtn.tag=600+section;
+        [footerView addSubview:rightBtn];
         UIButton *quiXaioBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        quiXaioBtn.frame = CGRectMake(self.view.width-165*self.scale, fuKuanBtn.top, 72.5*self.scale, 30*self.scale);
+        quiXaioBtn.frame = CGRectMake(self.view.width-165*self.scale, rightBtn.top, 72.5*self.scale, 30*self.scale);
         quiXaioBtn.layer.cornerRadius = quiXaioBtn.height/2;
         quiXaioBtn.layer.borderWidth = .5;
         quiXaioBtn.layer.borderColor = blackLineColore.CGColor;
-        [quiXaioBtn setTitle:@"取消" forState:UIControlStateNormal];
+        [quiXaioBtn setTitle:@"取消订单" forState:UIControlStateNormal];
         [quiXaioBtn addTarget:self action:@selector(fuAndQUxiAO:) forControlEvents:UIControlEventTouchUpInside];
         quiXaioBtn.titleLabel.font = SmallFont(self.scale);
         [quiXaioBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         quiXaioBtn.backgroundColor = [UIColor whiteColor];
         quiXaioBtn.tag=200+section;
         [footerView addSubview:quiXaioBtn];
-    }else if ([status isEqualToString:@"2"] || [status isEqualToString:@"3"]){
+    }else if ([status isEqualToString:@"2"] ){
+        UIButton *rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        rightBtn.frame = CGRectMake(self.view.width-82.5*self.scale, line.bottom+7.5*self.scale, 72.5*self.scale, 30*self.scale);
+        [rightBtn setBackgroundImage:[UIImage imageNamed:@"bg_order"] forState:UIControlStateNormal];
+        [rightBtn setTitle:@"再来一单" forState:UIControlStateNormal];
+        [rightBtn addTarget:self action:@selector(singleAgainClick:) forControlEvents:UIControlEventTouchUpInside];
+        rightBtn.titleLabel.font = SmallFont(self.scale);
+        [rightBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        rightBtn.tag=SINGLE_AGAIN_TAG+section;
+        [footerView addSubview:rightBtn];
         UIButton *quiXaioBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        quiXaioBtn.frame = CGRectMake(self.view.width-82.5*self.scale, line.bottom+7.5*self.scale, 72.5*self.scale, 30*self.scale);
+        quiXaioBtn.frame = CGRectMake(self.view.width-165*self.scale, line.bottom+7.5*self.scale, 72.5*self.scale, 30*self.scale);
         quiXaioBtn.layer.borderWidth = .5;
         quiXaioBtn.layer.borderColor = blackLineColore.CGColor;
-        [quiXaioBtn setTitle:@"取消" forState:UIControlStateNormal];
+        [quiXaioBtn setTitle:@"取消订单" forState:UIControlStateNormal];
         [quiXaioBtn addTarget:self action:@selector(huodaoQuXiao:) forControlEvents:UIControlEventTouchUpInside];
         quiXaioBtn.titleLabel.font = SmallFont(self.scale);
         [quiXaioBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
@@ -662,22 +753,22 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
         quiXaioBtn.layer.cornerRadius = quiXaioBtn.height/2;
         quiXaioBtn.tag=6000+section;
         [footerView addSubview:quiXaioBtn];
-    }else if ([status isEqualToString:@"4"]){
+    }else if ([status isEqualToString:@"3"]|| [status isEqualToString:@"4"]){
         UIButton *quiXaioBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         quiXaioBtn.frame =CGRectMake(self.view.width-82.5*self.scale, line.bottom+7.5*self.scale, 72.5*self.scale, 30*self.scale);
         [quiXaioBtn setBackgroundImage:[UIImage imageNamed:@"bg_order"] forState:UIControlStateNormal];
-        [quiXaioBtn setTitle:@"确认收货" forState:UIControlStateNormal];
-        [quiXaioBtn addTarget:self action:@selector(querenshouhuo:) forControlEvents:UIControlEventTouchUpInside];
+        [quiXaioBtn setTitle:@"再来一单" forState:UIControlStateNormal];
+        [quiXaioBtn addTarget:self action:@selector(singleAgainClick:) forControlEvents:UIControlEventTouchUpInside];
         quiXaioBtn.titleLabel.font = SmallFont(self.scale);
         [quiXaioBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         quiXaioBtn.backgroundColor = blackLineColore;
-        quiXaioBtn.tag=200000+section;
+        quiXaioBtn.tag=SINGLE_AGAIN_TAG+section;
         [footerView addSubview:quiXaioBtn];
         UIButton *cancelBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         cancelBtn.frame = CGRectMake(self.view.width-165*self.scale, quiXaioBtn.top, 72.5*self.scale, 30*self.scale);
         cancelBtn.layer.borderWidth = .5;
         cancelBtn.layer.borderColor = blackLineColore.CGColor;
-        [cancelBtn setTitle:@"取消" forState:UIControlStateNormal];
+        [cancelBtn setTitle:@"取消订单" forState:UIControlStateNormal];
         [cancelBtn addTarget:self action:@selector(cancelByShipped:) forControlEvents:UIControlEventTouchUpInside];
         cancelBtn.tag=400000+section;
         cancelBtn.titleLabel.font = SmallFont(self.scale);
@@ -686,31 +777,33 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
         cancelBtn.layer.cornerRadius = cancelBtn.height/2;
         [footerView addSubview:cancelBtn];
     }else if([status isEqualToString:@"5"]){
+        UIButton *rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        rightBtn.frame = CGRectMake(self.view.width-82.5*self.scale, line.bottom+7.5*self.scale, 72.5*self.scale, 30*self.scale);
+        [rightBtn setBackgroundImage:[UIImage imageNamed:@"bg_order"] forState:UIControlStateNormal];
+        [rightBtn setTitle:@"再来一单" forState:UIControlStateNormal];
+        [rightBtn addTarget:self action:@selector(singleAgainClick:) forControlEvents:UIControlEventTouchUpInside];
+        rightBtn.titleLabel.font = SmallFont(self.scale);
+        [rightBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        rightBtn.tag=SINGLE_AGAIN_TAG+section;
+        [footerView addSubview:rightBtn];
+        
         UIButton *shanchu = [UIButton buttonWithType:UIButtonTypeCustom];
-        shanchu.frame = CGRectMake(self.view.width-82.5*self.scale, line.bottom+7.5*self.scale, 72.5*self.scale, 30*self.scale);
-        shanchu.layer.borderWidth = .5;
-        shanchu.layer.borderColor = blackLineColore.CGColor;
-        [shanchu setTitle:@"删除" forState:UIControlStateNormal];
+        shanchu.frame = CGRectMake(10*self.scale, line.bottom+7.5*self.scale, 72.5*self.scale, 30*self.scale);
+        [shanchu setTitle:@"删除订单" forState:UIControlStateNormal];
         [shanchu addTarget:self action:@selector(daipingjiaEvent:) forControlEvents:UIControlEventTouchUpInside];
         shanchu.titleLabel.font = SmallFont(self.scale);
         [shanchu setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        shanchu.backgroundColor = blackLineColore;
-        shanchu.layer.cornerRadius = shanchu.height/2;
-        shanchu.tag=70000+section;
+        shanchu.tag=DELETE_ORDER_TAG+section;
         [footerView addSubview:shanchu];
-        if ([groupDic[@"order_detail"][0][@"is_comment"] isEqualToString:@""] || [groupDic[@"order_detail"][0][@"is_comment"] isEqualToString:@"1"]) {
-            UIButton *quiXaioBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-            quiXaioBtn.frame =CGRectMake(self.view.width-165*self.scale, shanchu.top, 72.5*self.scale, 30*self.scale);;
-            quiXaioBtn.layer.borderWidth = .5;
-            quiXaioBtn.layer.borderColor = blackLineColore.CGColor;
-            [quiXaioBtn setTitle:@"去评价" forState:UIControlStateNormal];
-            [quiXaioBtn addTarget:self action:@selector(daipingjiaEvent:) forControlEvents:UIControlEventTouchUpInside];
-            quiXaioBtn.titleLabel.font = SmallFont(self.scale);
-            [quiXaioBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-            quiXaioBtn.layer.cornerRadius = quiXaioBtn.height/2;
-            quiXaioBtn.tag=60000+section;
-            [footerView addSubview:quiXaioBtn];
-        }
+    }else{
+        UIButton *shanchu = [UIButton buttonWithType:UIButtonTypeCustom];
+        shanchu.frame = CGRectMake(10*self.scale, line.bottom+7.5*self.scale, 72.5*self.scale, 30*self.scale);
+        [shanchu setTitle:@"删除订单" forState:UIControlStateNormal];
+        [shanchu addTarget:self action:@selector(daipingjiaEvent:) forControlEvents:UIControlEventTouchUpInside];
+        shanchu.titleLabel.font = SmallFont(self.scale);
+        [shanchu setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        shanchu.tag=DELETE_ORDER_TAG+section;
+        [footerView addSubview:shanchu];
     }
     return footerView;
 }
@@ -770,79 +863,32 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
 
 -(void)oderStBtnEvent:(UIControl*)btn{
     NSLog(@"oderStBtnEvent4");
-    //self.hidesBottomBarWhenPushed=YES;
     id start = _orderArray[btn.tag-ORDER_HEADER_TAG];
-    NSString *starts = [[NSString alloc]init];
-//    if ([start isKindOfClass:[NSArray class]]) {
-//        starts=start[@"order_detail"][0][@"status"];
-//    }else{
-//        starts = start[@"status"];
-//    }
-    starts=start[@"order_detail"][0][@"status"];
-    if (![starts isEqualToString:@"1"]) {
-        OderStatesViewController *oder = [OderStatesViewController new];
-        oder.hidesBottomBarWhenPushed=YES;
-        oder.price = start[@"order_detail"][0][@"total_amount"];
-        oder.orderid =start[@"order_detail"][0][@"order_no"];
-        oder.smallOder =start[@"order_detail"][0][@"prods"][0][@"sub_order_no"];
-        [self.navigationController pushViewController:oder animated:YES];
-        
-//        OrderDetailsViewController* details=[[OrderDetailsViewController alloc] init];
-//        details.hidesBottomBarWhenPushed=YES;
-//        details.orderId =start[@"order_detail"][0][@"order_no"];
-//        details.subOrderId =start[@"order_detail"][0][@"prods"][0][@"sub_order_no"];
-//        [self.navigationController pushViewController:details animated:YES];
-    }else{
-        weifukuanViewController *weifu = [weifukuanViewController new];
-        weifu.hidesBottomBarWhenPushed=YES;
-        weifu.order_id=start[@"order_detail"][0][@"order_no"];
-        [self.navigationController pushViewController:weifu animated:YES];
-    }
+    OrderDetailsViewController* details=[[OrderDetailsViewController alloc] init];
+    details.hidesBottomBarWhenPushed=YES;
+    details.orderId =start[@"order_detail"][0][@"order_no"];
+    details.subOrderId =start[@"order_detail"][0][@"prods"][0][@"sub_order_no"];
+    [self.navigationController pushViewController:details animated:YES];
 }
 
 -(void)fuAndQUxiAO:(UIButton *)sender{
     self.user_id = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
-    if ([sender.titleLabel.text isEqualToString:@"付款"]) {
-        [self.view addSubview:self.activityVC];
-        [self.activityVC startAnimate];
-        //付款
-        if ([_orderArray[sender.tag-600][@"order_detail"][0][@"pay_type"] isEqualToString:@"2"]) {//微信支付
-            AnalyzeObject *anle = [AnalyzeObject new];
-            NSMutableDictionary *param = [NSMutableDictionary dictionary];
-            [param setObject:_orderArray[sender.tag-600][@"order_detail"][0][@"order_no"] forKey:@"orderid"];
-            [param setObject: self.user_id forKey:@"user_id"];
-            [anle resubmitOrder:[param copy] Block:^(id models, NSString *code, NSString *msg) {
-                [self.activityVC stopAnimate];
-                //NSLog(@"resubmitOrder==%@",models);
-                [self.appdelegate WXPayNewWithNonceStr:models[@"noncestr"] OrderID:models[@"order_no"] Timestamp:models[@"timestamp"] sign:models[@"sign"] complete:^(BaseResp *resp) {
-                    [self.activityVC stopAnimate];
-                    if (resp.errCode == WXSuccess) {
-                        [self dropDownRefresh];
-                    }
-                }];
-            }];
-        }else if ([_orderArray[sender.tag-600][@"order_detail"][0][@"pay_type"] isEqualToString:@"1"]){
-            AnalyzeObject *anle = [AnalyzeObject new];
-            NSMutableDictionary *param = [NSMutableDictionary dictionary];
-            [param setObject:_orderArray[sender.tag-600][@"order_detail"][0][@"order_no"] forKey:@"orderid"];
-            [param setObject: self.user_id forKey:@"user_id"];
-            [anle resubmitOrder:[param copy] Block:^(id models, NSString *code, NSString *msg) {
-                [self.activityVC stopAnimate];
-                [self.appdelegate AliPayNewPrice:models[@"amount"] OrderID:[NSString stringWithFormat:@"%@",models[@"order_no"]] OrderName:@"拇指社区" Sign:models[@"sign"]  OrderDescription:[NSString stringWithFormat:@"%@",models[@"order_no"]] complete:^(NSDictionary *resp) {
-                    [self.activityVC stopAnimate];
-                    if ([[resp objectForKey:@"resultStatus"] isEqualToString:@"9000"]) {
-                        [self dropDownRefresh];
-                    }
-                }];
-            }];
-        }
+    if ([sender.titleLabel.text isEqualToString:@"立即付款"]) {
+        NSMutableDictionary *orderDic=[NSMutableDictionary dictionary];
+        [orderDic setObject:_orderArray[sender.tag-600][@"isOnLinePay"] forKey:@"isOnLinePay"];
+        [orderDic setObject:_orderArray[sender.tag-600][@"order_detail"][0][@"order_no"] forKey:@"OrderID"];
+        [orderDic setObject:_orderArray[sender.tag-600][@"order_detail"][0][@"total_amount"] forKey:@"AllMoney"];
+        PaymentOrderViewController* paymentOrderView=[[PaymentOrderViewController alloc] init];
+        paymentOrderView.hidesBottomBarWhenPushed=YES;
+        paymentOrderView.orderDic=orderDic;
+        [self.navigationController pushViewController:paymentOrderView animated:YES];
     }else{
         //取消
         [self ShowAlertTitle:nil Message:@"确认取消?" Delegate:self Block:^(NSInteger index) {
             if (index==1) {
                 [self.view addSubview:self.activityVC];
-                [self.activityVC startAnimate];
-                NSDictionary *dic = @{@"user_id":self.user_id,@"order_no":_orderArray[sender.tag-200][0][@"order_no"]};
+                [self.activityVC startAnimate];//_orderArray[sender.tag-600][@"order_detail"][0][@"order_no"]
+                NSDictionary *dic = @{@"user_id":self.user_id,@"order_no":_orderArray[sender.tag-200][@"order_detail"][0][@"order_no"]};
                 AnalyzeObject *anle = [AnalyzeObject new];
                 [anle cancelOrderWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
                     if ([code isEqualToString:@"0"]) {
@@ -888,27 +934,6 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
     }];
 }
 
--(void)querenshouhuo:(UIButton *)btn{
-    [self ShowAlertTitle:nil Message:@"确认收货?" Delegate:self Block:^(NSInteger index) {
-        if (index==1) {
-            NSInteger tag = btn.tag-200000;
-            [self.view addSubview:self.activityVC];
-            [self.activityVC startAnimate];
-            NSString *userid = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
-            //_data2[tag][@"order_detail"][0][@"sub_order_no"]
-            NSLog(@"");
-            NSDictionary *dic = @{@"user_id":userid,@"sub_order_no":_orderArray[tag][@"order_detail"][0][@"sub_order_no"]};
-            AnalyzeObject *anle = [AnalyzeObject new];
-            [anle finishOrderWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
-                if ([code isEqualToString:@"0"]) {
-                    [self dropDownRefresh];
-                }
-                [self.activityVC stopAnimate];
-            }];
-        }
-    }];
-}
-
 -(void)cancelByShipped:(UIButton *)btn{
     [self ShowAlertTitle:nil Message:@"确认取消?" Delegate:self Block:^(NSInteger index) {
         if (index==1) {
@@ -937,32 +962,23 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
 
 -(void)daipingjiaEvent:(UIButton *)btn{
     [self.view addSubview:self.activityVC];
-    if ([btn.titleLabel.text isEqualToString:@"去评价"]) {
-        XiePingJiaViewController *pingjia= [XiePingJiaViewController new];
-        pingjia.hidesBottomBarWhenPushed=YES;
-        pingjia.is_order_on=YES;
-        pingjia.order_on = _orderArray[btn.tag-60000][@"sub_order_no"];
-        pingjia.shopid = _orderArray[btn.tag-60000][@"shop_id"];
-        [pingjia reshBlock:^(NSMutableArray *arr) {
+    [self ShowAlertTitle:nil Message:@"确认删除?" Delegate:self Block:^(NSInteger index) {
+        if (index==1) {
             [self.activityVC startAnimate];
-             [self dropDownRefresh];
-        }];
-        [self.navigationController pushViewController:pingjia animated:YES];
-    }else{
-        [self ShowAlertTitle:nil Message:@"确认删除?" Delegate:self Block:^(NSInteger index) {
-            if (index==1) {
-                [self.activityVC startAnimate];
-                NSString *userid = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
-                NSDictionary *dic = @{@"user_id":userid,@"sub_order_no":_orderArray[btn.tag-70000][@"order_detail"][0][@"sub_order_no"]};
-                AnalyzeObject *anle = [AnalyzeObject new];
-                [anle delOrderWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
-                    if ([code isEqualToString:@"0"]) {
-                         [self dropDownRefresh];
-                    }
-                }];
-            }
-        }];
-    }
+            NSString *userid = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
+            NSDictionary *dic = @{@"user_id":userid,@"sub_order_no":_orderArray[btn.tag-DELETE_ORDER_TAG][@"order_detail"][0][@"sub_order_no"]};
+            AnalyzeObject *anle = [AnalyzeObject new];
+            [anle delOrderWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
+                [self.activityVC stopAnimate];
+                if ([code isEqualToString:@"0"]) {
+                    [AppUtil showToast:self.view withContent:msg];
+                    [self dropDownRefresh];
+                }else{
+                    [self ShowAlertWithMessage:msg];
+                }
+            }];
+        }
+    }];
 }
 
 - (void)skipSigning{
@@ -988,6 +1004,109 @@ static const NSUInteger ORDER_PROD_TAG = 2000000;
         familyViewController.hidesBottomBarWhenPushed=YES;
         [self.navigationController pushViewController:familyViewController animated:YES];
     }
+}
+
+/*
+ *再来一单
+ */
+-(void)singleAgainClick:(UIButton *)btn{
+    [self ShowAlertTitle:nil Message:@"再来一单?" Delegate:self Block:^(NSInteger index) {
+        if (index==1) {
+            [self.activityVC startAnimate];
+            //NSString *userid = [[NSUserDefaults standardUserDefaults]objectForKey:@"user_id"];
+            NSDictionary *dic = @{@"orderid":_orderArray[btn.tag-SINGLE_AGAIN_TAG][@"order_detail"][0][@"order_no"]};
+            AnalyzeObject *anle = [AnalyzeObject new];
+            [anle reOrderWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
+                [self.activityVC stopAnimate];
+                if ([code isEqualToString:@"0"]) {
+                    NSLog(@"reOrder==%@==%@",dic,models);
+                    [self settleAccount:models];
+                }
+            }];
+        }
+    }];
+}
+
+-(void)settleAccount:(NSDictionary*) models{
+    NSArray *dataSource=models[@"prodList"];
+    if(dataSource.count==0){
+        [self ShowAlertWithMessage:@"当前商品已下架"];
+        return;
+    }
+    NSDictionary* dataDic=models[@"shopinfo"];
+    NSMutableArray *settleArray=[NSMutableArray array];
+    CGFloat amount=0.0;
+    for(int i=0;i<dataSource.count;i++){
+        NSMutableDictionary* dic=[dataSource[i] mutableCopy];
+        [dic setObject:dataSource[i][@"prod_id"] forKey:@"pro_id"];
+        [dic setObject:dataSource[i][@"prod_count"] forKey:@"pro_allnum"];
+        [dic setObject:dataSource[i][@"price"] forKey:@"pro_price"];
+        NSArray* imgs=dataSource[i][@"img"];
+        if(imgs.count>0){
+            NSString *string = [NSString stringWithFormat:@"%@",imgs[0]];
+            NSArray *imgArr = [string componentsSeparatedByString:@","];
+            [dic setObject:imgArr[0] forKey:@"pro_cover"];
+        }
+        amount+=[dataSource[i][@"price"] floatValue];
+        NSInteger activityid=[[NSString stringWithFormat:@"%@",dic[@"activity_id"]] integerValue];
+        if(activityid>0){
+            NSInteger actmaxbuy=[[NSString stringWithFormat:@"%@",[dic objectForKey:@"actmaxbuy"]] integerValue];
+            NSInteger havedbuy=[[NSString stringWithFormat:@"%@",[dic objectForKey:@"havedbuy"]] integerValue];
+            if(actmaxbuy>0){
+                NSInteger pro_allnum=[[NSString stringWithFormat:@"%@",[dic objectForKey:@"pro_allnum"]] integerValue];
+                NSInteger sub=pro_allnum-(actmaxbuy-havedbuy);
+                if(sub>0){
+                    if((actmaxbuy-havedbuy)>0){
+                        [dic setObject:[NSNumber numberWithInteger:(actmaxbuy-havedbuy)] forKey:@"pro_allnum"];
+                        [settleArray addObject:dic];
+                    }
+                    NSMutableDictionary* dic1=[dic mutableCopy];
+                    [dic1 setObject:[NSNumber numberWithInteger:sub] forKey:@"pro_allnum"];
+                    [dic1 setObject:[NSNumber numberWithInteger:0] forKey:@"activity_id"];
+                    [settleArray addObject:dic1];
+                }else{
+                    [settleArray addObject:dic];
+                }
+            }else{
+                [settleArray addObject:dic];
+            }
+        }else{
+            [settleArray addObject:dic];
+        }
+    }
+    CGFloat delivery_free=[dataDic[@"delivery_free"] floatValue];
+    CGFloat delivery_fee=[dataDic[@"delivery_fee"] floatValue];
+    CGFloat total=amount;
+    if(amount<delivery_free){
+        total+=delivery_fee;
+    }
+    NSMutableDictionary* settleDic=[NSMutableDictionary dictionary];
+    [settleDic setObject:dataDic[@"delivery_fee"] forKey:@"delivery_fee"];
+    [settleDic setObject:dataDic[@"delivery_free"] forKey:@"delivery_free"];
+    [settleDic setObject:dataDic[@"shop_icon"] forKey:@"shop_icon"];
+    [settleDic setObject:dataDic[@"shop_id"] forKey:@"shop_id"];
+    [settleDic setObject:dataDic[@"shop_name"] forKey:@"shop_name"];
+    [settleDic setObject:[NSString stringWithFormat:@"%.2f",amount] forKey:@"amount"];
+    [settleDic setObject:[NSString stringWithFormat:@"%.2f",total] forKey:@"total"];
+    
+    NSLog(@"dic==%@",settleDic);
+    OrderViewController *orde = [OrderViewController new];
+    orde.hidesBottomBarWhenPushed=YES;
+    orde.dataArray = settleArray;
+    orde.dataDic=settleDic;
+    orde.couponDic=models[@"coupon"];
+    orde.isReOrder=YES;
+    // orde.gouwucheData=_dataSource;
+    [self.navigationController pushViewController:orde animated:YES];
+}
+
+-(UILabel*)footerView{
+    UILabel* footer=[[UILabel alloc]initWithFrame:CGRectMake(0, 10*self.scale,self.view.width,40*self.scale)];
+    footer.text=@"----  更多订单请至我的订单查看  ----";
+    footer.font=SmallFont(self.scale*0.8);
+    footer.textColor=[UIColor colorWithRed:0.686 green:0.686 blue:0.690 alpha:1.00];
+    footer.textAlignment=NSTextAlignmentCenter;
+    return footer;
 }
 
 @end

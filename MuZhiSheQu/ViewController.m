@@ -102,8 +102,6 @@
         self.appdelegate.isRefresh=false;
         [self refreshPage];
     }
-//    NSString *addrss = [[NSUserDefaults standardUserDefaults]objectForKey:@"commname"];
-//    self.TitleLabel.text=addrss;
     if ([[NSUserDefaults standardUserDefaults]boolForKey:@"changeComm"]) {
         _lingShouData=[NSMutableArray new];
         _lunda=[NSMutableArray new];
@@ -170,31 +168,6 @@
         if(isRefresh)
             [self xiala];
     }
-//    NSDictionary *dic = @{@"user_id":userid};
-//    AnalyzeObject *analy=[[AnalyzeObject alloc]init];
-//    [analy showCartWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
-//        //NSLog(@"cartCode==%@ msg=%@",code,msg);
-//        if ([code isEqualToString:@"0"]) {
-//            NSArray* arr=models;
-//            if(arr==nil||arr.count==0){
-//                [self.appdelegate.shopDictionary removeAllObjects];
-//                if(isRefresh)
-//                    [self xiala];
-//                return ;            }
-//            for (int i = 0; i < arr.count; i ++) {
-//                NSArray * Prod_infoArr = arr[i][@"prod_info"];
-//                for (int j = 0; j < Prod_infoArr.count; j ++) {
-//                    [self.appdelegate.shopDictionary setObject:Prod_infoArr[j][@"prod_count"] forKey:Prod_infoArr[j][@"prod_id"]];
-//                }
-//            }
-//            if(isRefresh)
-//                [self xiala];
-//        }else if([code isEqualToString:@"1"]){
-//            [self.appdelegate.shopDictionary removeAllObjects];
-//            if(isRefresh)
-//                [self xiala];
-//        }
-//    }];
 }
 
 -(void)viewWillDisappear:(BOOL)animated{
@@ -252,7 +225,6 @@
         [self gongGaoDian];
     }
     [self createShangJiaJinZhuBtn];
-   // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshPage)  name:@"refreshPage" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshPage)  name:@"refreshPage" object:nil];
   // timer= [NSTimer timerWithTimeInterval:1.0 target:self selector:@selector(setLock) userInfo:nil repeats:NO];
 }
@@ -342,23 +314,15 @@
     NSString *noewyers = [nowFo stringFromDate:now];
     for (NSString *str in timArr) {
         if ([str isEqualToString:@"1"]) {
-            
             NSString *timeStart1 = [noewyers stringByAppendingString:[NSString stringWithFormat:@" %@",_ADDic[@"shop_info"][@"business_start_hour1"]]];
             NSString *timeEnd1 =[noewyers stringByAppendingString:[NSString stringWithFormat:@" %@",_ADDic[@"shop_info"][@"business_end_hour1"]]];
-            
-            
-            
             NSDateFormatter *fo = [[NSDateFormatter alloc]init];
             [fo setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
             NSDate *das = [fo dateFromString:timeStart1];
             NSDate *dad = [fo dateFromString:timeEnd1];
-            
             NSDate *dates = [self getNowDateFromatAnDate:das];
             NSDate *dated = [self getNowDateFromatAnDate:dad];
             NSDate *daten = [self getNowDateFromatAnDate:[NSDate date]];
-            
-            
-            
             //开始的时间戳
             double times = [dates timeIntervalSince1970];
             //结束的时间戳
@@ -419,24 +383,17 @@
     }
     //-----------------
     if (isSleep1==NO || isSleep2==NO || isSleep3==NO) {
-        
-
-        
     }else{
         add = @"商铺正在休息中，您所提交的订单会在营业后第一时间处理";
-        
     }
     if ([_ADDic[@"shop_info"][@"business_hour"] isEqualToString:@""]) {
-
         add=@"";
     }
-
     //-----------------是否休息判断end
         self.hidesBottomBarWhenPushed=YES;
         BOOL issleep;
         if ([add isEqualToString:@"商铺正在休息中，您所提交的订单会在营业后第一时间处理"]) {
             issleep=YES;
-//            return cell;
         }else{
             issleep=NO;
         }
@@ -1135,11 +1092,8 @@
 //    [souBtn setTitleColor:whiteLineColore forState:UIControlStateNormal];
 //    [souVi addSubview:souBtn];
 //    [souBtn addTarget:self action:@selector(souBtnEvent:) forControlEvents:UIControlEventTouchUpInside];
-    
-
     [self newShopView];
 }
-
 
 -(void)newShopView{
 
@@ -1434,7 +1388,7 @@
     if ([data[tag][@"redirect_to"] isEqualToString:@"1"]) {
         return;
     }else if ([data[tag][@"redirect_to"] isEqualToString:@"2"]){
-       lunbo.link = data[tag][@"redirect_to"];
+       //lunbo.link = data[tag][@"redirect_to"];
         [self.navigationController pushViewController:lunbo animated:YES];
     }else if ([data[tag][@"redirect_to"] isEqualToString:@"3"]){
         deiletWebViewViewController *deole = [deiletWebViewViewController new];
@@ -2787,6 +2741,7 @@
 
 
 - (void)onRCIMReceiveMessage:(RCMessage *)message left:(int)left{
+    NSLog(@"onRCIMReceiveMessage");
     dispatch_async(dispatch_get_main_queue(), ^{
         [self ReshMessage];
         

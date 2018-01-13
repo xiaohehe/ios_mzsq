@@ -8,7 +8,6 @@
 
 #import "SuperViewController.h"
 
-@interface LunBoWebViewController : SuperViewController
-@property(nonatomic,strong)NSString *lunboid;
-@property(nonatomic,strong)NSString *link;
+@interface LunBoWebViewController : SuperViewController<UIWebViewDelegate>
+@property(nonatomic,copy) NSString* url;
 @end

@@ -43,27 +43,22 @@
     [super viewWillAppear:YES];
     [UmengCollection intoPage:NSStringFromClass([self class])];
     //    self.tabBarController.tabBar.hidden=NO;
-    self.navigationController.navigationBarHidden=YES;
+    self.navigationController.navigationBarHidden = NO;
+    self.navigationController.navigationBar.hidden = YES;
     if ([Stockpile sharedStockpile].isLogin==NO) {
         LoginViewController *login = [LoginViewController new];
         //让tabbar的select等于0
         login.f=YES;
         [login resggong:^(NSString *str) {
-            
             [self reshData];
-            
         }];
 //        [self presentViewController:login animated:YES completion:nil];
         [self presentViewController:login animated:YES completion:^{
 //           [self.view endEditing:YES];
         }];
-
         return;
     }
-    
-    
     NSString *commid = [[NSUserDefaults standardUserDefaults]objectForKey:@"commid"];
-    
     if ([commid isEqualToString:@"0"] && [Stockpile sharedStockpile].isLogin==YES) {
         self.hidesBottomBarWhenPushed=YES;
         SheQuManagerViewController *shequ = [SheQuManagerViewController new];
@@ -83,15 +78,13 @@
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(keybordWillChange:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(keybordWillhieeht:) name:UIKeyboardWillHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(xiala)  name:@"reloadNearby" object:nil];
-    
     _dic=[NSMutableDictionary new];//dictionaryWithObjectsAndKeys:@"张三":@"产品不错我想买",@"张三":@"产品不错我想买",@"张三":@"产品不错我想买",@"张三":@"产品不错我想买" nil] ;
     NSDictionary *d=@{@"张三":@"产品不错我想买",
                       @"李四":@"产品不错11111我想买",
                       @"王五":@"产品不错1111111我想买",
                       @"赵六":@"产品111111不错我想买"};
-    [_dic addEntriesFromDictionary:d];
-   [self newNav];
-   
+   [_dic addEntriesFromDictionary:d];
+  [self newNav];
     self.view.backgroundColor=[UIColor whiteColor];
     _index=0;
     _typeg=@"5";
@@ -823,22 +816,16 @@
 //    cell.NameLabel.text=[_data [indexPath.row]objectForKey:@"title"];
     cell.ContentLabel.text=[_data [indexPath.row]objectForKey:@"content"];
     cell.ContentLabel.numberOfLines=3;
-   
     cell.commitDic=_data[indexPath.row][@"comments"];
-    
     cell.commitCount=[_data[indexPath.row][@"comment_count"] integerValue];
-    
     NSDateFormatter *formatter = [[NSDateFormatter alloc]init];
     [formatter setDateFormat:@"yyyy-MM-dd HH:mm"];
     NSString *time = [NSString stringWithFormat:@"%@",[_data [indexPath.row]objectForKey:@"create_time"]];
-    
     NSDate *date = [formatter dateFromString:time];
     NSDateFormatter *formatter1 = [[NSDateFormatter alloc]init];
     [formatter1 setDateFormat:@"MM-dd HH:mm"];
-
     time = [formatter1 stringFromDate:date];
-    
-    [cell.ju addTarget:self action:@selector(jubao) forControlEvents:UIControlEventTouchUpInside];
+   // [cell.ju addTarget:self action:@selector(jubao) forControlEvents:UIControlEventTouchUpInside];
     cell.DateLabel.text=time;
     cell.delegate=self;
     cell.indexPath=indexPath;
@@ -847,52 +834,36 @@
 }
 
 -(void)jubao{
-    
     UIAlertView *al = [[UIAlertView alloc]initWithTitle:@"提示" message:@"请输入举报内容" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
     al.alertViewStyle=UIAlertViewStylePlainTextInput;
     [al show];
      UITextField *tf=[al textFieldAtIndex:0];
     [tf becomeFirstResponder];
-    
 }
 
-
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-    
     if (buttonIndex==1) {
         UITextField *tf=[alertView textFieldAtIndex:0];
-
         dispatch_async(dispatch_get_main_queue(), ^{
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                
                 [tf resignFirstResponder];
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                     [_mesay resignFirstResponder];
                     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                         [self ShowAlertWithMessage:@"举报成功"];
                     });
-                    
                 });
             });
-            
         });
-        
     }else{
         UITextField *tf=[alertView textFieldAtIndex:0];
-
         dispatch_async(dispatch_get_main_queue(), ^{
-            
             [tf resignFirstResponder];
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 [_mesay resignFirstResponder];
-
             });
-
-            
-
         });
     }
-    
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -1063,7 +1034,7 @@
 -(void)CanZuoTableViewCellWith:(NSIndexPath *)indexPath Selected:(BOOL)selected{
     if (_selectedIndex && _selectedIndex!=indexPath) {
         ShareTableViewCell *cell=(ShareTableViewCell *)[_tableView cellForRowAtIndexPath:_selectedIndex];
-        cell.CaoZuoButton.selected=NO;
+       // cell.CaoZuoButton.selected=NO;
         _selectedIndex=nil;
     }
     _selectedIndex=indexPath;
@@ -1072,7 +1043,6 @@
 -(void)BigImageTableViewCellWith:(NSIndexPath *)indexPath ImageIndex:(NSInteger)index{
     NSMutableArray *a = [NSMutableArray new];
 //    [self setHidesBottomBarWhenPushed:YES];
-    
     for (int i=0; i<9; i++) {
         NSString *str = [NSString stringWithFormat:@"img%d",i+1];
         NSString *na = _data[indexPath.row][str];
@@ -1080,48 +1050,44 @@
             [a addObject:na];
         }
     }
-    
     SolveRedViewController *sole = [SolveRedViewController new];
     sole.data=a;
     sole.index=index;
     [self presentViewController:sole animated:NO completion:nil];
-    
-    
-//    NSMutableArray *pagesArr = [[NSMutableArray alloc] init];
-//    for (int i = 0; i <a.count; i ++) {
-//        
-//        IntroModel *model1 = [[IntroModel alloc] initWithTitle:@"" description:@"" image:[NSString stringWithFormat:@"%@",a[i]]];
-//        [pagesArr addObject:model1];
-//    }
-//    
-//    _IntroV = [[IntroControll alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) pages:pagesArr];
-//    _IntroV.delegate=self;
-//    [_IntroV index:index-1];
-//    self.tabBarController.tabBar.hidden=YES;
-//    [self.appdelegate.window addSubview:_IntroV];
+    //    NSMutableArray *pagesArr = [[NSMutableArray alloc] init];
+    //    for (int i = 0; i <a.count; i ++) {
+    //        IntroModel *model1 = [[IntroModel alloc] initWithTitle:@"" description:@"" image:[NSString stringWithFormat:@"%@",a[i]]];
+    //        [pagesArr addObject:model1];
+    //    }
+    //
+    //    _IntroV = [[IntroControll alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) pages:pagesArr];
+    //    _IntroV.delegate=self;
+    //    [_IntroV index:index-1];
+    //    self.tabBarController.tabBar.hidden=YES;
+    //    [self.appdelegate.window addSubview:_IntroV];
 }
+
 -(void)tabaryes{
-
     self.tabBarController.tabBar.hidden=NO;
-
 }
 
 -(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
     if (_selectedIndex) {
         ShareTableViewCell *cell=(ShareTableViewCell *)[_tableView cellForRowAtIndexPath:_selectedIndex];
-        cell.CaoZuoButton.selected=NO;
+       // cell.CaoZuoButton.selected=NO;
         _selectedIndex=nil;
     }
 }
+
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView{
     if (_tableView==scrollView) {
         [self.view endEditing:YES];
     }
 }
+
 #pragma mark - 导航
 -(void)newNav{
     self.TitleLabel.text=@"邻里圈";
-    
     UIButton *button=[[UIButton alloc]initWithFrame:CGRectMake(0, self.TitleLabel.top, 85*self.scale, self.TitleLabel.height)];
     button.titleLabel.font=DefaultFont(self.scale);
     [button setTitle:@"所有公告" forState:UIControlStateNormal];
@@ -1132,12 +1098,10 @@
     [button addTarget:self action:@selector(SearchEvent:) forControlEvents:UIControlEventTouchUpInside];
     [button addSubview:iconImg];
     [self.NavImg addSubview:button];
-    
     UIButton *AddButton=[[UIButton alloc]initWithFrame:CGRectMake(self.view.width-self.TitleLabel.height, self.TitleLabel.top, self.TitleLabel.height, self.TitleLabel.height)];
     [AddButton setImage:[UIImage imageNamed:@"gg_jia"] forState:UIControlStateNormal];
     [AddButton addTarget:self action:@selector(fagonggao) forControlEvents:UIControlEventTouchUpInside];
     [self.NavImg addSubview:AddButton];
-    
 }
 
 -(void)fagonggao{
@@ -1146,11 +1110,11 @@
     [fabuvc gonggaoResh:^(NSString *str) {
         _index=0;
         [self reshData];
-        
     }];
     [self.navigationController pushViewController:fabuvc animated:YES];
     self.hidesBottomBarWhenPushed=NO;
 }
+
 -(void)SearchEvent:(UIButton *)button{
     button.selected=!button.selected;
     if (button.selected) {

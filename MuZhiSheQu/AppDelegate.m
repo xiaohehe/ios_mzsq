@@ -28,7 +28,7 @@
 #import "ChoosePlotController.h"
 #import "SuperViewController.h"
 #import <Math.h>
-#import <ShareSDK/ShareSDK.h>
+//#import <ShareSDK/ShareSDK.h>
 #import "DataBase.h"
 //#import <ShareSDK/ShareSDK.h>---
 //#import <ShareSDKConnector/ShareSDKConnector.h>
@@ -44,11 +44,6 @@
 #import <UserNotifications/UserNotifications.h>
 #endif
 #import "RCDChatViewController.h"
-//#import <TencentOpenAPI/QQApiInterface.h>
-//#import <TencentOpenAPI/TencentOAuth.h>
-#import <TencentOpenAPI/TencentOAuth.h>
-#import <TencentOpenAPI/QQApiInterface.h>
-//#import <QZoneConnection/ISSQZoneApp.h>
 #import "WebViewController.h"
 #import "FuWuXiangQingViewController.h"
 #import "OderStatesViewController.h"
@@ -58,7 +53,8 @@
 #import <BaiduMapAPI_Search/BMKGeocodeSearch.h>
 #import <BaiduMapAPI_Search/BMKPoiSearchType.h>
 #import <BaiduMapAPI_Search/BMKSearchComponent.h>
-#import "BNCoreServices.h"
+#import "JSHAREService.h"
+#import <AdSupport/AdSupport.h>
 
 @interface AppDelegate ()<UITabBarControllerDelegate,CLLocationManagerDelegate,RCIMReceiveMessageDelegate,RCIMConnectionStatusDelegate,WXApiDelegate,RCIMUserInfoDataSource,BMKGeneralDelegate,BMKLocationServiceDelegate,BMKGeoCodeSearchDelegate,JPUSHRegisterDelegate>
 
@@ -93,6 +89,7 @@
 //}
 
 - (BOOL)application:(UIApplication *)app handleOpenURL:(nonnull NSURL *)url{
+    [JSHAREService handleOpenUrl:url];
     if ([url.host isEqualToString:@"safepay"]) {
         [[AlipaySDK defaultService] processOrderWithPaymentResult:url standbyCallback:^(NSDictionary *resultDic) {
             NSLog(@"result = %@",resultDic);
@@ -127,7 +124,6 @@
     if ([url.host isEqualToString:@"safepay"]) {
         [[AlipaySDK defaultService] processOrderWithPaymentResult:url standbyCallback:^(NSDictionary *resultDic) {
             NSLog(@"result = %@",resultDic);
-
             if (_ApiBlock) {
                 _ApiBlock(resultDic);
             }
@@ -139,11 +135,11 @@
 
 -(void) clearHistoryData{
     //if([Stockpile sharedStockpile].isLogin){
-        [[DataBase sharedDataBase] clearHistoryCart];
-        [[NSUserDefaults standardUserDefaults] setObject:@"0" forKey:@"GouWuCheShuLiang"];
-        double sum=[[DataBase sharedDataBase] sumCartPrice];
-        NSLog(@"sum==%f",sum);
-  //  }
+    [[DataBase sharedDataBase] clearHistoryCart];
+    [[NSUserDefaults standardUserDefaults] setObject:@"0" forKey:@"GouWuCheShuLiang"];
+    double sum=[[DataBase sharedDataBase] sumCartPrice];
+    NSLog(@"sum==%f",sum);
+    //  }
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -153,6 +149,7 @@
     [[NSUserDefaults standardUserDefaults]synchronize];
     self.shopDictionary=[NSMutableDictionary dictionary];
     self.isRefresh=false;
+    self.isRefuse=false;
     _mapManager = [[BMKMapManager alloc]init];
     [WXApi registerApp:APPI_ID withDescription:@"demo 2.0"];
     BOOL ret = [_mapManager start:@"QO6VKCRlxvnW7dbESvuRN749hHAx2QSB" generalDelegate:self];//KT8PaG8f62YITBtye0c7Drjr
@@ -164,20 +161,15 @@
     [self newTabBarViewController:YES];
     [self NavStye];
     [self newJPushWithOptions:launchOptions];
-    [ShareSDK registerApp:@"c8ff5ced9020"];
+    //[ShareSDK registerApp:@"c8ff5ced9020"];
     [self RongRunInit];
     [RCIM sharedRCIM].userInfoDataSource=self;
     [RCIM sharedRCIM].receiveMessageDelegate=self;
 //  [self ziding];
-    [self initddd];
+    [self setShareInfo];
     [self appNum];
     [UmengCollection setup];//友盟
     [self clearHistoryData];
-    [BNCoreServices_Instance initServices:@"QO6VKCRlxvnW7dbESvuRN749hHAx2QSB"];
-    [BNCoreServices_Instance setTTSAppId:@"10480876"];
-    //设置是否自动退出导航
-    [BNCoreServices_Instance setAutoExitNavi:NO];
-    [BNCoreServices_Instance startServicesAsyn:nil fail:nil];
     return YES;
 }
 
@@ -419,55 +411,26 @@
     [[UINavigationBar appearance]setBackgroundImage:[UIImage ImageForColor:[UIColor whiteColor]] forBarMetrics:UIBarMetricsDefault];
 }
 
--(void)initddd{
-//    [ShareSDK registerApp:@"c8ff5ced9020"
-//     
-//          activePlatforms:@[@(SSDKPlatformTypeWechat),
-//                            @(SSDKPlatformTypeQQ),
-//                            ]
-//                 onImport:^(SSDKPlatformType platformType)
-//     {
-//         switch (platformType)
-//         {
-//             case SSDKPlatformTypeWechat:
-//                 [ShareSDKConnector connectWeChat:[WXApi class]];
-//                 break;
-//             case SSDKPlatformTypeQQ:
-//                 [ShareSDKConnector connectQQ:[QQApiInterface class] tencentOAuthClass:[TencentOAuth class]];
-//                 break;
-//             default:
-//                 break;
-//         }
-//     }
-//          onConfiguration:^(SSDKPlatformType platformType, NSMutableDictionary *appInfo)
-//     {
-//         
-//         switch (platformType)
-//         {
-//             case SSDKPlatformTypeWechat:
-//                 [appInfo SSDKSetupWeChatByAppId:APPI_ID
-//                                       appSecret:APP_SECRET];
-//                 break;
-//             case SSDKPlatformTypeQQ:
-//                 [appInfo SSDKSetupQQByAppId:@"1105091993"
-//                                      appKey:@"aed9b0303e3ed1e27bae87c33761161d"
-//                                    authType:SSDKAuthTypeBoth];
-//                 break;
-//             default:
-//                 break;
-//         }
-//     }];
-    [ShareSDK connectQZoneWithAppKey:@"1105091993"
-                           appSecret:@"9u6v7VT9isn0AWya"
-                   qqApiInterfaceCls:[QQApiInterface class]
-                     tencentOAuthCls:[TencentOAuth class]];
-    [ShareSDK connectWeChatWithAppId:APPI_ID
-                           appSecret:APP_SECRET
-                           wechatCls:[WXApi class]];
-    [ShareSDK connectQQWithQZoneAppKey:@"1105091993"
-                     qqApiInterfaceCls:[QQApiInterface class]
-                       tencentOAuthCls:[TencentOAuth class]];
-    [ShareSDK connectQQWithAppId:@"1105091993" qqApiCls:[QQApiInterface class]];
+-(void)setShareInfo{
+    JSHARELaunchConfig *config = [[JSHARELaunchConfig alloc] init];
+    config.appKey = @"77eb1f35fa18e1b0db64b981";
+    config.QQAppId = @"1106079602";
+    config.QQAppKey = @"ThlExEAM306j8roO";
+    config.WeChatAppId = @"wxdfe194545e76328d";
+    config.WeChatAppSecret = @"a19238a392f09de20be5080c34fa322b";
+    [JSHAREService setupWithConfig:config];
+    [JSHAREService setDebug:YES];
+//    [ShareSDK connectQZoneWithAppKey:@"1105091993"
+//                           appSecret:@"9u6v7VT9isn0AWya"
+//                   qqApiInterfaceCls:[QQApiInterface class]
+//                     tencentOAuthCls:[TencentOAuth class]];
+//    [ShareSDK connectWeChatWithAppId:APPI_ID
+//                           appSecret:APP_SECRET
+//                           wechatCls:[WXApi class]];
+//    [ShareSDK connectQQWithQZoneAppKey:@"1105091993"
+//                     qqApiInterfaceCls:[QQApiInterface class]
+//                       tencentOAuthCls:[TencentOAuth class]];
+//    [ShareSDK connectQQWithAppId:@"1105091993" qqApiCls:[QQApiInterface class]];
 }
 
 #pragma mark - TabBarViewController
@@ -725,10 +688,6 @@
 -(void)AliPayNewPrice:(NSString *)price OrderID:(NSString *)orderId OrderName:(NSString *)orderName Sign:(NSString*)sign OrderDescription:(NSString *)description  complete:(ApiPayBlock)complete{
     NSString *appScheme = @"MZSQZFB";
 //    NSString* orderInfo = [self getOrderInfoPrice:price OrderID:orderId OrderName:orderName OrderDescription:description];
-//    
-//    
-//    
-//    
 //    /*
 //     *生成订单信息及签名
 //     */

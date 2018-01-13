@@ -12,12 +12,9 @@
 #import "IntroView.h"
 #import "IntroControll.h"
 #import "UmengCollection.h"
-@interface GanXiShopViewController ()<UITextFieldDelegate,UITextViewDelegate,UIScrollViewDelegate,UIWebViewDelegate>
-
-{
+@interface GanXiShopViewController ()<UITextFieldDelegate,UITextViewDelegate,UIScrollViewDelegate,UIWebViewDelegate>{
     int ii;
 }
-
 @property(nonatomic,strong)UIScrollView *imgScroll;
 @property(nonatomic,strong)UIPageControl *page;
 @property(nonatomic,strong)NSTimer *timer;
@@ -28,7 +25,6 @@
 @property(nonatomic,strong)NSDictionary *data;
 @property(nonatomic,strong)NSMutableArray *btnArry;
 @property(nonatomic,strong)reshshocuang block;
-
 @property(nonatomic,assign)BOOL isHaveItem;
 @end
 
@@ -36,20 +32,27 @@
 @implementation GanXiShopViewController
 
 
--(void)viewWillAppear:(BOOL)animated
-{
+//-(void)viewWillAppear:(BOOL)animated
+//{
+//    [super viewWillAppear:animated];
+//    [UmengCollection intoPage:NSStringFromClass([self class])];
+//    self.navigationController.navigationBarHidden=YES;
+//}
+
+-(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [UmengCollection intoPage:NSStringFromClass([self class])];
-    self.navigationController.navigationBarHidden=YES;
-//    [self remind];·
+    self.tabBarController.tabBar.hidden=YES;
+    self.navigationController.navigationBarHidden = NO;
+    self.navigationController.navigationBar.hidden = YES;
 }
--(void)viewWillDisappear:(BOOL)animated
-{
+
+-(void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     [UmengCollection outPage:NSStringFromClass([self class])];
 }
--(void)reshshoucahng:(reshshocuang)block{
 
+-(void)reshshoucahng:(reshshocuang)block{
     _block=block;
 }
 
@@ -65,8 +68,7 @@
     _TodayArr=[[NSMutableArray alloc]init];
     _DataArr=[[NSMutableArray alloc]init];
     [_TodayArr addObject:@"1小时送达"];
-    for(int i=0;i<24;i++)
-    {
+    for(int i=0;i<24;i++){
         NSString *Time=[NSString stringWithFormat:@"%d:00-%d:00",i,i+1];
         [_TimeArr addObject:Time];
     }
@@ -82,15 +84,11 @@
     //[self botVi];
     [self returnVi];
     [self reshData];
-
-    
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(keywillchange:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(keywillhhh:) name:UIKeyboardWillHideNotification object:nil];
-
-    
 }
--(void)keywillchange:(NSNotification *)notification{
 
+-(void)keywillchange:(NSNotification *)notification{
     NSDictionary *info =notification.userInfo;
     CGRect rect=[info[UIKeyboardFrameEndUserInfoKey] CGRectValue];
     CGFloat duration=[info[UIKeyboardAnimationDurationUserInfoKey] floatValue];
@@ -98,19 +96,12 @@
         //_mainScrollView.frame=CGRectMake(0, self.NavImg.bottom, self.view.width,  rect.origin.y-self.NavImg.bottom);
         //        float =
         //        self.view.bottom=
-        //
         //_vi.bottom=rect.origin.y;
-        
         self.view.bottom=rect.origin.y+49*self.scale;
     }];
-    
-    
-
-
 }
 
 -(void)keywillhhh:(NSNotification *)notification{
-    
     NSDictionary *info =notification.userInfo;
 //    CGRect rect=[info[UIKeyboardFrameEndUserInfoKey] CGRectValue];
     CGFloat duration=[info[UIKeyboardAnimationDurationUserInfoKey] floatValue];
@@ -120,15 +111,9 @@
         //        self.view.bottom=
         //
         //_vi.bottom=rect.origin.y;
-        
         self.view.bottom=self.view.height;
     }];
-    
-    
-    
-    
 }
-
 
 -(void)reshData{
 //    [self.view addSubview:self.activityVC];
@@ -137,21 +122,16 @@
 //    if ([Stockpile sharedStockpile].isLogin) {
 //        dic=@{@"shop_id":self.ID,@"user_id":[self getuserid]};
 //    }
-//    
 //    AnalyzeObject *analyze=[[AnalyzeObject alloc]init];
 //    [analyze queryShopDetailwithDic:dic WithBlock:^(id models, NSString *code, NSString *msg) {
 //        [self.activityVC stopAnimate];
 //
 //        if ([code isEqualToString:@"0"]) {
-    
-    
-    
     if (_isPush)
     {
          AnalyzeObject *anle = [AnalyzeObject new];
         NSLog(@"%@",[self getCommid]);
         NSDictionary * dict = @{@"community_id":[self getCommid],@"shop_id":self.shop_id};
-        
         NSLog(@"%@",dict);
         [anle shangjialPush:dict Block:^(id models, NSString *code, NSString *msg) {
             
@@ -161,46 +141,31 @@
                 NSLog(@"reshData====%@",_data);
                 self.TitleLabel.text =_data[@"shop_name"];
                  [self BigScrollView];
-                
-                
             }
         }];
-    }
-    else
-    {
+    }else{
         _data=_zongshuju;
         [self BigScrollView];
     }
-    
 //            if (_issleep) {
 //                [self ShowAlertWithMessage:@"商铺正在休息中，您所提交的订单会在营业后第一时间处理"];
 //            }
 //            [self remind];
 
 //        }
-//        
 //    }];
-    
-
-
 }
 
 -(void)BigScrollView{
     if (_bigScroll ) {
         [_bigScroll removeFromSuperview];
     }
-    
-    _bigScroll = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 64, self.view.width, self.view.height-49-64)];
+    _bigScroll = [[UIScrollView alloc]initWithFrame:CGRectMake(0, [self getStartHeight]+44, self.view.width, self.view.height-49*self.scale-([self getStartHeight]+44)-self.dangerAreaHeight)];
     _bigScroll.contentSize = CGSizeMake(self.view.width, 1000);
     [self.view addSubview:_bigScroll];
-    
-    
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(xialuo)];
     [_bigScroll addGestureRecognizer:tap];
-    
-    
     [self topImageVi];
-    
 }
 
 -(void)xialuo{
@@ -213,20 +178,16 @@
 }
 #pragma mark ------顶部图片
 -(void)topImageVi{
-    
     NSLog(@"topImageVi==%@",_data);
     _imgScroll = [[UIScrollView alloc]initWithFrame:CGRectMake(0,0, self.view.width, self.view.width*3/4)];
     _imgScroll.pagingEnabled=YES;
     _imgScroll.delegate=self;
     [_bigScroll addSubview:_imgScroll];
-    
     NSInteger count=0;
-    
     if ([_data[@"shop_zhaopai"] isKindOfClass:[NSArray class]]) {
         count=[_data[@"shop_zhaopai"] count];
     }
     _imgScroll.contentSize=CGSizeMake(self.view.width*count, _imgScroll.height);
-    
     for (int i=0; i<count; i++) {
         UIImageView *topImg = [[UIImageView alloc]initWithFrame:CGRectMake(_imgScroll.width*i, 0, self.view.width, self.view.width*3/4)];
         topImg.tag=1000+i;
@@ -253,8 +214,6 @@
 //                
 //            }
 //        }
-
-        
 //        [topImg setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_thumb640.%@",url,[tuPianarray lastObject]]] placeholderImage:[UIImage imageNamed:@"za"]];
          [topImg setImageWithURL:[NSURL URLWithString:smallImgUrl] placeholderImage:[UIImage imageNamed:@"za"]];
         topImg.contentMode=UIViewContentModeScaleAspectFill;
@@ -263,33 +222,24 @@
         [_imgScroll addSubview:topImg];
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(imgbig:)];
         [topImg addGestureRecognizer:tap];
-        
-        
     }
-
     if (count==0) {
         UIImageView *topImg1 = [[UIImageView alloc]initWithFrame:CGRectMake(_imgScroll.width*0, 0, self.view.width, self.view.width*3/4)];
         [topImg1 setImage:[UIImage imageNamed:@"za"]];
         [_imgScroll addSubview:topImg1];
-
     }
-    
     _page = [[UIPageControl alloc]initWithFrame:CGRectMake(0, _imgScroll.bottom-20*self.scale, _imgScroll.width, 20*self.scale)];
     _page.currentPageIndicatorTintColor=[UIColor redColor];
     _page.pageIndicatorTintColor=[UIColor grayColor];
     _page.numberOfPages=[_data[@"shop_zhaopai"] count];
     [_bigScroll addSubview:_page];
-    
-    
     if (_timer) {
         [_timer invalidate];
         _timer=nil;
     }
     if (count>0) {
         _timer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(lunbo) userInfo:nil repeats:YES];
-
     }
-    
     [self BusinessNameAndAdress];
 }
 
@@ -424,34 +374,22 @@
     phone.frame = CGRectMake(shuLine.centerX, 0, self.view.width-shuLine.centerX, adressCell.height);
     [phone addTarget:self action:@selector(phoneEvent:) forControlEvents:UIControlEventTouchUpInside];
     [adressCell addSubview:phone];
-    
     [self GongGaoShop];
-    
 }
 
 -(void)shouCangEvent:(UIButton *)sender{
     if ([Stockpile sharedStockpile].isLogin==NO) {
-        
         [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
             if (index==1) {
                 [self login];
             }
-            
         }];
-        
         return;
     }
-
-    
-    
-
     UIImageView *btn = (UIImageView *)[self.view viewWithTag:909];
     UILabel *btn1 = (UILabel *)[self.view viewWithTag:908];
     AnalyzeObject *anle = [AnalyzeObject new];
-
-    
     if ([btn1.text isEqualToString:@"取消收藏"]) {
-        
         NSDictionary *dic = @{@"user_id":[self getuserid],@"collect_type":@"2",@"collect_id":self.ID};
         [anle delCollectWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
             if ([code isEqualToString:@"0"]) {
@@ -463,21 +401,10 @@
                     _block(@"ok");
                 }
             }
-            
         }];
-
-        
-        
-       
         return;
-        
     }
- 
-    
-    
     NSDictionary *dic = @{@"user_id":[self getuserid],@"collect_type":@"2",@"collect_id":self.ID};
-    
-    
     [anle addCollectWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
         if ([code isEqualToString:@"0"]) {
             [self ShowAlertWithMessage:@"收藏成功"];
@@ -487,16 +414,8 @@
             if (_block) {
                 _block(@"ok");
             }
-            
         }
     }];
-
-  
-    
-   
-
-    
-
 }
 
 //#pragma mark--简介
@@ -538,26 +457,19 @@
 
 #pragma mark -------提示下单事件的view
 -(float)remind{
-    
     if (_bigTopVi) {
         [_bigTopVi removeFromSuperview];
     }
-    
     _bigTopVi = [[UIView alloc]initWithFrame:CGRectMake(0,self.NavImg.bottom, self.view.bounds.size.width, 70/2.25*self.scale)];
     [_bigTopVi setBackgroundColor:[UIColor colorWithRed:250/255.0 green:255/255.0 blue:182/255.0 alpha:1]];
     [self.view addSubview:_bigTopVi];
-    
     UIView *bg = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 30*self.scale, _bigTopVi.height)];
     bg.backgroundColor=[UIColor colorWithRed:250/255.0 green:255/255.0 blue:182/255.0 alpha:1];
     [_bigTopVi addSubview:bg];
-    
-    
     UIButton *gbImg = [[UIButton alloc]initWithFrame:CGRectMake(10*self.scale, _bigTopVi.height/2-6*self.scale, 12*self.scale, 12*self.scale)];
     gbImg.backgroundColor=[UIColor colorWithRed:250/255.0 green:255/255.0 blue:182/255.0 alpha:1];
     [gbImg setImage:[UIImage imageNamed:@"dian_xiaoxi"] forState:0];
     [bg addSubview:gbImg];
-    
-    
     UILabel *remLa = [[UILabel alloc]initWithFrame:CGRectMake(30*self.scale,gbImg.top-0*self.scale,self.view.bounds.size.width-25*self.scale,70/2.25*self.scale)];
     remLa.font = [UIFont systemFontOfSize:10];
     remLa.textAlignment = NSTextAlignmentCenter;
@@ -566,48 +478,34 @@
     if (self.gonggao==nil || [self.gonggao isEqualToString:@""]) {
         remLa.text= @"暂无公告";
     }else{
-        
         remLa.text= self.gonggao;
     }
-    
     if (_issleep) {
         remLa.text=@"商铺正在休息中，您所提交的订单会在营业后第一时间处理";
         remLa.textColor=[UIColor redColor];
     }
-    
     remLa.textAlignment=NSTextAlignmentLeft;
     [remLa sizeToFit];
     _bigTopVi.height=remLa.bottom+10*self.scale;
     [_bigTopVi addSubview:remLa];
-    
     if (remLa.width>self.view.width-22*self.scale) {
         CGRect frame = remLa.frame;
         frame.origin.x = self.view.width;
         remLa.frame = frame;
-        
         [UIView beginAnimations:@"testAnimation" context:NULL];
         [UIView setAnimationDuration:20];
         [UIView setAnimationCurve:UIViewAnimationCurveLinear];
         [UIView setAnimationDelegate:self];
         [UIView setAnimationRepeatAutoreverses:NO];
         [UIView setAnimationRepeatCount:999999];
-        
         frame = remLa.frame;
         frame.origin.x = -frame.size.width;
         remLa.frame = frame;
         [UIView commitAnimations];
-        
-        
-
     }
     [_bigTopVi addSubview:bg];
     bg.height=_bigTopVi.height;
-
-    
-    
-    
     return _bigTopVi.height;
-    
 }
 
 #pragma mark------本店公告
@@ -1003,8 +901,6 @@
 //
 //    [contextLa loadHTMLString:webContent baseURL:nil];
     
-    
-    
     UILabel *contextLa = [[UILabel alloc]initWithFrame:CGRectMake(jianJieLa.left, line.bottom+10*self.scale, line.width, 0)];
     contextLa.textAlignment = NSTextAlignmentLeft;
     contextLa.text = [_data objectForKey:@"detail"];
@@ -1042,32 +938,18 @@
 //    
 //}
 
-
-
-
-
-
 - (BOOL)textFieldShouldReturn:(UITextField *)textField{
-
     [self.view endEditing:YES];
-
-
     return YES;
-
 }
 
 -(void)botVi{
-
-    UIView *bigVi = [[UIView alloc]initWithFrame:CGRectMake(0, self.view.height-49*self.scale,self.view.width, 49*self.scale)];
+    UIView *bigVi = [[UIView alloc]initWithFrame:CGRectMake(0, self.view.height-49*self.scale-self.dangerAreaHeight,self.view.width, 49*self.scale+self.dangerAreaHeight)];
     bigVi.backgroundColor=[UIColor whiteColor];
     [self.view addSubview:bigVi];
-
     UIView *leftVi = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 160/2.25*self.scale, bigVi.height)];
     leftVi.backgroundColor = [UIColor colorWithRed:14/255.0 green:120/255.0 blue:255/255.0 alpha:1];
     [bigVi addSubview:leftVi];
-   
-    
-    
 //在线咨询
     UIImageView *talkImg = [[UIImageView alloc]initWithFrame:CGRectMake(leftVi.width/2-10*self.scale, leftVi.top+5*self.scale, 20*self.scale, 20*self.scale)];
     talkImg.image = [UIImage imageNamed:@"index_xiaoxi"];
@@ -1080,14 +962,10 @@
     talkLa.textColor = [UIColor whiteColor];
     [bigVi addSubview:talkLa];
     
-    
     UIButton *talkBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     talkBtn.frame = CGRectMake(0, 0, leftVi.width, leftVi.height);
     [talkBtn addTarget:self action:@selector(onLineZiXun:) forControlEvents:UIControlEventTouchUpInside];
     [leftVi addSubview:talkBtn];
-    
-    
-    
     
     UIView *rightVi = [[UIView alloc]initWithFrame:CGRectMake(leftVi.right, leftVi.top, bigVi.width-leftVi.width, bigVi.height)];
 //    if (!_isHaveItem) {

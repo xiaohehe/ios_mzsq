@@ -22,10 +22,11 @@
 //贴子发布时间
 +(NSString*) postSendTime:(NSString*) time;
 +(NSString*) postSendTime2:(NSString*) time;
++(NSString*) postSendTime3:(NSString*) time;
 //获取当前时间
 +(NSString*) getCurrentTime;
 +(NSString*) getCurrentTime2;
 +(NSString*) getTimeWith0:(NSInteger) time;
 +(BOOL) arrayIsEmpty:(NSArray *) arr;
-
++(NSString*) dateConversion:(NSString*) time;
 @end

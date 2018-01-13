@@ -14,30 +14,30 @@
 @property(nonatomic,strong)AlertBlock alertBlock;
 
 @end
+
 @implementation SuperViewController
-- (void)viewWillAppear:(BOOL)animated
-{
+
+- (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-//    [self gouWuCheShuZi];
 }
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
     _appdelegate=(AppDelegate *)[UIApplication sharedApplication].delegate;
-    
     if ([self respondsToSelector:@selector(setEdgesForExtendedLayout:)])
     {
         [self setEdgesForExtendedLayout:UIRectEdgeNone];
     }
     _scale=1.0;
-    if ([[UIScreen mainScreen] bounds].size.height > 480)
+    if ([[UIScreen mainScreen] bounds].size.height > 480)//&&!(self.isIphoneX)
     {
          _scale = [[UIScreen mainScreen] bounds].size.height / 568.0;
     }
+//    if(self.isIphoneX){
+//        _scale=1.0/3*2;
+//    }
     [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
-//   self.navigationController.navigationBarHidden=YES;
     [self.navigationController setNavigationBarHidden:YES animated:YES];
-
     
     self.view.backgroundColor = superBackgroundColor;
     self.NavImg = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.view.width, [self getStartHeight]+44)];
@@ -60,9 +60,6 @@
     _gradientLayer.endPoint = CGPointMake(1.0, 0);
     _isIphoneX=([self getStartHeight]==44);
     _dangerAreaHeight=self.isIphoneX?34:0;
- //   _Navline=[[UIImageView alloc]initWithFrame:CGRectMake(0, self.NavImg.height-1*self.scale, self.view.width, 1*self.scale)];
-//    _Navline.backgroundColor=blackLineColore;
-   //[self.NavImg addSubview:_Navline];
 }
 
 -(void) netError:(CGRect)frame {
