@@ -15,6 +15,7 @@
 @property(nonatomic,strong)UIImageView *logoIv;
 @property(nonatomic,strong)UILabel *titleLb;
 @property(nonatomic,strong)UILabel *desLb;
+@property(nonatomic,strong)UILabel *markLb;
 @property(nonatomic,strong)UIButton *addBtn;
 @property(nonatomic,copy) NSString* pNsStr;
 @end
@@ -71,7 +72,21 @@
     _desLb.attributedText = attributedString;
     [_desLb sizeToFit];
     [self.view addSubview:_desLb];
-    _addBtn=[[UIButton alloc]initWithFrame:CGRectMake(10*self.scale, _desLb.bottom+35*self.scale, self.view.width-20*self.scale, 35*self.scale)];
+    _markLb=[[UILabel alloc]initWithFrame:CGRectMake(10*self.scale, _desLb.bottom+10*self.scale, self.view.width-20*self.scale, 0)];
+    _markLb.numberOfLines = 0;
+    _markLb.text = [NSString stringWithFormat:@"代取范围：\n%@",_mark];
+    _markLb.textColor=[UIColor colorWithRed:0.988 green:0.357 blue:0.000 alpha:1.00];
+    _markLb.font=[UIFont systemFontOfSize:15];
+    // 调整行间距
+    NSMutableAttributedString *attributedString1 = [[NSMutableAttributedString alloc] initWithString:_markLb.text];
+    NSMutableParagraphStyle *paragraphStyle1 = [[NSMutableParagraphStyle alloc] init];
+    [paragraphStyle1 setLineSpacing:6];
+    [attributedString1 addAttribute:NSParagraphStyleAttributeName value:paragraphStyle1 range:NSMakeRange(0, [_markLb.text length])];
+    _markLb.attributedText = attributedString1;
+    [_markLb sizeToFit];
+    [self.view addSubview:_markLb];
+    
+    _addBtn=[[UIButton alloc]initWithFrame:CGRectMake(10*self.scale, _markLb.bottom+35*self.scale, self.view.width-20*self.scale, 35*self.scale)];
     [_addBtn setTitle:@"导入快递" forState:UIControlStateNormal];
     _addBtn.titleLabel.font=[UIFont systemFontOfSize:18];
     [_addBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];

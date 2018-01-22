@@ -159,7 +159,8 @@ static const NSUInteger DELETE_ORDER_TAG = 2000;
                 [_orderArray addObjectsFromArray:models[@"Order"]];
                 _familyDic=models[@"Family"];
                 [self setFamilyInfo];
-                _tableView.tableFooterView=[self footerView];
+                if(_orderArray.count>0)
+                    _tableView.tableFooterView=[self footerView];
             }
             [_tableView reloadData];
         }
@@ -169,14 +170,20 @@ static const NSUInteger DELETE_ORDER_TAG = 2000;
 -(void)setFamilyInfo{
     if ([Stockpile sharedStockpile].isLogin) {
         _integralBtn.hidden=NO;
+        for(UIView *view in [_integralBtn subviews]){
+            [view removeFromSuperview];
+        }
+//        if(_integralBtn){
+//            [_integralBtn removeFromSuperview];
+//        }
         NSString* fid=[NSString stringWithFormat:@"%@",_familyDic[@"FID"]];
         if([fid isEqualToString:@"0"]){
             _integralBtn.width=70*self.scale*0.75;
-            [_integralBtn setBackgroundImage:[UIImage imageNamed:@"no_sign"] forState:UIControlStateNormal];
+           // [_integralBtn setImage:[UIImage imageNamed:@"no_sign"] forState:UIControlStateNormal];
+            UIImageView* logo=[[UIImageView alloc] initWithFrame:CGRectMake(0, 0, _integralBtn.width, _integralBtn.height)];
+            [logo setImage:[UIImage imageNamed:@"no_sign"]];
+            [_integralBtn addSubview:logo];
         }else{
-            for(UIView *view in [_integralBtn subviews]){
-                [view removeFromSuperview];
-            }
             NSString* integral=[NSString stringWithFormat:@"家庭积分:%@ >",_familyDic[@"Integral"]];
             _integralBtn.backgroundColor=[UIColor colorWithRed:0.180 green:0.196 blue:0.271 alpha:1.00];
             UIImageView* logo=[[UIImageView alloc] initWithFrame:CGRectMake(8, 3, _integralBtn.height-6, _integralBtn.height-6)];
@@ -190,7 +197,6 @@ static const NSUInteger DELETE_ORDER_TAG = 2000;
             content.width=titleSize.width;
             [_integralBtn addSubview:content];
             _integralBtn.width=content.right+8;
-            NSLog(@"");
             _integralBtn.layer.masksToBounds = YES;
             _integralBtn.layer.cornerRadius = _integralBtn.height/2;
         }
@@ -207,13 +213,19 @@ static const NSUInteger DELETE_ORDER_TAG = 2000;
     [self ReshMessage];
     [self gouWuCheShuZi];
     self.navigationController.navigationBarHidden=YES;
-    NSString *commid =[NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults]objectForKey:@"commid"]];// ;
-    //NSLog(@"commid222222==%@",commid);
+    NSString *commid =[NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults]objectForKey:@"commid"]];
     if ([commid isEqualToString:@"0"] && [Stockpile sharedStockpile].isLogin==YES) {
         SheQuManagerViewController *shequ = [SheQuManagerViewController new];
         shequ.hidesBottomBarWhenPushed=YES;
         shequ.nojiantou=NO;
         [self.navigationController pushViewController:shequ animated:NO];
+    }
+    if ([Stockpile sharedStockpile].isLogin) {
+        _coverImg.selected=YES;
+        [_coverImg setBackgroundImageForState:UIControlStateNormal withURL:[NSURL URLWithString:[Stockpile sharedStockpile].logo] placeholderImage:[UIImage imageNamed:@"head_sculpture"]];
+    }else{
+        _coverImg.selected=NO;
+        [_coverImg setBackgroundImage:[UIImage imageNamed:@"head_sculpture"] forState:UIControlStateNormal];
     }
 }
 
@@ -259,24 +271,27 @@ static const NSUInteger DELETE_ORDER_TAG = 2000;
     //_familyBtn.backgroundColor=[UIColor greenColor];
     [_HeaderImg addSubview:_familyBtn];
      _integralBtn=[[UIButton alloc]initWithFrame:CGRectMake(_loginBtn.left, 30*self.scale, 113*self.scale*0.75, 15*self.scale)];
-//    [_integralBtn setTitleColor:[UIColor colorWithRed:0.792 green:0.675 blue:0.416 alpha:1.00] forState:UIControlStateNormal];
-//    _integralBtn.titleLabel.font = [UIFont systemFontOfSize: 11.0];
     [_integralBtn addTarget:self action:@selector(skipSigning) forControlEvents:UIControlEventTouchUpInside];
-    [self setFamilyInfo];
     [_HeaderImg addSubview:_integralBtn];
+    [self setFamilyInfo];
 }
 
 -(void)skipUserInfo{
     NSLog(@"skipUserInfo");
     if ([Stockpile sharedStockpile].isLogin==NO) {
-        [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
-            if (index==1) {
-                LoginViewController *login = [self login];
-                [login resggong:^(NSString *str) {//登录成功后需要加载的数据
-                    NSLog(@"登录成功");
-                    [self dropDownRefresh];
-                }];
-            }
+//        [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
+//            if (index==1) {
+//                LoginViewController *login = [self login];
+//                [login resggong:^(NSString *str) {//登录成功后需要加载的数据
+//                    NSLog(@"登录成功");
+//                    [self dropDownRefresh];
+//                }];
+//            }
+//        }];
+        LoginViewController *login = [self login];
+        [login resggong:^(NSString *str) {//登录成功后需要加载的数据
+            NSLog(@"登录成功");
+            [self dropDownRefresh];
         }];
         return;
     }
@@ -289,15 +304,20 @@ static const NSUInteger DELETE_ORDER_TAG = 2000;
 
 -(void)gozhanghumanager:(UIButton *)btn{
     NSLog(@"gozhanghumanager");
-    if (btn.selected==NO) {
-        [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
-            if (index==1) {
-                LoginViewController *login = [self login];
-                [login resggong:^(NSString *str) {//登录成功后需要加载的数据
-                    NSLog(@"登录成功");
-                    [self dropDownRefresh];
-                }];
-            }
+    if ([Stockpile sharedStockpile].isLogin==NO) {
+//        [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
+//            if (index==1) {
+//                LoginViewController *login = [self login];
+//                [login resggong:^(NSString *str) {//登录成功后需要加载的数据
+//                    NSLog(@"登录成功");
+//                    [self dropDownRefresh];
+//                }];
+//            }
+//        }];
+        LoginViewController *login = [self login];
+        [login resggong:^(NSString *str) {//登录成功后需要加载的数据
+            NSLog(@"登录成功");
+            [self dropDownRefresh];
         }];
         return;
     }
@@ -351,15 +371,20 @@ static const NSUInteger DELETE_ORDER_TAG = 2000;
 }
 
 -(void)LoginViewEvent:(UIButton *)button{
-    [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
-        if (index==1) {
-            LoginViewController *login = [self login];
-            [login resggong:^(NSString *str) {//登录成功后需要加载的数据
-                NSLog(@"登录成功");
-               // [self dropDownRefresh];
-            }];
-        }
+    LoginViewController *login = [self login];
+    [login resggong:^(NSString *str) {//登录成功后需要加载的数据
+        NSLog(@"登录成功");
+        [self dropDownRefresh];
     }];
+//    [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
+//        if (index==1) {
+//            LoginViewController *login = [self login];
+//            [login resggong:^(NSString *str) {//登录成功后需要加载的数据
+//                NSLog(@"登录成功");
+//               // [self dropDownRefresh];
+//            }];
+//        }
+//    }];
 }
 
 - (void)onRCIMReceiveMessage:(RCMessage *)message left:(int)left{
@@ -556,6 +581,7 @@ static const NSUInteger DELETE_ORDER_TAG = 2000;
 -(void)shippingAddress{
     ShouHuoDiZhiListViewController *lingShou=[[ShouHuoDiZhiListViewController alloc]init];
     lingShou.hidesBottomBarWhenPushed=YES;
+    lingShou.isMine=YES;
     [self.navigationController pushViewController:lingShou animated:YES];
 }
 

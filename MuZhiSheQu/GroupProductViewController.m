@@ -77,7 +77,7 @@ static const NSUInteger SUB_CART_TAG = 300000;//减少购物车商品数量
     NSString * shopid=[NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults] objectForKey:@"shopid"]];
     NSDictionary *dic = @{@"shopid":shopid,@"groupid":_dataDic[@"GroupID"]};
     [anle getProductGroupDetailWithDic:dic Block:^(id models, NSString *code, NSString *msg) {
-        //NSLog(@"getProductGroupDetailWithDic==%@",models);
+        NSLog(@"getProductGroupDetailWithDic==%@",models);
         [self.activityVC stopAnimate];
         if ([code isEqualToString:@"0"]) {
             [self bottomVi];
@@ -223,7 +223,7 @@ static const NSUInteger SUB_CART_TAG = 300000;//减少购物车商品数量
     NSMutableAttributedString * priceAttributeString = [[NSMutableAttributedString alloc]initWithString:priceString];
     [priceAttributeString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:12*self.scale] range:NSMakeRange(1, firstString.length)];
     cell.PriceLabel.attributedText = priceAttributeString;
-    NSString *prod_id = _dataSource[indexPath.row][@"prod_id"];
+    NSString *prod_id = [NSString stringWithFormat:@"%@",_dataSource[indexPath.row][@"id"]];
     int index=[self.appdelegate.shopDictionary[@([prod_id intValue])] intValue];
     cell.numLb.text=[NSString stringWithFormat:@"%d",index];
     if (index==0) {
@@ -263,7 +263,7 @@ static const NSUInteger SUB_CART_TAG = 300000;//减少购物车商品数量
     buess.shop_user_id=_dataSource[indexPath.row][@"shop_id"];//shop_user_id
     NSLog(@"%@",_dataSource[indexPath.row][@"shop_user_id"]);
     buess.shop_id = _dataSource[indexPath.row][@"shop_id"];
-    buess.prod_id = _dataSource[indexPath.row][@"prod_id"];
+    buess.prod_id = [NSString stringWithFormat:@"%@",_dataSource[indexPath.row][@"id"]];
     buess.xiaoliang = _dataSource[indexPath.row][@"sales"];
     buess.shoucang = _dataSource[indexPath.row][@"collect_time"];
     NSLog(@"shop_id==%@",_dataSource[indexPath.row][@"shop_id"]);

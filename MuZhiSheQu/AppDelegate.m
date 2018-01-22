@@ -502,7 +502,6 @@
                 [RCIM sharedRCIM].userInfoDataSource=self;
             });
         }];
-        
         self.window.rootViewController = guideVC;
     }else{
         if ([Stockpile sharedStockpile].isLogin==NO && orgen) {
@@ -518,20 +517,20 @@
                 self.window.rootViewController = nav;
             [RCIM sharedRCIM].userInfoDataSource=self;
         }else{
-//       NSString *ID = [[NSUserDefaults standardUserDefaults]objectForKey:@"commid"];
-//        if (!ID) {
-//            dispatch_async(dispatch_get_main_queue(), ^{
-//                ChooseQuViewController *ch = [[ChooseQuViewController alloc]initWithBlock:^(BOOL success) {
-//                    
-//                    self.window.rootViewController=_tabBarController;
-//                }];
-//                UINavigationController *nav = [[UINavigationController alloc]initWithRootViewController:ch];
-//                self.window.rootViewController = nav;
-//            });
-//        }
+            //       NSString *ID = [[NSUserDefaults standardUserDefaults]objectForKey:@"commid"];
+            //        if (!ID) {
+            //            dispatch_async(dispatch_get_main_queue(), ^{
+            //                ChooseQuViewController *ch = [[ChooseQuViewController alloc]initWithBlock:^(BOOL success) {
+            //
+            //                    self.window.rootViewController=_tabBarController;
+            //                }];
+            //                UINavigationController *nav = [[UINavigationController alloc]initWithRootViewController:ch];
+            //                self.window.rootViewController = nav;
+            //            });
+            //        }
             self.window.rootViewController = _tabBarController;
             [RCIM sharedRCIM].userInfoDataSource=self;
-    }
+        }
     }
 }
 

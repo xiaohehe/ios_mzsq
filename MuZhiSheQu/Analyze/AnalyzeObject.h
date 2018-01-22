@@ -291,7 +291,10 @@
  * 导入快递信息
  */
 -(void)importExpressWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
-
+/**
+ *  删除朋友圈
+ */
+-(void)userNoticeDelWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
 /**
  * 再来一单
  */

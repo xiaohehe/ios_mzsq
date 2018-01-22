@@ -108,7 +108,7 @@
     
     
     UILabel *la = [[UILabel alloc]initWithFrame:CGRectMake(10*self.scale, 10*self.scale, self.view.width-20*self.scale, 30*self.scale)];
-    la.text=@"如果您所在的社区还未开通拇指社区，请访问下列网址查看拇指社区加盟代理：";
+    la.text=@"如果您所在的社区还未开通拇指便利，请访问下列网址查看拇指便利加盟代理：";
     la.numberOfLines=0;
     la.textAlignment=NSTextAlignmentCenter;
     la.font=Small10Font(self.scale);

@@ -71,6 +71,7 @@ static const NSUInteger GROUP_TAG = 700000;//区头
 - (void)viewDidLoad {
     [super viewDidLoad];
     NSLog(@"width==%f",self.view.width);
+    self.appdelegate.isNewShop=YES;
     [self returnVi];
     goodsArray=[[NSMutableArray alloc]init];
     shopData=[[NSMutableDictionary alloc] init];
@@ -154,6 +155,7 @@ static const NSUInteger GROUP_TAG = 700000;//区头
 -(void)usefulTelephoneNumbers{
     LifeServiceViewController * shangjiaVC = [[LifeServiceViewController alloc]init];
     shangjiaVC.hidesBottomBarWhenPushed=YES;
+    shangjiaVC.phoneNum=[NSString stringWithFormat:@"%@",shopData[@"hotline"]];
     [self.navigationController pushViewController:shangjiaVC animated:YES];
 }
 
@@ -170,12 +172,12 @@ static const NSUInteger GROUP_TAG = 700000;//区头
     _conversationVC.hidesBottomBarWhenPushed=YES;
     _conversationVC.conversationType = ConversationType_PRIVATE;
     _conversationVC.targetId = [NSString stringWithFormat:@"%@",shopData[@"shop_user_id"]];
-    NSLog(@"imtargetid==%@",shopData[@"shop_user_id"]);
+    //NSLog(@"imtargetid==%@",shopData[@"shop_user_id"]);
     _conversationVC.title = shopData[@"shopname"];
     [self.navigationController pushViewController:_conversationVC animated:YES];
 }
 
--(void) skipExpressDelivery{
+-(void) skipExpressDelivery:(NSString*)mark{
     if ([Stockpile sharedStockpile].isLogin==NO) {
         [self ShowAlertTitle:nil Message:@"请先登录" Delegate:self Block:^(NSInteger index) {
             if (index==1) {
@@ -186,6 +188,7 @@ static const NSUInteger GROUP_TAG = 700000;//区头
     }
     CollectingExpressViewController *vc = [[CollectingExpressViewController alloc]init];
     vc.hidesBottomBarWhenPushed=YES;
+    vc.mark=mark;
     [self.navigationController pushViewController:vc animated:YES];
 }
 
@@ -200,7 +203,7 @@ static const NSUInteger GROUP_TAG = 700000;//区头
     }else if([dic[@"OpenKey"] isEqual:@"CopyPrint"]){
         [self skipCopyPrint];
     }else if([dic[@"OpenKey"] isEqual:@"ExpressDelivery"]){
-        [self skipExpressDelivery];
+        [self skipExpressDelivery:dic[@"Mark"]];
     }
 }
 
@@ -245,13 +248,13 @@ static const NSUInteger GROUP_TAG = 700000;//区头
      }else{
          headerView=[[UIScrollView alloc] initWithFrame:CGRectMake(0, self.NavImg.bottom, self.view.frame.size.width,160*self.scale)];
      }
-    _dataSourceImg=@[@"forum",@"shopping",@"phone"];//,@"borrow"
-    _dataSourceName=@[@"邻里圈",@"逛逛街",@"常用电话"];//,@"爱心借"
+//    _dataSourceImg=@[@"forum",@"shopping",@"phone"];//,@"borrow"
+//    _dataSourceName=@[@"邻里圈",@"逛逛街",@"常用电话"];//,@"爱心借"
     NSUInteger count=0;
-    if([_dataSourceImg count]%4==0)
-        count=[_dataSourceImg count]/4;
+    if([functionArray count]%4==0)
+        count=[functionArray count]/4;
     else
-        count=[_dataSourceImg count]/4+1;
+        count=[functionArray count]/4+1;
     functionSv=[[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, self.view.width, 70*self.scale)];
     functionSv.delegate = self;
     functionSv.showsHorizontalScrollIndicator = FALSE;
@@ -701,8 +704,8 @@ static const NSUInteger GROUP_TAG = 700000;//区头
 -(void) loadCommunityShop{
     NSString *commid =[NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults] objectForKey:@"commid"]];
     NSString *shopid =[NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults] objectForKey:@"shopid"]];
-    NSString* comName=[[NSUserDefaults standardUserDefaults]objectForKey:@"commname"] ;
-    NSLog(@"shopid==%@==%@",shopid,comName);
+    //NSString* comName=[[NSUserDefaults standardUserDefaults]objectForKey:@"commname"] ;
+    //NSLog(@"shopid==%@==%@",shopid,comName);
     AnalyzeObject *analy=[[AnalyzeObject alloc]init];
     NSDictionary *dic = @{@"cid":commid,@"shopid":shopid};
     [analy getCommunityShop:dic Block:^(id models, NSString *code, NSString *msg) {
@@ -719,10 +722,6 @@ static const NSUInteger GROUP_TAG = 700000;//区头
             self.appdelegate.shopInfoDic=models[@"shopinfo"];
             NSArray* funArr=models[@"module"];
             [functionArray addObjectsFromArray:funArr];
-//            NSMutableDictionary* funDic=[NSMutableDictionary dictionary];
-//            [funDic setObject:@"代收快递" forKey:@"ModuleName"];
-//            [funDic setObject:@"express" forKey:@"OpenKey"];
-//            [functionArray addObject:funDic];
             NSArray* imgArr=models[@"advertlist"];
             [imageArray addObjectsFromArray:imgArr];
             familyData=models[@"FamilyInfo"];
@@ -734,7 +733,7 @@ static const NSUInteger GROUP_TAG = 700000;//区头
             [goodsArray addObjectsFromArray:arr];
             goodsTv.tableHeaderView=headerView;
             [goodsTv reloadData];
-        }else if(self.appdelegate.isNewShop){
+        }else if(models==nil&&code==nil&&msg==nil&&self.appdelegate.isNewShop){
             self.appdelegate.isNewShop=NO;
             if(!errorView){
                 errorView=[[LoadFailureView alloc] initWithFrame:goodsTv.frame];
@@ -744,7 +743,6 @@ static const NSUInteger GROUP_TAG = 700000;//区头
             errorView.errorLb.text=msg;
             [errorView.reloadBtn addTarget:self action:@selector(reloadData) forControlEvents:UIControlEventTouchUpInside];
             [self.view addSubview:errorView];
-            
         }
     }];
 }
@@ -1008,13 +1006,12 @@ static const NSUInteger GROUP_TAG = 700000;//区头
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
-    self.hidesBottomBarWhenPushed=YES;
+    //self.hidesBottomBarWhenPushed=YES;
     ShopInfoViewController *buess = [ShopInfoViewController new];
     //NSDictionary* param=goodsArray[indexPath.row];
-    
+    buess.hidesBottomBarWhenPushed=YES;
     NSArray* prodArr=goodsArray[indexPath.section][@"ProdDetailList"];
     NSDictionary* param=prodArr[indexPath.row];
-    
     buess.isgo=YES;
     // buess.issleep=issleep;
     buess.yes=NO;
@@ -1031,7 +1028,7 @@ static const NSUInteger GROUP_TAG = 700000;//区头
     NSLog(@"ShopInfoViewController==%@==%@==%@",param,param[@"id"],self.appdelegate.shopDictionary);
     buess.param=param;
     [self.navigationController pushViewController:buess animated:YES];
-      self.hidesBottomBarWhenPushed=NO;
+    //  self.hidesBottomBarWhenPushed=NO;
 }
 
 //真实GPS导航

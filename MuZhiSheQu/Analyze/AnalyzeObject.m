@@ -1714,6 +1714,31 @@
 }
 
 /**
+ *  删除朋友圈(新增）
+ 2018-01-22
+ */
+-(void)userNoticeDelWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
+    [[AFAppDotNetAPIClient sharedClient]GET:@"UserNoticeDel" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+        NSNumber *retn = [responseObject objectForKey:@"ret"];
+        NSString *ret = [NSString stringWithFormat:@"%@",retn];
+        if ([ret isEqualToString:@"200"]) {
+            NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
+            NSString *msg =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"msg"]];
+            if ([code isEqualToString:@"0"]) {
+                block([[responseObject objectForKey:@"data"] objectForKey:@"info"],code,msg);
+            }else{
+                block(nil,code,msg);
+            }
+        }else{
+            block(nil,nil,nil);
+        }
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        block(nil,nil,nil);
+        NSLog(@"%@",error);
+    }];
+}
+
+/**
  * 去积分兑换(新增）
  2017-12-19
  新：FamilyExchange
@@ -1763,10 +1788,8 @@
 +(void)addCommentWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
     //NSDictionary* param=[self getParamWithToken:dic];
     [[AFAppDotNetAPIClient sharedClient]POST:@"Comment/addComment" parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
-        
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
-        
         if ([ret isEqualToString:@"200"]) {
             NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
             NSString *msg =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"msg"]];
@@ -1778,13 +1801,8 @@
         }else{
             block(nil,nil,nil);
         }
-        
-        
-        
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        
-                block(nil,nil,nil);
-        
+        block(nil,nil,nil);
         NSLog(@"%@",error);
     }];
 }
@@ -1795,7 +1813,6 @@
  老：Area/getProvinceList
  */
 -(void)getProvinceListWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-
     [[AFAppDotNetAPIClient sharedClient]GET:@"GetAreaProvinceList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         
         NSNumber *retn = [responseObject objectForKey:@"ret"];
@@ -1825,12 +1842,9 @@
  老：Area/getCityList
  */
 -(void)getCityListWithDicWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-
     [[AFAppDotNetAPIClient sharedClient]GET:@"GetAreaCityList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
-        
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
-        
         if ([ret isEqualToString:@"200"]) {
             NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
             NSString *msg =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"msg"]];
@@ -1842,13 +1856,8 @@
         }else{
             block(nil,nil,nil);
         }
-        
-        
-        
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        
-                block(nil,nil,nil);
-        
+        block(nil,nil,nil);
         NSLog(@"%@",error);
     }];
 }

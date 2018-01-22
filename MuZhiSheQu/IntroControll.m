@@ -1,14 +1,11 @@
 
 #import "IntroControll.h"
-
 #import "UIImageView+WebCache.h"
 //#import "UIImageView+AFNetworking.h"
 
 @implementation IntroControll
 
-
-- (id)initWithFrame:(CGRect)frame pages:(NSArray*)pagesArray
-{
+- (id)initWithFrame:(CGRect)frame pages:(NSArray*)pagesArray{
     self = [super initWithFrame:frame];
     if(self != nil) {
         //Initial Background images
@@ -22,11 +19,10 @@
         [backgroundImage2 setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
         [self addSubview:backgroundImage2];
         //Initial shadow
-        UIImageView *shadowImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"center_img"]];
-        shadowImageView.contentMode = UIViewContentModeScaleToFill;
-        shadowImageView.frame = CGRectMake(0, frame.size.height-300, frame.size.width, 300);
-        [self addSubview:shadowImageView];
-        
+//        UIImageView *shadowImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"center_img"]];
+//        shadowImageView.contentMode = UIViewContentModeScaleToFill;
+//        shadowImageView.frame = CGRectMake(0, frame.size.height-300, frame.size.width, 300);
+//        [self addSubview:shadowImageView];
         //Initial ScrollView
         scrollView = [[UIScrollView alloc] initWithFrame:self.frame];
         scrollView.backgroundColor = [UIColor clearColor];
@@ -35,37 +31,23 @@
         scrollView.showsVerticalScrollIndicator = NO;
         scrollView.delegate = self;
         [self addSubview:scrollView];
-        
         //Initial PageView
         pageControl = [[UIPageControl alloc] init];
         pageControl.numberOfPages = pagesArray.count;
         [pageControl sizeToFit];
         [pageControl setCenter:CGPointMake(frame.size.width/2.0, frame.size.height-20)];
         [self addSubview:pageControl];
-        
         //Create pages
         pages = pagesArray;
-        
         scrollView.contentSize = CGSizeMake(pages.count * frame.size.width, frame.size.height);
-        
         currentPhotoNum = -1;
-        
         //insert TextViews into ScrollView
         for(int i = 0; i <  pages.count; i++) {
             IntroView *view = [[IntroView alloc] initWithFrame:frame model:[pages objectAtIndex:i]];
             view.frame = CGRectOffset(view.frame, i*frame.size.width, 0);
             [scrollView addSubview:view];
         }
-            
-        //start timer
-//        timer =  [NSTimer scheduledTimerWithTimeInterval:3.0
-//                        target:self
-//                        selector:@selector(tick)
-//                        userInfo:nil
-//                        repeats:YES];
-        
         [self initShow];
-        
         UITapGestureRecognizer* singleRecognizer;
         singleRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(ShouShi:)];
         singleRecognizer.numberOfTapsRequired = 1; // 单击
@@ -93,9 +75,6 @@
     int scrollPhotoNumber = MAX(0, MIN(pages.count-1, (int)(scrollView.contentOffset.x / self.frame.size.width)));
     if(scrollPhotoNumber != currentPhotoNum) {
         currentPhotoNum = scrollPhotoNumber;
-//        backgroundImage1.image = currentPhotoNum != 0 ? [(IntroModel*)[pages objectAtIndex:currentPhotoNum-1] image] : nil;
-//        backgroundImage1.image = [(IntroModel*)[pages objectAtIndex:currentPhotoNum] image];
-//        backgroundImage2.image = currentPhotoNum+1 != [pages count] ? [(IntroModel*)[pages objectAtIndex:currentPhotoNum+1] image] : nil;
         [backgroundImage1 sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",[(IntroModel*)[pages objectAtIndex:currentPhotoNum] image]]]];
         [backgroundImage2 sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",currentPhotoNum+1 != [pages count] ? [(IntroModel*)[pages objectAtIndex:currentPhotoNum + 1] image]: nil]]];
     }

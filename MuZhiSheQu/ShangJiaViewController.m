@@ -789,13 +789,8 @@
 //        }else{
 //            cline.bottomline.hidden=YES;
 //        }
-//        
-//        
 //    }
-//    
-//    
 //}
-//
 //
 //-(void)ShangMenFuWuEvent:(UIButton *)sender{
 //    for (UIButton *btn in _heardView.subviews) {

@@ -9,5 +9,5 @@
 #import "SuperViewController.h"
 
 @interface CollectingExpressViewController : SuperViewController
-
+@property(nonatomic,copy) NSString* mark;
 @end

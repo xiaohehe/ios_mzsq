@@ -202,34 +202,6 @@
     CellView *bv = [[CellView alloc]initWithFrame:CGRectMake(0, self.view.height-44*self.scale, self.view.width, 44*self.scale)];
     bv.backgroundColor=superBackgroundColor;
     [self.view addSubview:bv];
-//    _tf = [[UITextField alloc]initWithFrame:CGRectMake(10*self.scale, 7, self.view.width-20*self.scale, 30*self.scale)];
-//    _tf.layer.borderWidth=.5;
-//    _tf.backgroundColor=[UIColor whiteColor];
-//    _tf.layer.borderColor=blackLineColore.CGColor;
-//    _tf.layer.cornerRadius=5;
-//    _tf.placeholder=@"  我也说两句";
-//    _tf.font=DefaultFont(self.scale);
-//    [bv addSubview:_tf];
-//    UIView *rightv = [[UIView alloc]initWithFrame:CGRectMake(_tf.right+10*self.scale, _tf.top, self.view.width-_tf.right-20*self.scale, _tf.height)];
-//    rightv.backgroundColor=[UIColor whiteColor];
-//    rightv.layer.cornerRadius=5;
-//    rightv.layer.borderWidth=.5;
-//    rightv.layer.borderColor=blackLineColore.CGColor;
-    //[bv addSubview:rightv];
-//    UIImageView *im = [[UIImageView alloc]initWithFrame:CGRectMake(6*self.scale, rightv.height/2-9*self.scale, 20*self.scale, 18*self.scale)];
-//    im.image=[UIImage imageNamed:@"gg_pingjia_ico"];
-//    //[rightv addSubview:im];
-//    UILabel *num = [[UILabel alloc]initWithFrame:CGRectMake(im.right+3*self.scale, rightv.height/2-10*self.scale, rightv.width-im.right-5*self.scale, 17*self.scale)];
-//    if (_dataSource.count<=0) {
-//        num.text=@"0";
-//    }else{
-//        num.text=_dataSource[0][@"comment_count"];
-//    }
-//    num.textAlignment=NSTextAlignmentCenter;
-//    num.font=SmallFont(self.scale);
-//    num.textColor=blueTextColor;
-    //[rightv addSubview:num];
-    //[self fabiaovi];
 }
 
 -(void)fabiaovi{
@@ -244,8 +216,6 @@
     vi.layer.cornerRadius=5;
     [_bv addSubview:vi];
     _mesay = [[UITextField alloc]initWithFrame:CGRectMake(10*self.scale, 0, vi.width-20*self.scale, 30*self.scale)];
-//    _mesay.layer.borderWidth=.5;
-//    _mesay.backgroundColor=[UIColor whiteColor];
     _mesay.layer.borderColor=blackLineColore.CGColor;
     _mesay.layer.cornerRadius=5;
     _mesay.placeholder=@"我也说两句";
@@ -285,13 +255,13 @@
     nameLb.text=_postDic[@"publisher"];
     [headerView addSubview:nameLb];
     
-    UILabel* titleLb=[[UILabel alloc]initWithFrame:CGRectMake(10*self.scale, headerIv.bottom+10*self.scale, self.view.width-20*self.scale, 20*self.scale)];
-    titleLb.font=[UIFont boldSystemFontOfSize:13*self.scale];;
-    titleLb.textColor=[UIColor blackColor];
-    titleLb.text=_postDic[@"title"];
-    [headerView addSubview:titleLb];
+//    UILabel* titleLb=[[UILabel alloc]initWithFrame:CGRectMake(10*self.scale, headerIv.bottom+10*self.scale, self.view.width-20*self.scale, 20*self.scale)];
+//    titleLb.font=[UIFont boldSystemFontOfSize:13*self.scale];;
+//    titleLb.textColor=[UIColor blackColor];
+//    titleLb.text=_postDic[@"title"];
+//    [headerView addSubview:titleLb];
     
-    UILabel *la = [[UILabel alloc]initWithFrame:CGRectMake(10*self.scale, titleLb.bottom+10*self.scale, self.view.width-20*self.scale, 10)];
+    UILabel *la = [[UILabel alloc]initWithFrame:CGRectMake(10*self.scale, headerIv.bottom+10*self.scale, self.view.width-20*self.scale, 10)];
     la.numberOfLines=0;
     la.font=[UIFont systemFontOfSize:12*self.scale];
     la.textColor=[UIColor colorWithRed:0.004 green:0.004 blue:0.004 alpha:1.00];
@@ -301,10 +271,7 @@
     NSMutableArray *a = [NSMutableArray new];
     NSArray* imgs=_postDic[@"img"];
     if(![AppUtil arrayIsEmpty:imgs]){
-        NSString *string = [NSString stringWithFormat:@"%@",imgs[0]];
-        NSArray *imgArr = [string componentsSeparatedByString:@"|"];
-        if(![AppUtil arrayIsEmpty:imgArr])
-            a=[imgArr mutableCopy];
+        a=[imgs mutableCopy];
     }
     float setY=la.bottom+10*self.scale;
     if (a.count>0) {
@@ -343,8 +310,8 @@
 
 -(void)imgBig:(UITapGestureRecognizer *)tap{
     NSMutableArray *a = [NSMutableArray new];
-    NSString *string = [NSString stringWithFormat:@"%@",_postDic[@"img"][0]];
-    NSArray *imgArr = [string componentsSeparatedByString:@"|"];
+    //NSString *string = [NSString stringWithFormat:@"%@",_postDic[@"img"][0]];
+    NSArray *imgArr = _postDic[@"img"];
     if(![AppUtil arrayIsEmpty:imgArr])
         a=[imgArr mutableCopy];
     NSMutableArray *pagesArr = [[NSMutableArray alloc] init];
@@ -508,7 +475,7 @@
 //    NSArray *shareList = [ShareSDK getShareListWithType:ShareTypeWeixiSession,ShareTypeWeixiTimeline,ShareTypeQQ,ShareTypeQQSpace,nil];
 //    id<ISSContent> publishContent;
 //    if (_dataSource.count>0) {
-//        publishContent = [ShareSDK content:@"中国最接地气的社区OTO，我们只关注社区服务最后100米，绿城百合，联盟新城，温哥华山庄服务已开通" defaultContent:@"中国最接地气的社区OTO，我们只关注社区服务最后100米，绿城百合，联盟新城，温哥华山庄服务已开通" image:[ShareSDK jpegImageWithImage:im quality:0.8] title:@"拇指社区" url:@"fx.mzsq.cc" description:@"中国最接地气的社区OTO，我们只关注社区服务最后100米，绿城百合，联盟新城，温哥华山庄服务已开通" mediaType:SSPublishContentMediaTypeNews];
+//        publishContent = [ShareSDK content:@"中国最接地气的社区OTO，我们只关注社区服务最后100米，绿城百合，联盟新城，温哥华山庄服务已开通" defaultContent:@"中国最接地气的社区OTO，我们只关注社区服务最后100米，绿城百合，联盟新城，温哥华山庄服务已开通" image:[ShareSDK jpegImageWithImage:im quality:0.8] title:@"拇指便利" url:@"fx.mzsq.cc" description:@"中国最接地气的社区OTO，我们只关注社区服务最后100米，绿城百合，联盟新城，温哥华山庄服务已开通" mediaType:SSPublishContentMediaTypeNews];
 //    }
 //    id<ISSAuthOptions> authOptions = [ShareSDK authOptionsWithAutoAuth:YES
 //                                                         allowCallback:YES
