@@ -1959,7 +1959,6 @@
         NSLog(@"helpinfo==%@",responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
-        
         if ([ret isEqualToString:@"200"]) {
             NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
             NSString *msg =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"msg"]];
@@ -1971,17 +1970,10 @@
         }else{
             block(nil,nil,nil);
         }
-        
-        
-        
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        
                 block(nil,nil,nil);
-        
         NSLog(@"%@",error);
     }];
-
-
 }
 
 /**
@@ -2202,7 +2194,7 @@
 }
 
 -(void)GetNickAndAvatarWithUser_ID:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"User/getNickAndAvatar" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"GetUserNickAndAvatarList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         //NSLog(@"GetNickAndAvatarWithUser_ID11111==%@==%@",[self getParamWithToken:dic],responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];

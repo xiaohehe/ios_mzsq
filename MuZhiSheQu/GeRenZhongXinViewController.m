@@ -702,7 +702,7 @@ static const NSUInteger DELETE_ORDER_TAG = 2000;
     NSDictionary* groupDic=_orderArray[section];
     UIView *footerView=[[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.width, 70*self.scale)];
     footerView.backgroundColor=[UIColor whiteColor];
-    UILabel *totalLb = [[UILabel alloc]initWithFrame:CGRectMake(self.view.width/2, 0, self.view.width/2-10*self.scale, 15*self.scale)];
+    UILabel *totalLb = [[UILabel alloc]initWithFrame:CGRectMake(self.view.width/3, 0, self.view.width/3*2-10*self.scale, 15*self.scale)];
     int total=0;
     for(int i=0;i<[groupDic[@"order_detail"][0][@"prods"] count];i++){
         NSDictionary* dic=groupDic[@"order_detail"][0][@"prods"][i];
@@ -1061,7 +1061,7 @@ static const NSUInteger DELETE_ORDER_TAG = 2000;
     }
     NSDictionary* dataDic=models[@"shopinfo"];
     NSMutableArray *settleArray=[NSMutableArray array];
-    CGFloat amount=0.0;
+    CGFloat amount=[[NSString stringWithFormat:@"%@",models[@"Amount"]] floatValue];
     for(int i=0;i<dataSource.count;i++){
         NSMutableDictionary* dic=[dataSource[i] mutableCopy];
         [dic setObject:dataSource[i][@"prod_id"] forKey:@"pro_id"];
@@ -1073,7 +1073,7 @@ static const NSUInteger DELETE_ORDER_TAG = 2000;
             NSArray *imgArr = [string componentsSeparatedByString:@","];
             [dic setObject:imgArr[0] forKey:@"pro_cover"];
         }
-        amount+=[dataSource[i][@"price"] floatValue];
+        //amount+=[dataSource[i][@"price"] floatValue];
         NSInteger activityid=[[NSString stringWithFormat:@"%@",dic[@"activity_id"]] integerValue];
         if(activityid>0){
             NSInteger actmaxbuy=[[NSString stringWithFormat:@"%@",[dic objectForKey:@"actmaxbuy"]] integerValue];
@@ -1089,14 +1089,17 @@ static const NSUInteger DELETE_ORDER_TAG = 2000;
                     NSMutableDictionary* dic1=[dic mutableCopy];
                     [dic1 setObject:[NSNumber numberWithInteger:sub] forKey:@"pro_allnum"];
                     [dic1 setObject:[NSNumber numberWithInteger:0] forKey:@"activity_id"];
+                    //amount+=[dataSource[i][@"pro_actprice"] floatValue];
                     [settleArray addObject:dic1];
                 }else{
+                    //amount+=[dataSource[i][@"price"] floatValue];
                     [settleArray addObject:dic];
                 }
             }else{
                 [settleArray addObject:dic];
             }
         }else{
+            //amount+=[dataSource[i][@"price"] floatValue];
             [settleArray addObject:dic];
         }
     }

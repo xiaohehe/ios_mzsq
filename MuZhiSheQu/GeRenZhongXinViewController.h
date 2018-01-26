@@ -7,7 +7,7 @@
 //
 
 #import "SuperViewController.h"
-#import "RCDChatListViewController.h"
+//#import "RCDChatListViewController.h"
 
 @interface GeRenZhongXinViewController : SuperViewController
 

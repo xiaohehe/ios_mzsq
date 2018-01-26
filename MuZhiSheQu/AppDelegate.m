@@ -203,8 +203,8 @@
 //        }];
 //    }
     AnalyzeObject *analy=[[AnalyzeObject alloc]init];
-    [analy GetNickAndAvatarWithUser_ID:@{@"user_id":uid} Block:^(id models, NSString *code, NSString *msg) {
-       // NSLog(@"GetNickAndAvatarWithUser_ID==%@",models);
+    [analy GetNickAndAvatarWithUser_ID:@{@"userid":uid} Block:^(id models, NSString *code, NSString *msg) {
+       // NSLog(@"GetNickAndAvatarWithUser_ID==%@==%@==%@",code,msg,models);
         NSArray *Arr=models;
         if (Arr && Arr.firstObject && [code isEqualToString:@"0"]) {
             NSDictionary *dic = Arr.firstObject;

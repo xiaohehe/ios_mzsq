@@ -11,7 +11,7 @@
 #import "RegisterViewController.h"
 #import "SheQuManagerViewController.h"
 #import "JPUSHService.h"
-//#import "APService.h"
+#import "AppUtil.h"
 #import "DataBase.h"
 
 @interface LoginViewController()<UITextFieldDelegate>
@@ -179,6 +179,12 @@
     NSDictionary* param=[NSDictionary dictionaryWithObjectsAndKeys:TelText.text,@"mobile",yan.text,@"code",commid,@"comid", nil];//,@"4",@"type"
     [analy userLogin:param Block:^(id models, NSString *code, NSString *msg) {
         [self.activityVC stopAnimate];
+        if(![code isEqualToString:@"0"]){
+            if([AppUtil isBlank:msg])
+                msg=@"登录失败，请重试";
+            [self ShowAlertWithMessage:msg];
+            return ;
+        }
         NSLog(@"login====%@",models);
         if (models && [models isKindOfClass:[NSDictionary class]]) {
             NSInteger count= [[DataBase sharedDataBase] sumCartNum];

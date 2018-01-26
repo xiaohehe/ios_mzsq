@@ -35,7 +35,7 @@ static const NSUInteger SUB_CART_TAG = 300000;//减少购物车商品数量
     [self.view addSubview:self.activityVC];
     [self.activityVC startAnimate];
     //[self reshData];
-    [self requestShopingCart:true];
+   
 }
 
 #pragma mark - 导航
@@ -60,6 +60,7 @@ static const NSUInteger SUB_CART_TAG = 300000;//减少购物车商品数量
     [super viewWillAppear:animated];
     self.navigationController.navigationBarHidden = NO;
     self.navigationController.navigationBar.hidden = YES;
+    [self requestShopingCart:true];
 }
 
 -(void)newView{
@@ -116,7 +117,8 @@ static const NSUInteger SUB_CART_TAG = 300000;//减少购物车商品数量
     _numberImg = [[UIButton alloc]initWithFrame:CGRectMake(shopcarImgL.width-15*self.scale,3*self.scale-5, 15*self.scale, 15*self.scale)];
     _numberImg.backgroundColor = [UIColor redColor];
     _numberImg.layer.cornerRadius=_numberImg.width/2;
-    NSString * value = [[NSUserDefaults standardUserDefaults]objectForKey:@"GouWuCheShuLiang"];
+    NSNumber* num=[[NSUserDefaults standardUserDefaults]objectForKey:@"GouWuCheShuLiang"];
+    NSString * value = [NSString stringWithFormat:@"%@",num];
     if (value==nil||[value isEqualToString:@""]||[value isEqualToString:@"0"]){
         _numberImg.hidden=YES;
     }else{
@@ -304,6 +306,9 @@ static const NSUInteger SUB_CART_TAG = 300000;//减少购物车商品数量
         if(isRefresh)
             [self reshData];
     }else{
+        [[NSUserDefaults standardUserDefaults] setObject:[NSString stringWithFormat:@"%ld",0l] forKey:@"GouWuCheShuLiang"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        [self gouWuCheShuZi];
         //[self.appdelegate.shopDictionary removeAllObjects];
         if(isRefresh)
             [self reshData];
@@ -418,7 +423,8 @@ static const NSUInteger SUB_CART_TAG = 300000;//减少购物车商品数量
     UITabBarItem * item=[self.appdelegate.tabBarController.tabBar.items objectAtIndex:2];
     //    if ([Stockpile sharedStockpile].isLogin)
     //    {
-    NSString * value = [[NSUserDefaults standardUserDefaults]objectForKey:@"GouWuCheShuLiang"];
+    NSNumber* num=[[NSUserDefaults standardUserDefaults]objectForKey:@"GouWuCheShuLiang"];
+    NSString * value = [NSString stringWithFormat:@"%@",num];
     NSLog(@"%@",value);
     if (value==nil||[value isEqualToString:@""]||[value isEqualToString:@"0"])
     {

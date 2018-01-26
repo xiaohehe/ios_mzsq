@@ -168,6 +168,7 @@ static const NSUInteger GROUP_TAG = 700000;//区头
         }];
         return;
     }
+    self.navigationController.navigationBar.hidden=NO;
     IMViewController *_conversationVC = [[IMViewController alloc]init];
     _conversationVC.hidesBottomBarWhenPushed=YES;
     _conversationVC.conversationType = ConversationType_PRIVATE;
@@ -494,6 +495,8 @@ static const NSUInteger GROUP_TAG = 700000;//区头
     [self gouWuCheShuZi];
     [self ReshMessage];
     [self.navigationController setNavigationBarHidden:YES animated:YES];
+//    self.navigationController.navigationBarHidden = NO;
+//    self.navigationController.navigationBar.hidden = YES;
 //    if(self.appdelegate.isRefresh){
 //        self.appdelegate.isRefresh=false;
 //        [self refreshPage];
@@ -698,7 +701,7 @@ static const NSUInteger GROUP_TAG = 700000;//区头
     //openBtn.backgroundColor=[UIColor blueColor];
     [openBtn addTarget:self action:@selector(openRedEnvelope) forControlEvents:UIControlEventTouchUpInside];
     [customView addSubview:openBtn];
-    [SMAlert showCustomView:customView];
+
 }
 
 -(void) loadCommunityShop{
@@ -760,7 +763,7 @@ static const NSUInteger GROUP_TAG = 700000;//区头
     UITabBarItem * item=[self.appdelegate.tabBarController.tabBar.items objectAtIndex:2];
     NSNumber* num=[[NSUserDefaults standardUserDefaults]objectForKey:@"GouWuCheShuLiang"];
     NSString * value = [NSString stringWithFormat:@"%@",num];
-    if (num==nil||[value isEqualToString:@"0"]){
+    if (!([Stockpile sharedStockpile].isLogin)||num==nil||[value isEqualToString:@"0"]){
         [item setBadgeValue:nil];
     }else{
         [item setBadgeValue:value];
@@ -779,11 +782,12 @@ static const NSUInteger GROUP_TAG = 700000;//区头
     }
     if(shopData==nil)
         return;
+    self.navigationController.navigationBar.hidden=NO;
     IMViewController *_conversationVC = [[IMViewController alloc]init];
     _conversationVC.hidesBottomBarWhenPushed=YES;
     _conversationVC.conversationType = ConversationType_PRIVATE;
     _conversationVC.targetId = [NSString stringWithFormat:@"%@",shopData[@"shop_user_id"]];
-    NSLog(@"imtargetid==%@",shopData[@"shop_user_id"]);
+    //NSLog(@"imtargetid==%@",shopData[@"shop_user_id"]);
     // _conversationVC.userName = @"123456";
     _conversationVC.title = shopData[@"shopname"];
     //_conversationVC.conversation = model;
