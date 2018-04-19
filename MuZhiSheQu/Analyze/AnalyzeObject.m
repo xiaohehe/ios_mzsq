@@ -21,7 +21,7 @@
  新增：GetNoticeWall
  */
 -(void)getNoticeWall:(NSDictionary *)dic WithBlock:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"GetNoticeWall" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/GetNoticeWall" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -46,7 +46,7 @@
  新增：GetCommunityNoticeList
  */
 -(void)getCommunityNoticeList:(NSDictionary *)dic WithBlock:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"GetCommunityNoticeList" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/GetCommunityNoticeList" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -72,7 +72,7 @@
  老：User/getVerifyCodeV2
  */
 -(void)getyanzhengma:(NSDictionary *)dic WithBlock:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"getVerifyCode" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/getVerifyCode" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -92,7 +92,7 @@
 }
 
 -(void)mu_zhi_adwithDic:(NSDictionary *)dic WithBlock:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient] GET:@"Carousel/slider" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient] GET:@"Api/v2/Carousel/slider" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
         NSLog(@"lb_param==%@",responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -114,7 +114,7 @@
     }];
 }
 -(void)shouYeFenLei:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Home/getSelectionClass" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Home/getSelectionClass" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
         NSLog(@"shouYeFenLei_param==%@",[self getParamWithToken:dic]);
 
         NSNumber *retn = [responseObject objectForKey:@"ret"];
@@ -180,7 +180,7 @@
     NSLog(@"param====%@",[self getParamWithToken:dic]);
 
     
-    [[AFAppDotNetAPIClient sharedClient] GET:@"ProfessionClass/getRetailShopListV2" parameters:[self getParamWithToken:dic]  progress:^(NSProgress * _Nonnull uploadProgress) {
+    [[AFAppDotNetAPIClient sharedClient] GET:@"Api/v2/ProfessionClass/getRetailShopListV2" parameters:[self getParamWithToken:dic]  progress:^(NSProgress * _Nonnull uploadProgress) {
         
         
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
@@ -258,7 +258,7 @@
 
 #pragma mark===--v2去掉了
     
-    [[AFAppDotNetAPIClient sharedClient]GET:@"ProfessionClass/getServShopList" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/ProfessionClass/getServShopList" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
         
         
         NSNumber *retn = [responseObject objectForKey:@"ret"];
@@ -297,7 +297,7 @@
 
 -(void)queryShopByKeyAndProwithDic:(NSDictionary *)dic WithBlock:(void(^)(id models, NSString *code ,NSString * msg))block{
 
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Shop/queryShopByKeyAndPro" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Shop/queryShopByKeyAndPro" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
         
         
 //        NSLog(@"*********%@",responseObject[@"data"][@"msg"]);
@@ -332,7 +332,7 @@
 
 -(void)getWeiShopListwithDic:(NSDictionary *)dic WithBlock:(void(^)(id models, NSString *code ,NSString * msg))block{
 
-    [[AFAppDotNetAPIClient sharedClient]GET:@"ProfessionClass/getWeiShopListV2" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/ProfessionClass/getWeiShopListV2" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
         
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -376,7 +376,7 @@
 //    } failure:^(NSURLSessionDataTask *task, NSError *error) {
 //        NSLog(@"失败");
 //    }];
-    [[AFAppDotNetAPIClient sharedClient]GET:@"GetShopProductCategoryList" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/GetShopProductCategoryList" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
         //SLog(@"getProdListByClasswithDic==%@",responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -407,7 +407,7 @@
     //    } failure:^(NSURLSessionDataTask *task, NSError *error) {
     //        NSLog(@"失败");
     //    }];
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Shop/queryShopDetail" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Shop/queryShopDetail" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -432,7 +432,7 @@
  老：Shop/getProdListByClass
  */
 -(void)getProdListByClasswithDic:(NSDictionary *)dic WithBlock:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"GetShopProductList" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/GetShopProductList" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -456,7 +456,7 @@
  *2017-12-01
  */
 -(void)windowShopping:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"GetProShopList" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/GetProShopList" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -476,7 +476,7 @@
 }
 
 -(void)getprodDetailwithDic:(NSDictionary *)dic WithBlock:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Product/prodDetail" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Product/prodDetail" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
          NSLog(@"getprodDetailwithDic===%@===%@",[self getParamWithToken:dic],responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -507,7 +507,7 @@
  老：Product/prodDetailV2
  */
 -(void)getprodDetailPushwithDic:(NSDictionary *)dic WithBlock:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"GetShopProdDetail" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/GetShopProdDetail" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
         NSLog(@"getprodDetailPushwithDic%@",responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -528,7 +528,7 @@
 }
 
 -(void)queryShopDetailPushwithDic:(NSDictionary *)dic WithBlock:(void(^)(id models, NSString *code ,NSString * msg))block{
-       [[AFAppDotNetAPIClient sharedClient]GET:@"Product/prodDetailV2" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
+       [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Product/prodDetailV2" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -553,7 +553,7 @@
  老：Shop/queryShopDetail
  */
 -(void)queryShopDetailwithDic:(NSDictionary *)dic WithBlock:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"GetShopDetail" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/GetShopDetail" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -573,7 +573,7 @@
 }
 
 -(void)commentListwithDic:(NSDictionary *)dic WithBlock:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Comment/commentList" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Comment/commentList" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -593,7 +593,7 @@
 }
 
 -(void)getNoticeListwithDic:(NSDictionary *)dic WithBlock:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"User/getNoticeList" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/User/getNoticeList" parameters:[self getParamWithToken:dic]  success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -633,7 +633,7 @@
  *用户登录接口
  */
 -(void)userLoginWithTel:(NSString *)mobile  Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"User/userLogin" parameters:[NSDictionary dictionaryWithObjectsAndKeys:mobile,@"mobile",@"4",@"type", nil] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/User/userLogin" parameters:[NSDictionary dictionaryWithObjectsAndKeys:mobile,@"mobile",@"4",@"type", nil] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSLog(@"login param==%@==%@",[NSDictionary dictionaryWithObjectsAndKeys:mobile,@"mobile",@"4",@"type", nil],[self DataTOjsonString:responseObject]);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -655,7 +655,7 @@
 
 
 -(void)userLoginWithTelAndCode:(NSString *)mobile andCode:(NSString*) code Block:(void(^)(id models, NSString *code ,NSString * msg))block{//
-    [[AFAppDotNetAPIClient sharedClient]GET:@"User/userLogin" parameters:[NSDictionary dictionaryWithObjectsAndKeys:mobile,@"mobile",code,@"code", nil] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/User/userLogin" parameters:[NSDictionary dictionaryWithObjectsAndKeys:mobile,@"mobile",code,@"code", nil] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSLog(@"login param==%@==%@",[NSDictionary dictionaryWithObjectsAndKeys:mobile,@"mobile",@"4",@"type", nil],[self DataTOjsonString:responseObject]);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -681,7 +681,7 @@
  老：User/userLogin
  */
 -(void)userLogin:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Login" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Login" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSLog(@"login param==%@",[self DataTOjsonString:responseObject]);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -701,10 +701,8 @@
     }];
 }
 
-
-
 -(void)addProdWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Cart/addProd" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Cart/addProd" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -724,13 +722,10 @@
 }
 
 -(void)showCartWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-
-    
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Cart/showCart" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Cart/showCart" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         //NSLog(@"shopingcart==%@",responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
-        
         if ([ret isEqualToString:@"200"]) {
             NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
             NSString *msg =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"msg"]];
@@ -742,25 +737,15 @@
         }else{
             block(nil,nil,nil);
         }
-        
-        
-        
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        
                 block(nil,nil,nil);
-        
-        
     }];
 }
 
-
 -(void)getShopClassListWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    
-    [[AFAppDotNetAPIClient sharedClient]GET:@"ProfessionClass/getShopClassList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
-        
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/ProfessionClass/getShopClassList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
-        
         if ([ret isEqualToString:@"200"]) {
             NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
             NSString *msg =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"msg"]];
@@ -772,22 +757,15 @@
         }else{
             block(nil,nil,nil);
         }
-        
-        
-        
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        
                 block(nil,nil,nil);
-        
-        
     }];
 }
 
 -(void)queryShopByKeyWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Shop/queryShopByKey" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Shop/queryShopByKey" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
-        
         if ([ret isEqualToString:@"200"]) {
             NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
             NSString *msg =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"msg"]];
@@ -802,11 +780,10 @@
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
                 block(nil,nil,nil);
     }];
-
 }
 
 -(void)clearCartWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Cart/clearCart" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Cart/clearCart" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -830,12 +807,66 @@
 }
 
 /**
+ *报修记录
+ *2018-03-21
+ */
+-(void)getUserRepairLogWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/GetUserRepairLog" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+        NSNumber *retn = [responseObject objectForKey:@"ret"];
+        NSString *ret = [NSString stringWithFormat:@"%@",retn];
+        if ([ret isEqualToString:@"200"]) {
+            NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
+            NSString *msg =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"msg"]];
+            if ([code isEqualToString:@"0"]) {
+                block([[responseObject objectForKey:@"data"] objectForKey:@"info"],code,msg);
+            }else{
+                block(nil,code,msg);
+                if([code isEqualToString:@"-1"])
+                    [self clearUserInfo];
+            }
+        }else{
+            block(nil,nil,nil);
+        }
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        block(nil,nil,nil);
+    }];
+}
+/**
+ *上报报修(post)
+ *content={内容}&mobile={手机号}&&img1={图片:base64}...&img9={图片:base64}
+ *2018-03-21
+ */
+-(void)userRepairAddWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
+    //NSLog(@"UserRepairAdd==%@",[self getURLWithParam:@"UserRepairAdd"]);
+    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"Api/v2/UserRepairAdd"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
+        NSNumber *retn = [responseObject objectForKey:@"ret"];
+        NSString *ret = [NSString stringWithFormat:@"%@",retn];
+        if ([ret isEqualToString:@"200"]) {
+            NSString *code =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"code"]];
+            NSString *msg =[NSString stringWithFormat:@"%@",[[responseObject objectForKey:@"data"] objectForKey:@"msg"]];
+            
+            NSLog(@"%@",responseObject);
+            if ([code isEqualToString:@"0"]) {
+                block([[responseObject objectForKey:@"data"] objectForKey:@"info"],code,msg);
+            }else{
+                block(nil,code,msg);
+            }
+        }else{
+            block(nil,nil,nil);
+        }
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        block(nil,nil,nil);
+        NSLog(@"%@",error);
+    }];
+}
+
+/**
  *订单提交(这个没变)
  *2017-11-07
  */
 -(void)OrdersubmitWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    NSLog(@"OrdersubmitWithDic==%@",[self getURLWithParam:@"Order/submit"]);
-    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"Order/submit"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
+    NSLog(@"OrdersubmitWithDic==%@",[self getURLWithParam:@"Api/v2/Order/submit"]);
+    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"Api/v2/Order/submit"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -860,7 +891,7 @@
 }
 
 -(void)delProdInCartWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Cart/delProdInCart" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Cart/delProdInCart" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -888,7 +919,7 @@
 }
 
 -(void)serveShopSubmitWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Order/serveShopSubmit" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Order/serveShopSubmit" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         
@@ -903,9 +934,6 @@
         }else{
             block(nil,nil,nil);
         }
-        
-        
-        
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         
         block(nil,nil,nil);
@@ -921,7 +949,7 @@
  老：User/getAddressList
  */
 -(void)getAddressListWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"GetUserAddressList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/GetUserAddressList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSLog(@"getAddressListWithDic==%@",responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -949,7 +977,7 @@
  老：User/updAddress
  */
 -(void)addAddressWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"UserAddressUp"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"Api/v2/UserAddressUp"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -974,7 +1002,7 @@
  老：User/setDefaultAddress
  */
 -(void)setDefaultAddressWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"UserAddressSetDefault" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/UserAddressSetDefault" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSLog(@"setDefaultAddressWithDic==%@",responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -997,7 +1025,7 @@
 }
 
 -(void)kucun:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Product/checkProd" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Product/checkProd" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -1023,7 +1051,7 @@
  老：User/getCollectList
  */
 -(void)getCollectListWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"GetUserCollectList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/GetUserCollectList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -1044,7 +1072,7 @@
 }
 
 -(void)getNoticeListWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"User/getCollectList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/User/getCollectList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -1068,8 +1096,7 @@
 
 
 -(void)myOrderListWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Order/myOrderList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Order/myOrderList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -1099,7 +1126,7 @@
 
 
 -(void)myServeOrderListWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Order/myServeOrderList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Order/myServeOrderList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -1132,7 +1159,7 @@
  老：User/delAddress
  */
 -(void)delAddressWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"UserAddressDel" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/UserAddressDel" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -1159,7 +1186,7 @@
  老：NoticeWall/getNoticeListV2
  */
 -(void)getNoticeListwallWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"GetNoticeList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/GetNoticeList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -1185,7 +1212,7 @@
  老：NoticeWall/noticeDetail
  */
 -(void)noticeDetailWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"GetNoticeDetail" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/GetNoticeDetail" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         //NSLog(@"noticeDetailWithDic==%@==%@",dic,responseObject);
 
         NSNumber *retn = [responseObject objectForKey:@"ret"];
@@ -1215,7 +1242,7 @@
  老：NoticeWall/comment
  */
 -(void)NoticeWallcommentWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"NoticeCommentAdd" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/NoticeCommentAdd" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSLog(@"NoticeWallcommentWithDic==%@==%@",dic,responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -1247,7 +1274,7 @@
  老：NoticeWall/praise
  */
 -(void)NoticeWallAgreeWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"NoticePraise" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/NoticePraise" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSLog(@"NoticeWallAgreeWithDic==%@==%@",[self getParamWithToken:dic],responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -1273,7 +1300,7 @@
  新：NoticeReport 
  */
 -(void)noticeReport :(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"NoticeReport"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"Api/v2/NoticeReport"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -1299,7 +1326,7 @@
  新：GetUserNoticeList
  */
 -(void)getMyNoticeList:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"GetUserNoticeList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/GetUserNoticeList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -1325,7 +1352,7 @@
  新：UserReplyNotice
  */
 -(void)getMyReplyList:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"UserReplyNotice"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"Api/v2/UserReplyNotice"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -1351,7 +1378,7 @@
  老：User/addNotice
  */
 -(void)addNoticeWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"UserNoticeAdd"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"Api/v2/UserNoticeAdd"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -1372,7 +1399,7 @@
 }
 
 -(void)delNoticeWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"User/delNotice" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/User/delNotice" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -1398,7 +1425,7 @@
  老：User/modifyLogo
  */
 -(void)modifyLogoWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"UserLogoModify"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"Api/v2/UserLogoModify"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
         NSLog(@"modify==%@==%@",dic,responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -1425,7 +1452,7 @@
  老：User/modifyNickname
  */
 -(void)modifyNicknameWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"UserNickNameModify"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"Api/v2/UserNickNameModify"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         
@@ -1454,7 +1481,7 @@
  */
 
 -(void)modifySexWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"UserSexModify"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"Api/v2/UserSexModify"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -1480,7 +1507,7 @@
  */
 
 -(void)modifyBirthdayWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"UserBirthdayModify"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"Api/v2/UserBirthdayModify"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -1506,7 +1533,7 @@
  新：MyCentre
  */
 -(void)myCentreWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"MyCentre" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/MyCentre" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         //NSLog(@"_orderArray==%@",[self getParamWithToken:dic]);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -1534,7 +1561,7 @@
  */
 
 -(void)createFamilyWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"FamilyCreate" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/FamilyCreate" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         //NSLog(@"_orderArray==%@",[self getParamWithToken:dic]);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -1561,7 +1588,7 @@
  新：GetMyFamily
  */
 -(void)getMyFamilyWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"GetMyFamily" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/GetMyFamily" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -1588,7 +1615,7 @@
  */
 
 -(void)getFamilyMemberWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"GetFamilyMember" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/GetFamilyMember" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -1615,7 +1642,7 @@
  */
 
 -(void)addFamilyWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"AddFamily" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/AddFamily" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -1641,7 +1668,7 @@
  */
 
 -(void)getFamilyProductWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"GetFamilyProduct" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/GetFamilyProduct" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -1667,7 +1694,7 @@
  新：FamilyOrder
  */
 -(void)familyOrderWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"FamilyOrder" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/FamilyOrder" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -1693,7 +1720,7 @@
  新：GetFamilyExchangeLog
  */
 -(void)getFamilyExchangeLogWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"GetFamilyExchangeLog" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/GetFamilyExchangeLog" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -1718,7 +1745,7 @@
  2018-01-22
  */
 -(void)userNoticeDelWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"UserNoticeDel" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/UserNoticeDel" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -1744,7 +1771,7 @@
  新：FamilyExchange
  */
 -(void)familyExchangeWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"FamilyExchange" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/FamilyExchange" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -1765,7 +1792,7 @@
 }
 
 -(void)modifyPayPassWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"User/modifyLoginPass" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/User/modifyLoginPass" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -1787,7 +1814,7 @@
 
 +(void)addCommentWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
     //NSDictionary* param=[self getParamWithToken:dic];
-    [[AFAppDotNetAPIClient sharedClient]POST:@"Comment/addComment" parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]POST:@"Api/v2/Comment/addComment" parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -1813,7 +1840,7 @@
  老：Area/getProvinceList
  */
 -(void)getProvinceListWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"GetAreaProvinceList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/GetAreaProvinceList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -1842,7 +1869,7 @@
  老：Area/getCityList
  */
 -(void)getCityListWithDicWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"GetAreaCityList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/GetAreaCityList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -1869,7 +1896,7 @@
  老：Area/getDistrictList
  */
 -(void)getDistrictListDicWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"GetAreaDistrictList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/GetAreaDistrictList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -1905,7 +1932,7 @@
  */
 
 -(void)getCommunityListWithDicWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"GetCommunityList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/GetCommunityList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         NSLog(@"getCommunityList==%@==%@",[self getParamWithToken:dic],responseObject);
@@ -1934,7 +1961,7 @@
  老：User/modifyCommunityAddress
  */
 -(void)modifyCommunityAddressDicWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"ModifyCommunityAddress" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/ModifyCommunityAddress" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -1955,7 +1982,7 @@
 }
 
 -(void)helpInfoWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"User/helpInfo" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/User/helpInfo" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSLog(@"helpinfo==%@",responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -1983,7 +2010,7 @@
  老：User/addCollect
  */
 -(void)addCollectWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"UserCollectAdd" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/UserCollectAdd" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         //NSLog(@"addCollectWithDic==%@==%@",responseObject,[self getParamWithToken:dic]);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -2005,7 +2032,7 @@
 }
 
 -(void)myOrderDetailWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Order/myOrderDetail" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Order/myOrderDetail" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -2026,7 +2053,7 @@
 }
 
 -(void)cancelOrderWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Order/cancelOrder" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Order/cancelOrder" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSLog(@"cancelOrderWithDic==%@",responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -2057,7 +2084,7 @@
 
 
 -(void)delOrderWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Order/delOrder" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Order/delOrder" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -2088,7 +2115,7 @@
 
 
 -(void)finishOrderWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Order/finishOrder" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Order/finishOrder" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -2116,7 +2143,7 @@
 }
 
 -(void)myServeOrderDetailWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Order/myServeOrderDetail" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Order/myServeOrderDetail" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -2151,7 +2178,7 @@
  老：User/delCollect
  */
 -(void)delCollectWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"UserCollectDel" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/UserCollectDel" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         //NSLog(@"delCollectWithDic==%@==%@",responseObject,[self getParamWithToken:dic]);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -2173,7 +2200,7 @@
 }
 
 -(void)showCommonTelWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Shop/showCommonTel" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Shop/showCommonTel" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -2194,7 +2221,7 @@
 }
 
 -(void)GetNickAndAvatarWithUser_ID:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"GetUserNickAndAvatarList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/GetUserNickAndAvatarList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         //NSLog(@"GetNickAndAvatarWithUser_ID11111==%@==%@",[self getParamWithToken:dic],responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -2211,17 +2238,13 @@
             block(nil,nil,nil);
         }
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        
                 block(nil,nil,nil);
-        
         NSLog(@"%@",error);
     }];
-
 }
 
-
 -(void)feedbackWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"User/feedback" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/User/feedback" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -2237,21 +2260,15 @@
         }else{
             block(nil,nil,nil);
         }
-        
-         
-        
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        
                 block(nil,nil,nil);
-        
         NSLog(@"%@",error);
     }];
-
 }
 
 
 -(void)getPushDetailWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"User/getPushDetail" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/User/getPushDetail" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -2279,7 +2296,7 @@
 
 
 -(void)editNoticeWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]POST:@"User/editNotice" parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]POST:@"Api/v2/User/editNotice" parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
         
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -2311,7 +2328,7 @@
 -(void)sliderDetailWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
 
 
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Carousel/sliderDetail" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Carousel/sliderDetail" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -2343,7 +2360,7 @@
 -(void)isCollectWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
 
     
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Shop/isCollect" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Shop/isCollect" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -2374,7 +2391,7 @@
 -(void)isInServeWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
 
     
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Shop/isInServe" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Shop/isInServe" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -2410,7 +2427,7 @@
 //    if([Stockpile sharedStockpile].isLogin){
 //       [param setObject:@ forKey:@"usertoken"]
 //    }
-    [[AFAppDotNetAPIClient sharedClient]GET:@"User/getGJId" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/User/getGJId" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -2433,7 +2450,7 @@
 
 -(void)getShopingCartDataWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
 
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Cart/getShopingCartData" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Cart/getShopingCartData" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -2502,7 +2519,7 @@
 //    http://app.mzsq.cc/app/Public/mzsq/?service=User.getGJSerInfo
     
     
-    [[AFAppDotNetAPIClient sharedClient]GET:@"User/getGJSerInfo" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/User/getGJSerInfo" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -2531,7 +2548,7 @@
 }
 
 -(void)telTongJi:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Shop/telStatis" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Shop/telStatis" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -2552,7 +2569,7 @@
 
 -(void)ADD:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
 
-    [[AFAppDotNetAPIClient sharedClient]GET:@"User/showAd" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/User/showAd" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -2576,7 +2593,7 @@
 }
 
 -(void)ADDJLu:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"User/clickAd" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/User/clickAd" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -2609,7 +2626,7 @@
 
 -(void)GongGaoNum:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
 
-    [[AFAppDotNetAPIClient sharedClient]GET:@"User/getAllNoticeCountV2" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/User/getAllNoticeCountV2" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -2638,7 +2655,7 @@
  老：Shop/getProdListByName
  */
 -(void)shouYeSouList:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"GetShopProductSearch" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/GetShopProductSearch" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSLog(@"sou_result====:%@",responseObject);
 
         NSNumber *retn = [responseObject objectForKey:@"ret"];
@@ -2660,7 +2677,7 @@
 }
 
 -(void)shouYeGoodsF:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Home/getSelectionProd" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Home/getSelectionProd" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSLog(@"shouYeGoodsF_param==%@",[self getParamWithToken:dic]);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -2685,7 +2702,7 @@
 }
 
 -(void)shenghuoList:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Home/getSelectionProd" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Home/getSelectionProd" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -2718,7 +2735,7 @@
  老：ProfessionClass/getLifeServiceClass
  */
 -(void)leibiaol:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"GetPLifeServiceClass" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/GetPLifeServiceClass" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSLog(@"shfw==%@==%@",dic,responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -2744,7 +2761,7 @@
  老：Shop/lifeServiceShopList
  */
 -(void)shangjial:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"GetPLifeServiceShop" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/GetPLifeServiceShop" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSLog(@"shangjial==%@==%@",dic,responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -2765,7 +2782,7 @@
 }
 
 -(void)shangjialPush:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Shop/lifeServiceShopDetail" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Shop/lifeServiceShopDetail" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -2792,7 +2809,7 @@
  */
 - (void)wuyYeZhongxin:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block
 {
-    [[AFAppDotNetAPIClient sharedClient]GET:@"NoticeWall/communityNoticeList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/NoticeWall/communityNoticeList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         NSLog(@"%@",responseObject);
@@ -2849,7 +2866,7 @@
 #pragma mark -- 商家信息
 -(void)ShopshopInfoWithDic:(NSDictionary *)dic WithBlock:(void(^)(id models, NSString *code ,NSString * msg))block
 {
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Shop/shopInfo" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Shop/shopInfo" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -2874,7 +2891,7 @@
 #pragma mark -- 社区标语
 - (void)communitySlogan:(NSDictionary *)dic WithBlock:(void (^)(id, NSString *, NSString *))block
 {
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Home/communitySlogan" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Home/communitySlogan" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -2903,7 +2920,7 @@
  新：GetCommunityList
  */
 -(void)getNearbyCommunity:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"GetCommunityList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/GetCommunityList" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSLog(@"--getNearbyCommunity--%@",responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -2930,7 +2947,7 @@
  *重新提交订单（下单后未支付的情况）
  */
 -(void)resubmitOrder:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Order/resubmit" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Order/resubmit" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
        // NSLog(@"--res--%@",responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -2957,7 +2974,7 @@
  *获取该店铺营业情况
  */
 -(void)getShopOnlineTime:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"Shop/GetShopOnlineTime" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/Shop/GetShopOnlineTime" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         // NSLog(@"--res--%@",responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -2984,8 +3001,8 @@
  2017-10-09 新增
  */
 -(void)getCommunityShop:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]GET:@"GetCommunityShop" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
-        NSLog(@"--getCommunityShop--%@",responseObject);
+    [[AFAppDotNetAPIClient sharedClient]GET:@"Api/v2/GetCommunityShop" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+        //NSLog(@"--getCommunityShop--%@",responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -3012,7 +3029,7 @@
  *2017-11-04
  */
 -(void)checkCart:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"Cart/checkCart"] parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"Api/v2/Cart/checkCart"] parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
        // NSLog(@"--checkCart--%@",responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -3041,7 +3058,7 @@
  *2017-12-27
  */
 -(void)getMyCouponWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient] GET:@"GetMyCoupon" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient] GET:@"Api/v2/GetMyCoupon" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -3068,7 +3085,7 @@
  *2017-12-28
  */
 -(void)orderCheckWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"v2/OrderCheck"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"Api/v2/OrderCheck"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -3093,7 +3110,7 @@
  *2017-12-27
  */
 -(void)orderSubmitWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"v2/OrderSubmit"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"Api/v2/OrderSubmit"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -3119,7 +3136,7 @@
  *2017-12-27
  */
 -(void)orderPayWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"v2/OrderPay"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"Api/v2/OrderPay"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -3145,7 +3162,7 @@
  *2018-01-09
  */
 -(void)importExpressWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"ImportExpress"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient]POST:[self getURLWithParam:@"Api/v2/ImportExpress"] parameters:dic success:^(NSURLSessionDataTask *task, id responseObject) {
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
         if ([ret isEqualToString:@"200"]) {
@@ -3172,7 +3189,7 @@
  *2018-01-11
  */
 -(void)getMessagesWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient] GET:@"GetMessages" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient] GET:@"Api/v2/GetMessages" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         //NSLog(@"ReceiveCoupon==%@",responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -3200,7 +3217,7 @@
  *2018-01-11
  */
 -(void)getProductGroupDetailWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient] GET:@"GetProductGroupDetail" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient] GET:@"Api/v2/GetProductGroupDetail" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         //NSLog(@"ReceiveCoupon==%@",responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -3228,7 +3245,7 @@
  *2018-01-08
  */
 -(void)orderFinishWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient] GET:@"v2/OrderFinish" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient] GET:@"Api/v2/OrderFinish" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSLog(@"ReceiveCoupon==%@",responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -3256,7 +3273,7 @@
  *2018-01-04
  */
 -(void)reOrderWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient] GET:@"v2/ReOrder" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient] GET:@"Api/v2/ReOrder" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSLog(@"ReceiveCoupon==%@",responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -3284,7 +3301,7 @@
  *2018-01-03
  */
 -(void)receiveCouponWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient] GET:@"ReceiveCoupon" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient] GET:@"Api/v2/ReceiveCoupon" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSLog(@"ReceiveCoupon==%@",responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -3312,7 +3329,7 @@
  *2018-01-03
  */
 -(void)confirmFamilyWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient] GET:@"ConfirmFamily" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient] GET:@"Api/v2/ConfirmFamily" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
         NSLog(@"confirmFamily==%@",responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];
@@ -3340,7 +3357,7 @@
  *2017-12-06
  */
 -(void)getHotSearchKey:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block{
-    [[AFAppDotNetAPIClient sharedClient] GET:@"GetHotSearchKey" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[AFAppDotNetAPIClient sharedClient] GET:@"Api/v2/GetHotSearchKey" parameters:[self getParamWithToken:dic] success:^(NSURLSessionDataTask *task, id responseObject) {
          NSLog(@"GetHotSearchKey==%@",responseObject);
         NSNumber *retn = [responseObject objectForKey:@"ret"];
         NSString *ret = [NSString stringWithFormat:@"%@",retn];

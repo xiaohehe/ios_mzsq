@@ -261,7 +261,14 @@
  * 我的优惠券
  */
 -(void)getMyCouponWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
-
+/**
+ * 报修记录
+ */
+-(void)getUserRepairLogWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
+/**
+ * 上报报修(post)
+ */
+-(void)userRepairAddWithDic:(NSDictionary *)dic Block:(void(^)(id models, NSString *code ,NSString * msg))block;
 /**
  * 订单检测
  */
